@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/web_simulator/index.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/web_simulator/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/web_simulator/$1"
+    }
+  ]
+}
