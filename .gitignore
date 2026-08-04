@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs
+dist/
+build/
+*.tsbuildinfo
+
+# SQLite databases & temp logs (keep structure, exclude ephemeral DB if desired or keep seed)
+backend/data/*.db-journal
+backend/data/*.db-wal
+backend/data/*.db-shm
+*.log
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment Variables
+.env
+.env.local
+.env.*.local

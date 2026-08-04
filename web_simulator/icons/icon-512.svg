@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14532d"/>
+      <stop offset="100%" stop-color="#052e16"/>
+    </linearGradient>
+    <linearGradient id="leafGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="accentGrad512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  <!-- App Icon Background Circle / Rounded Rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad512)"/>
+  
+  <!-- Outer Glow Ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#22c55e" stroke-width="8" stroke-opacity="0.3" stroke-dasharray="20 16"/>
+  
+  <!-- Inner Shield / Seed Base -->
+  <path d="M256 74 C346 74 405 122 405 218 C405 336 256 438 256 438 C256 438 107 336 107 218 C107 122 166 74 256 74 Z" fill="#0f3d20" stroke="#22c55e" stroke-width="9"/>
+  
+  <!-- Stylized Plant Sprout & AI Scanner Crosshairs -->
+  <!-- Left Leaf -->
+  <path d="M256 298 C198 298 160 256 170 202 C202 198 250 234 256 298 Z" fill="url(#leafGrad512)"/>
+  <!-- Right Leaf -->
+  <path d="M256 272 C310 272 346 224 336 176 C298 176 262 214 256 272 Z" fill="url(#leafGrad512)"/>
+  <!-- Center Stem -->
+  <path d="M256 380 L256 186" stroke="#86efac" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- AI Neural / Diagnostic Glow Dot -->
+  <circle cx="256" cy="165" r="18" fill="url(#accentGrad512)"/>
+  <circle cx="256" cy="165" r="32" fill="none" stroke="#facc15" stroke-width="4" stroke-opacity="0.6"/>
+  
+  <!-- Scanner Corners -->
+  <path d="M 170 150 L 144 150 L 144 176" fill="none" stroke="#4ade80" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 342 150 L 368 150 L 368 176" fill="none" stroke="#4ade80" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 144 310 L 144 336 L 170 336" fill="none" stroke="#4ade80" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 368 310 L 368 336 L 342 336" fill="none" stroke="#4ade80" stroke-width="8" stroke-linecap="round"/>
+</svg>

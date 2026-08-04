@@ -1,0 +1,67 @@
+{
+  "version": "2026.07-CIBRC-REV3",
+  "lastUpdated": "2026-07-15",
+  "authority": "Central Insecticides Board & Registration Committee (CIB&RC), Govt of India",
+  "chemicals": [
+    {
+      "code": "CHEM_AZOXY_DIFENO",
+      "tradeNames": ["Custodia", "Amistar Top", "Score Super"],
+      "activeIngredient": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+      "cibrcRegNo": "CIR-142857/2021-Azoxystrobin(SC)-542",
+      "targetDiseases": ["Rust", "Powdery Mildew", "Anthracnose", "Leaf Spot"],
+      "approvedCrops": ["SOYBEAN", "COTTON", "CHILLI", "TOMATO", "WHEAT", "PADDY"],
+      "defaultDilutionRatePerLitre": "1.0 to 1.5 ml/L",
+      "defaultDosePerAcre": "200 ml in 200 L water",
+      "phiDays": 21,
+      "toxicityCategory": "BLUE_TRIANGLE"
+    },
+    {
+      "code": "CHEM_HEXACONAZOLE",
+      "tradeNames": ["Contaf Plus", "Sitara"],
+      "activeIngredient": "Hexaconazole 5% SC",
+      "cibrcRegNo": "CIR-98421/2019-Hexaconazole-312",
+      "targetDiseases": ["Sheath Blight", "Rust", "Tikka Disease"],
+      "approvedCrops": ["PADDY", "GROUNDNUT", "SOYBEAN", "MANGO"],
+      "defaultDilutionRatePerLitre": "2.0 ml/L",
+      "defaultDosePerAcre": "400 ml in 200 L water",
+      "phiDays": 30,
+      "toxicityCategory": "BLUE_TRIANGLE"
+    },
+    {
+      "code": "CHEM_CHLORANTRANILIPROLE",
+      "tradeNames": ["Coragen", "Cover"],
+      "activeIngredient": "Chlorantraniliprole 18.5% SC",
+      "cibrcRegNo": "CIR-112340/2018-Chlorantraniliprole-889",
+      "targetDiseases": ["Stem Borer", "Pod Borer", "Fall Armyworm", "Spodoptera litura"],
+      "approvedCrops": ["PADDY", "SOYBEAN", "MAIZE", "SUGARCANE", "COTTON"],
+      "defaultDilutionRatePerLitre": "0.3 to 0.4 ml/L",
+      "defaultDosePerAcre": "60 ml in 150-200 L water",
+      "phiDays": 14,
+      "toxicityCategory": "GREEN_TRIANGLE"
+    },
+    {
+      "code": "CHEM_COPPER_OXYCHLORIDE",
+      "tradeNames": ["Blitox 50", "Blue Copper"],
+      "activeIngredient": "Copper Oxychloride 50% WP",
+      "cibrcRegNo": "CIR-45210/2015-CopperOxy-112",
+      "targetDiseases": ["Bacterial Leaf Blight", "Early Blight", "Downy Mildew"],
+      "approvedCrops": ["PADDY", "TOMATO", "POTATO", "CHILLI", "CITRUS"],
+      "defaultDilutionRatePerLitre": "2.5 to 3.0 g/L",
+      "defaultDosePerAcre": "500 g in 200 L water",
+      "phiDays": 10,
+      "toxicityCategory": "BLUE_TRIANGLE"
+    },
+    {
+      "code": "CHEM_IMIDACLOPRID",
+      "tradeNames": ["Confidor", "Tatamida"],
+      "activeIngredient": "Imidacloprid 17.8% SL",
+      "cibrcRegNo": "CIR-67890/2017-Imidacloprid-445",
+      "targetDiseases": ["Aphids", "Jassids", "Whiteflies", "Brown Plant Hopper"],
+      "approvedCrops": ["COTTON", "PADDY", "CHILLI", "OKRA"],
+      "defaultDilutionRatePerLitre": "0.5 ml/L",
+      "defaultDosePerAcre": "50-100 ml in 200 L water",
+      "phiDays": 21,
+      "toxicityCategory": "YELLOW_TRIANGLE"
+    }
+  ]
+}

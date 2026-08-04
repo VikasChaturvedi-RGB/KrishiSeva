@@ -1,0 +1,588 @@
+openapi: 3.1.0
+info:
+  title: AgriScan AI - Authentication & DPDP Consent Service
+  description: >
+    Zero-password mobile OTP authentication service strictly adhering to India's DPDP Act 2023
+    (Digital Personal Data Protection Act 2023). Enforces explicit purpose-specific consent logging,
+    multilingual communication preferences, and role-based access control (Farmer, Agri-Clinic Operator, Agronomist, Admin).
+  version: 1.0.0
+  contact:
+    name: Krishi Swasthya Sahayak Architecture Team
+    email: architecture@agriscan.gov.in
+
+servers:
+  - url: https://api.agriscan.in/v1/auth
+    description: Production API Gateway
+  - url: https://staging-api.agriscan.in/v1/auth
+    description: Staging API Gateway
+  - url: http://localhost:8081/v1/auth
+    description: Local Development Microservice
+
+paths:
+  /otp/request:
+    post:
+      summary: Request OTP for Mobile Login / Registration
+      description: >
+        Sends a 6-digit OTP via SMS (and optional WhatsApp fallback) to an Indian mobile number (+91).
+        Includes rate-limiting and anti-abuse safeguards.
+      operationId: requestOtp
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpRequestPayload'
+      responses:
+        '200':
+          description: OTP dispatched successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OtpRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /otp/verify:
+    post:
+      summary: Verify OTP & Issue Session Tokens with DPDP Consent
+      description: >
+        Validates OTP. If user is new, requires explicit DPDP Act 2023 consent payload.
+        Returns JWT access token, refresh token, user profile summary, and user role.
+      operationId: verifyOtp
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OtpVerifyPayload'
+      responses:
+        '200':
+          description: Authentication successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          description: Invalid or expired OTP.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: DPDP Consent required or user account suspended.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRequiredResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /token/refresh:
+    post:
+      summary: Refresh Access Token
+      description: Rotates refresh token and issues a fresh short-lived access token.
+      operationId: refreshToken
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenPayload'
+      responses:
+        '200':
+          description: Token refreshed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefreshResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /consent/record:
+    post:
+      summary: Record or Update Granular DPDP Consent
+      description: >
+        Logs purpose-bound explicit consent with immutable audit logs as mandated by DPDP Act 2023.
+        Supports consent revocation or modification for agricultural advisory, telemetry, and location tracking.
+      operationId: recordConsent
+      tags:
+        - Privacy & Consent
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentRecordPayload'
+      responses:
+        '200':
+          description: Consent logged with cryptographic audit signature.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecordResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityError'
+
+  /consent/status:
+    get:
+      summary: Fetch Current Active Consent & Purpose Matrix
+      description: Retrieves the farmer's active consents, purpose definitions, and localized consent notice texts.
+      operationId: getConsentStatus
+      tags:
+        - Privacy & Consent
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: Active consent status retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentStatusResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /logout:
+    post:
+      summary: Revoke Session & Blacklist Refresh Token
+      description: Terminates active device session.
+      operationId: logout
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutPayload'
+      responses:
+        '200':
+          description: Successfully logged out.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericSuccessResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter the JWT access token returned during OTP verification.
+
+  parameters:
+    AcceptLanguageHeader:
+      name: Accept-Language
+      in: header
+      required: false
+      description: ISO 639-1 / IETF BCP 47 language code for localized responses (e.g. hi, te, ta, kn, mr, bn, pa, gu, or, ml, en).
+      schema:
+        type: string
+        default: hi
+        enum:
+          - hi # Hindi
+          - en # English
+          - te # Telugu
+          - ta # Tamil
+          - kn # Kannada
+          - mr # Marathi
+          - bn # Bengali
+          - pa # Punjabi
+          - gu # Gujarati
+          - or # Odia
+          - ml # Malayalam
+          - as # Assamese
+          - mai # Maithili
+          - sat # Santali
+          - ks # Kashmiri
+          - ne # Nepali
+          - sd # Sindhi
+          - kok # Konkani
+          - dog # Dogri
+          - mni # Manipuri
+
+  schemas:
+    OtpRequestPayload:
+      type: object
+      required:
+        - mobileNumber
+        - channel
+      properties:
+        mobileNumber:
+          type: string
+          pattern: '^[6-9]\d{9}$'
+          example: '9876543210'
+          description: 10-digit Indian mobile phone number without country code.
+        channel:
+          type: string
+          enum: [SMS, WHATSAPP, VOICE_CALL]
+          default: SMS
+          description: Preferred dispatch channel for OTP delivery.
+        preferredLanguage:
+          type: string
+          example: 'hi'
+          description: Preferred language code for SMS template localization.
+        deviceFingerprint:
+          type: string
+          example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+          description: Secure hardware/device identifier for fraud prevention.
+
+    OtpRequestResponse:
+      type: object
+      required:
+        - success
+        - sessionId
+        - expiresInSeconds
+        - retryAfterSeconds
+      properties:
+        success:
+          type: boolean
+          example: true
+        sessionId:
+          type: string
+          format: uuid
+          example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+          description: Session token to be passed during verification.
+        expiresInSeconds:
+          type: integer
+          example: 300
+          description: OTP validity duration in seconds (5 minutes).
+        retryAfterSeconds:
+          type: integer
+          example: 60
+          description: Cooldown duration before resending OTP.
+        maskedMobile:
+          type: string
+          example: 'XXXXXX3210'
+
+    OtpVerifyPayload:
+      type: object
+      required:
+        - sessionId
+        - otp
+        - mobileNumber
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+          example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        mobileNumber:
+          type: string
+          pattern: '^[6-9]\d{9}$'
+          example: '9876543210'
+        otp:
+          type: string
+          pattern: '^\d{6}$'
+          example: '784920'
+        dpdpConsent:
+          $ref: '#/components/schemas/DpdpConsentPayload'
+
+    DpdpConsentPayload:
+      type: object
+      required:
+        - privacyPolicyVersion
+        - consentTimestamp
+        - consentedPurposes
+      properties:
+        privacyPolicyVersion:
+          type: string
+          example: 'v2026.1'
+        consentTimestamp:
+          type: string
+          format: date-time
+          example: '2026-08-04T15:10:00Z'
+        languageCode:
+          type: string
+          example: 'hi'
+        consentedPurposes:
+          type: array
+          items:
+            type: string
+            enum:
+              - AGRONOMIC_DIAGNOSIS_AND_ADVISORY
+              - HYPERLOCAL_WEATHER_INTEGRATION
+              - SOIL_HEALTH_ANALYTICS
+              - AGRI_CLINIC_EXPERT_ESCALATION
+              - ANONYMIZED_EPIDEMIOLOGICAL_RESEARCH
+          example:
+            - AGRONOMIC_DIAGNOSIS_AND_ADVISORY
+            - HYPERLOCAL_WEATHER_INTEGRATION
+            - SOIL_HEALTH_ANALYTICS
+
+    AuthSuccessResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - tokenType
+        - expiresIn
+        - user
+      properties:
+        accessToken:
+          type: string
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        refreshToken:
+          type: string
+          example: 'dGhpcy1pcy1hLXJlZnJlc2gtdG9rZW4...'
+        tokenType:
+          type: string
+          example: 'Bearer'
+        expiresIn:
+          type: integer
+          example: 3600
+          description: Access token lifespan in seconds (1 hour).
+        user:
+          $ref: '#/components/schemas/UserSummary'
+
+    UserSummary:
+      type: object
+      required:
+        - userId
+        - mobileNumber
+        - role
+        - isProfileComplete
+        - preferredLanguage
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+        mobileNumber:
+          type: string
+          example: '+919876543210'
+        name:
+          type: string
+          example: 'Ramesh Kumar Patel'
+        role:
+          type: string
+          enum: [FARMER, CLINIC_OPERATOR, AGRONOMIST, COMPLIANCE_ADMIN, SUPER_ADMIN]
+          example: FARMER
+        isProfileComplete:
+          type: boolean
+          example: true
+        preferredLanguage:
+          type: string
+          example: 'hi'
+        state:
+          type: string
+          example: 'Madhya Pradesh'
+        district:
+          type: string
+          example: 'Ujjain'
+
+    RefreshTokenPayload:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          example: 'dGhpcy1pcy1hLXJlZnJlc2gtdG9rZW4...'
+
+    TokenRefreshResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - tokenType
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          example: 'Bearer'
+        expiresIn:
+          type: integer
+          example: 3600
+
+    ConsentRecordPayload:
+      type: object
+      required:
+        - consentItems
+      properties:
+        consentItems:
+          type: array
+          items:
+            type: object
+            required:
+              - purpose
+              - isGranted
+            properties:
+              purpose:
+                type: string
+                enum:
+                  - AGRONOMIC_DIAGNOSIS_AND_ADVISORY
+                  - HYPERLOCAL_WEATHER_INTEGRATION
+                  - SOIL_HEALTH_ANALYTICS
+                  - AGRI_CLINIC_EXPERT_ESCALATION
+                  - ANONYMIZED_EPIDEMIOLOGICAL_RESEARCH
+              isGranted:
+                type: boolean
+              validUntil:
+                type: string
+                format: date-time
+
+    ConsentRecordResponse:
+      type: object
+      required:
+        - success
+        - consentAuditHash
+        - recordedAt
+      properties:
+        success:
+          type: boolean
+          example: true
+        consentAuditHash:
+          type: string
+          example: 'sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069'
+        recordedAt:
+          type: string
+          format: date-time
+
+    ConsentStatusResponse:
+      type: object
+      required:
+        - activeConsents
+        - noticeTextLocalized
+      properties:
+        activeConsents:
+          type: array
+          items:
+            type: object
+            properties:
+              purpose:
+                type: string
+              isGranted:
+                type: boolean
+              updatedAt:
+                type: string
+                format: date-time
+        noticeTextLocalized:
+          type: string
+          example: 'कृषि सेवा आपकी फसल की बीमारी का सटीक निदान करने के लिए मौसम और स्थान का उपयोग करती है।'
+
+    ConsentRequiredResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+        - missingPurposes
+        - consentNoticeUrl
+      properties:
+        errorCode:
+          type: string
+          example: 'DPDP_CONSENT_MANDATORY'
+        message:
+          type: string
+          example: 'Explicit purpose consent is required under DPDP Act 2023.'
+        missingPurposes:
+          type: array
+          items:
+            type: string
+        consentNoticeUrl:
+          type: string
+          format: uri
+
+    LogoutPayload:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    GenericSuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: 'Operation completed successfully.'
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+        - timestamp
+      properties:
+        errorCode:
+          type: string
+          example: 'AUTH_INVALID_OTP'
+        message:
+          type: string
+          example: 'The provided OTP is invalid or has expired.'
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequestError:
+      description: Invalid request payload or formatting.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Authentication credentials missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    RateLimitError:
+      description: Exceeded maximum allowed requests per time window.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntityError:
+      description: Business validation or policy rule failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Unhandled internal system error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

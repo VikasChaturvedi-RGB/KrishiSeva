@@ -1,0 +1,389 @@
+{
+  "version": "2026.08-RULES-V1",
+  "governance": {
+    "status": "PUBLISHED",
+    "reviewedBy": "Dr. A. Sharma (Chief Agronomist & CIBRC Compliance Lead)",
+    "approvalDate": "2026-08-01"
+  },
+  "crops": [
+    {
+      "id": "CROP_SOYBEAN",
+      "nameEn": "Soybean",
+      "nameHi": "सोयाबीन",
+      "scientificName": "Glycine max",
+      "majorStates": ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Karnataka"]
+    },
+    {
+      "id": "CROP_PADDY",
+      "nameEn": "Paddy / Rice",
+      "nameHi": "धान (चावल)",
+      "scientificName": "Oryza sativa",
+      "majorStates": ["West Bengal", "Uttar Pradesh", "Punjab", "Andhra Pradesh", "Telangana", "Odisha"]
+    },
+    {
+      "id": "CROP_COTTON",
+      "nameEn": "Cotton",
+      "nameHi": "कपास",
+      "scientificName": "Gossypium hirsutum",
+      "majorStates": ["Gujarat", "Maharashtra", "Telangana", "Andhra Pradesh", "Haryana"]
+    },
+    {
+      "id": "CROP_WHEAT",
+      "nameEn": "Wheat",
+      "nameHi": "गेहूँ",
+      "scientificName": "Triticum aestivum",
+      "majorStates": ["Uttar Pradesh", "Madhya Pradesh", "Punjab", "Haryana", "Rajasthan"]
+    },
+    {
+      "id": "CROP_TOMATO",
+      "nameEn": "Tomato",
+      "nameHi": "टमाटर",
+      "scientificName": "Solanum lycopersicum",
+      "majorStates": ["Andhra Pradesh", "Madhya Pradesh", "Karnataka", "Gujarat", "Odisha"]
+    },
+    {
+      "id": "CROP_CHILLI",
+      "nameEn": "Chilli",
+      "nameHi": "मिर्च",
+      "scientificName": "Capsicum annuum",
+      "majorStates": ["Andhra Pradesh", "Telangana", "Madhya Pradesh", "Karnataka"]
+    }
+  ],
+  "diseaseRules": {
+    "DIS_ZINC_DEFICIENCY": {
+      "code": "DIS_ZINC_DEFICIENCY",
+      "category": "NUTRITIONAL_DEFICIENCY",
+      "nameEn": "Zinc Deficiency (Khaira / Interveinal Chlorosis)",
+      "nameHi": "जिंक (जस्ता) की कमी / खैरा रोग लक्षण",
+      "nameTe": "జింక్ లోపం",
+      "nameTa": "துத்தநாகக் குறைபாடு",
+      "nameMr": "जस्ताची (झिंक) कमतरता",
+      "namePa": "ਜ਼ਿੰਕ ਦੀ ਘਾਟ",
+      "descriptionHi": "पत्तियों की मुख्य नसें हरी रहती हैं जबकि नसों के बीच का भाग पीला पड़ जाता है और बाद में हल्के भूरे धब्बे उभरते हैं।",
+      "descriptionEn": "Interveinal chlorosis on young and middle leaves with bronze/brown necrotic spotting.",
+      "adaptiveQuestionnaire": {
+        "promptHi": "सटीक पुष्टि के लिए निम्नलिखित 3 सवालों के जवाब दें:",
+        "promptEn": "Please answer these questions for accurate diagnosis confirmation:",
+        "questions": [
+          {
+            "id": "Q_LEAF_POSITION",
+            "textHi": "पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+            "textEn": "Where is the yellowing predominantly visible?",
+            "options": [
+              { "key": "TOP_YOUNG", "textHi": "पौधे के ऊपरी भाग की नई पत्तियों पर", "textEn": "On top/younger leaves" },
+              { "key": "BOTTOM_OLD", "textHi": "पौधे के निचले भाग की पुरानी पत्तियों पर", "textEn": "On bottom/older leaves" },
+              { "key": "WHOLE_PLANT", "textHi": "पूरे पौधे पर एक समान", "textEn": "Uniformly across entire plant" }
+            ]
+          },
+          {
+            "id": "Q_SPOT_TEXTURE",
+            "textHi": "क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) दिखाई दे रहा है?",
+            "textEn": "Do you see fungal powder, spores or webbing under the leaves?",
+            "options": [
+              { "key": "NO_POWDER", "textHi": "नहीं, पत्ती की सतह पूरी तरह साफ है (केवल रंग उड़ा है)", "textEn": "No, surface is clean (only discoloration)" },
+              { "key": "YES_RUST_POWDER", "textHi": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है", "textEn": "Yes, reddish brown powder is erupting" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: सूक्ष्म पोषक तत्व पर्णीय उपचार (Foliar Mineral Correction)",
+          "titleEn": "Step 1: Micronutrient Foliar Correction",
+          "actionHi": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) 500 ग्राम + 250 ग्राम बुझा हुआ चूना या 1 किग्रा यूरिया को 200 लीटर पानी में मिलाकर प्रति एकड़ छिड़कें।",
+          "actionEn": "Foliar spray of Zinc Sulphate (21% Heptahydrate) @ 500g + Slaked Lime 250g (or Urea 1kg) in 200L water per acre.",
+          "dosage": {
+            "perLitreDilution": "2.5 g / Litre water",
+            "perAcreDose": "500 g in 200 L water",
+            "perHectareDose": "1.25 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: जैविक एवं मृदा सुधार",
+          "titleEn": "Step 2: Soil Health & Organic Amendment",
+          "actionHi": "खेत में जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB) 1 किग्रा प्रति एकड़ 50 किग्रा अच्छी सड़ी गोबर की खाद (FYM) के साथ मिलाकर मृदा में दें।",
+          "actionEn": "Apply Zinc Solubilizing Bacteria (ZSB) bio-fertilizer @ 1 kg/acre mixed with 50 kg well-decomposed FYM.",
+          "dosage": {
+            "perLitreDilution": "N/A (Soil application)",
+            "perAcreDose": "1.0 kg with 50 kg FYM",
+            "perHectareDose": "2.5 kg with 125 kg FYM",
+            "waterVolumePerAcre": 0,
+            "method": "SOIL_DRENCHING"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": false,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: रासायनिक कीटनाशक / कवकनाशी (आवश्यकता नहीं)",
+          "titleEn": "Step 3: Chemical Intervention (Not Applicable)",
+          "actionHi": "यह पोषण संबंधी विकार है, किसी रासायनिक कीटनाशक या फफूंदनाशी के छिड़काव की आवश्यकता नहीं है। अनावश्यक खर्च से बचें।",
+          "actionEn": "Nutritional deficiency confirmed. Zero synthetic chemical pesticide needed.",
+          "activeIngredient": "None Required",
+          "cibrcRegNo": "EXEMPT_NUTRIENT",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 0,
+          "dosage": {
+            "perLitreDilution": "0",
+            "perAcreDose": "0",
+            "perHectareDose": "0",
+            "waterVolumePerAcre": 0,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    },
+    "DIS_SOYBEAN_RUST": {
+      "code": "DIS_SOYBEAN_RUST",
+      "category": "FUNGAL_DISEASE",
+      "nameEn": "Soybean Rust (Phakopsora pachyrhizi)",
+      "nameHi": "सोयाबीन गेरूई / रतुआ रोग",
+      "nameTe": "సోయాబీన్ రస్ట్",
+      "nameTa": "சோயாபீன் துரு நோய்",
+      "nameMr": "सोयाबीन तांबेरा रोग",
+      "namePa": "ਸੋਇਆਬੀਨ ਕੁੰਗੀ",
+      "descriptionHi": "पत्तियों की निचली सतह पर छोटे भूरे-लाल रंग के फफोले (पस्ट्यूल्स) बनते हैं जो हवा से तेजी से फैलते हैं।",
+      "descriptionEn": "Polygonal reddish-brown lesions with prominent sporulating pustules on the lower leaf surface.",
+      "adaptiveQuestionnaire": {
+        "promptHi": "सटीक कवकनाशी चयन के लिए पुष्टि करें:",
+        "promptEn": "Confirm for precise fungicidal treatment:",
+        "questions": [
+          {
+            "id": "Q_PUSTULE_COLOR",
+            "textHi": "पत्ती के पीछे फफोले किस रंग के दिख रहे हैं?",
+            "textEn": "What color are the lesions/pustules on the leaf underside?",
+            "options": [
+              { "key": "RED_BROWN_PUSTULE", "textHi": "लाल-भूरे दानेदार फफोले जो छूने पर पाउडर छोड़ते हैं", "textEn": "Reddish-brown raised pustules with powder" },
+              { "key": "BLACK_CONCENTRIC", "textHi": "काले गोल छल्ले (अल्टरनेरिया जैसे)", "textEn": "Black concentric rings" }
+            ]
+          },
+          {
+            "id": "Q_HUMIDITY_RAIN",
+            "textHi": "क्या पिछले 3-4 दिनों में लगातार बारिश या 80% से अधिक नमी रही है?",
+            "textEn": "Has there been continuous rain or >80% relative humidity in the last 3-4 days?",
+            "options": [
+              { "key": "HIGH_HUMIDITY_YES", "textHi": "हाँ, भारी नमी और बादल छाए रहे हैं", "textEn": "Yes, high humidity & cloudy weather" },
+              { "key": "DRY_WEATHER", "textHi": "नहीं, सूखा और तेज धूप का मौसम है", "textEn": "No, dry and hot conditions" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: रोग प्रतिरोधक पोषण (Nutritional Immunity)",
+          "titleEn": "Step 1: Nutritional Immunity & Cuticle Hardening",
+          "actionHi": "पोटेशियम सिलिकेट (2 मिली/लीटर) + घुलनशील पोटाश (00:00:50) 1 किग्रा प्रति एकड़ छिड़कें जिससे पत्ती की कोशिका दीवारें मजबूत हों और कवक प्रवेश न कर सके।",
+          "actionEn": "Spray Potassium Silicate @ 2ml/L + SOP (0-0-50) @ 1kg/acre to thicken leaf cuticle against fungal penetration.",
+          "dosage": {
+            "perLitreDilution": "2.0 ml / Litre",
+            "perAcreDose": "400 ml + 1 kg SOP in 200 L water",
+            "perHectareDose": "1.0 L + 2.5 kg SOP in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: जैविक कवकनाशी (Bio-control)",
+          "titleEn": "Step 2: Bio-fungicide Protective Layer",
+          "actionHi": "ट्राइकोडर्मा विरिडी 1% WP (5 ग्राम/लीटर पानी) का सुरक्षात्मक छिड़काव करें।",
+          "actionEn": "Protective spray of Trichoderma viride 1% WP @ 5g/L water.",
+          "dosage": {
+            "perLitreDilution": "5.0 g / Litre",
+            "perAcreDose": "1.0 kg in 200 L water",
+            "perHectareDose": "2.5 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": true,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: CIB&RC पंजीकृत रासायनिक उपचार (गंभीर संक्रमण में)",
+          "titleEn": "Step 3: CIB&RC Approved Fungicide (Curative)",
+          "actionHi": "एज़ोक्सिस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC @ 200 मिली प्रति एकड़ (1 मिली/लीटर पानी) 200 लीटर पानी में मिलाकर नोजल से पत्ती के नीचे तक छिड़कें।",
+          "actionEn": "Apply Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 200 ml/acre (1.0 ml/L water) in 200L water with hollow cone nozzle.",
+          "activeIngredient": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
+          "cibrcRegNo": "CIR-142857/2021-Azoxystrobin(SC)-542",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 21,
+          "dosage": {
+            "perLitreDilution": "1.0 ml / Litre",
+            "perAcreDose": "200 ml in 200 L water",
+            "perHectareDose": "500 ml in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    },
+    "DIS_PADDY_BLAST": {
+      "code": "DIS_PADDY_BLAST",
+      "category": "FUNGAL_DISEASE",
+      "nameEn": "Paddy Leaf & Neck Blast (Magnaporthe oryzae)",
+      "nameHi": "धान का झुलसा रोग (ब्लास्ट)",
+      "nameTe": "వరి అగ్గితెగులు",
+      "nameTa": "நெல் குலை நோய்",
+      "nameMr": "भातावरील करपा रोग",
+      "namePa": "ਝੋਨੇ ਦਾ ਝੁਲਸ ਰੋਗ",
+      "descriptionHi": "पत्तियों पर आंख या नाव के आकार के धब्बे जिनके किनारे भूरे और केंद्र राख जैसे भूरे होते हैं।",
+      "descriptionEn": "Spindle-shaped elliptical lesions with gray/whitish centers and reddish-brown margins.",
+      "adaptiveQuestionnaire": {
+        "promptHi": "ब्लास्ट के प्रकार की पहचान हेतु बताएं:",
+        "promptEn": "Specify blast manifestation:",
+        "questions": [
+          {
+            "id": "Q_BLAST_TYPE",
+            "textHi": "लक्षण पत्तियों पर हैं या बाली की गर्दन (Neck) काली पड़कर टूट रही है?",
+            "textEn": "Are lesions on leaf blades or is the panicle neck turning black and breaking?",
+            "options": [
+              { "key": "LEAF_BLAST", "textHi": "पत्तियों पर नाव के आकार के धब्बे हैं", "textEn": "Spindle lesions on leaves (Leaf Blast)" },
+              { "key": "NECK_BLAST", "textHi": "बाली की गर्दन काली होकर लटक गई है", "textEn": "Black rot at panicle neck (Neck Blast)" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: सिलिकॉन व पोटाश पोषण (नाइट्रोजन यूरिया तुरंत रोकें)",
+          "titleEn": "Step 1: Silicon + Potash Fortification (Stop Excess Nitrogen)",
+          "actionHi": "अतिरिक्त यूरिया तुरंत बंद करें। ऑर्थो-सिलिकिक एसिड 2 मिली/लीटर + 00:00:50 पोटाश 5 ग्राम/लीटर का छिड़काव करें।",
+          "actionEn": "Immediately suspend urea top-dressing. Spray Ortho-Silicic Acid @ 2ml/L + SOP (0-0-50) @ 5g/L.",
+          "dosage": {
+            "perLitreDilution": "2.0 ml / Litre",
+            "perAcreDose": "400 ml in 200 L water",
+            "perHectareDose": "1.0 L in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: जैविक फफूंद नियंत्रण",
+          "titleEn": "Step 2: Bio-control Pseudomonas",
+          "actionHi": "स्यूडोमोनास फ्लोरोसेंस 1% WP @ 5 ग्राम/लीटर पानी का छिड़काव करें।",
+          "actionEn": "Spray Pseudomonas fluorescens 1% WP @ 5g/L water.",
+          "dosage": {
+            "perLitreDilution": "5.0 g / Litre",
+            "perAcreDose": "1.0 kg in 200 L water",
+            "perHectareDose": "2.5 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": true,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: CIB&RC पंजीकृत कवकनाशी (ट्राइसाइक्लाज़ोल या हेक्साकोनाज़ोल)",
+          "titleEn": "Step 3: CIB&RC Registered Fungicide",
+          "actionHi": "हेक्साकोनाज़ोल 5% SC @ 400 मिली प्रति एकड़ (2 मिली/लीटर) 200 लीटर पानी में छिड़कें।",
+          "actionEn": "Apply Hexaconazole 5% SC @ 400 ml/acre (2.0 ml/L) in 200L water.",
+          "activeIngredient": "Hexaconazole 5% SC",
+          "cibrcRegNo": "CIR-98421/2019-Hexaconazole-312",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 30,
+          "dosage": {
+            "perLitreDilution": "2.0 ml / Litre",
+            "perAcreDose": "400 ml in 200 L water",
+            "perHectareDose": "1.0 L in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    },
+    "DIS_COTTON_PINK_BOLLWORM": {
+      "code": "DIS_COTTON_PINK_BOLLWORM",
+      "category": "PEST_INFESTATION",
+      "nameEn": "Cotton Pink Bollworm (Pectinophora gossypiella)",
+      "nameHi": "कपास की गुलाबी सुंडी (पिंक बॉलवर्म)",
+      "nameTe": "పత్తి గులాబీ రంగు కాయ తొలుచు పురుగు",
+      "nameTa": "பருத்தி இளஞ்சிவப்பு காய்ப்புழு",
+      "nameMr": "कपाशीवरील बोंडअळी",
+      "namePa": "ਗੁਲਾਬੀ ਸੁੰਡੀ",
+      "descriptionHi": "फूल रोसेट (गुलाब जैसा) हो जाते हैं और छोटे टिंडों में छेद करके सुंडी अंदर के बीजों को खाती है।",
+      "descriptionEn": "Rosetted flowers and exit/entry holes in developing bolls with pinkish larvae feeding on seeds.",
+      "adaptiveQuestionnaire": {
+        "promptHi": "सुंडी के प्रकोप की तीव्रता जांचने हेतु बताएं:",
+        "promptEn": "Assess infestation severity:",
+        "questions": [
+          {
+            "id": "Q_ROSETTE_FLOWERS",
+            "textHi": "क्या खेत में 100 में से 5 से अधिक फूल गुलाब की पंखुड़ी जैसे मुड़े (Rosetted) दिख रहे हैं?",
+            "textEn": "Are there >5 rosetted flowers per 100 plants (ETL threshold)?",
+            "options": [
+              { "key": "ETL_EXCEEDED", "textHi": "हाँ, 5% से अधिक फूलों में नुकसान है (ETL पार)", "textEn": "Yes, >5% rosetted flowers (Above ETL)" },
+              { "key": "LOW_INFESTATION", "textHi": "नहीं, इक्का-दुक्का ही लक्षण हैं", "textEn": "No, very isolated symptoms" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: टिंडों की सुरक्षा हेतु पोटाश व बोरॉन पोषण",
+          "titleEn": "Step 1: Potash & Boron for Boll Wall Hardening",
+          "actionHi": "पोटेशियम नाइट्रेट (13:00:45) 5 ग्राम + बोरॉन 20% 1 ग्राम प्रति लीटर पानी का छिड़काव करें जिससे टिंडे की बाहरी त्वचा सख्त हो सके।",
+          "actionEn": "Spray Potassium Nitrate (13-0-45) @ 5g + Solubor Boron 20% @ 1g/L water to strengthen boll carpel walls.",
+          "dosage": {
+            "perLitreDilution": "6.0 g / Litre",
+            "perAcreDose": "1.2 kg in 200 L water",
+            "perHectareDose": "3.0 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: फेरोमोन ट्रैप व ट्राइकोग्रामा परजीवी (Bio-control)",
+          "titleEn": "Step 2: Pheromone Traps & Parasitoids",
+          "actionHi": "खेत में पिंक बॉलवर्म फेरोमोन ट्रैप (8 ट्रैप प्रति एकड़) लगाएं और ट्राइकोग्रामा बैक्ट्राई परजीवी कार्ड (50,000 अंडे/एकड़) छोड़ें।",
+          "actionEn": "Install Pheromone Traps @ 8 traps/acre and release Trichogramma bactrae egg parasitoid cards @ 50,000 eggs/acre.",
+          "dosage": {
+            "perLitreDilution": "N/A (Traps & Bio-cards)",
+            "perAcreDose": "8 traps + 2 Trichocards",
+            "perHectareDose": "20 traps + 5 Trichocards",
+            "waterVolumePerAcre": 0,
+            "method": "BROADCAST"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": true,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: CIB&RC पंजीकृत सुरक्षित कीटनाशक (क्लोरांट्रानिलिप्रोल)",
+          "titleEn": "Step 3: CIB&RC Green Label Chemistry",
+          "actionHi": "क्लोरांट्रानिलिप्रोल 18.5% SC @ 60 मिली प्रति एकड़ (0.3 मिली/लीटर) 200 लीटर पानी में मिलाकर शाम के समय छिड़कें।",
+          "actionEn": "Apply Chlorantraniliprole 18.5% SC @ 60 ml/acre (0.3 ml/L) in 200L water during late evening.",
+          "activeIngredient": "Chlorantraniliprole 18.5% SC",
+          "cibrcRegNo": "CIR-112340/2018-Chlorantraniliprole-889",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 14,
+          "dosage": {
+            "perLitreDilution": "0.3 ml / Litre",
+            "perAcreDose": "60 ml in 200 L water",
+            "perHectareDose": "150 ml in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    }
+  }
+}

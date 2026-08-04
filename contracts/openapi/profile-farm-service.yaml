@@ -1,0 +1,785 @@
+openapi: 3.1.0
+info:
+  title: AgriScan AI - Profile, Land Parcel & Farm Service
+  description: >
+    Manages farmer identities, geo-referenced land parcels, soil health card parameters,
+    active crop lifecycle stages, and Agri-Clinic operator associations.
+    Fully aligned with config-driven Indian agricultural taxonomies and DPDP Act 2023 localization.
+  version: 1.0.0
+  contact:
+    name: Krishi Swasthya Sahayak Architecture Team
+    email: architecture@agriscan.gov.in
+
+servers:
+  - url: https://api.agriscan.in/v1/profile-farm
+    description: Production API Gateway
+  - url: https://staging-api.agriscan.in/v1/profile-farm
+    description: Staging API Gateway
+  - url: http://localhost:8082/v1/profile-farm
+    description: Local Development Microservice
+
+paths:
+  /farmer/profile:
+    get:
+      summary: Get Farmer Profile Details
+      description: Returns the authenticated farmer's biographical profile, localization settings, and default farm metadata.
+      operationId: getFarmerProfile
+      tags:
+        - Farmer Profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: Farmer profile retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfileResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      summary: Update Farmer Profile
+      description: Updates biographical attributes, language preferences, and administrative address hierarchy.
+      operationId: updateFarmerProfile
+      tags:
+        - Farmer Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFarmerProfilePayload'
+      responses:
+        '200':
+          description: Profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmerProfileResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /farms:
+    get:
+      summary: List All Farm Land Parcels for Current User
+      description: Returns all geo-tagged farm parcels belonging to the farmer or registered under a clinic client.
+      operationId: listFarms
+      tags:
+        - Farm & Land Parcels
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of registered farm parcels.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      summary: Register a New Farm Land Parcel
+      description: Creates a new parcel with survey/khasra ID, boundary coordinates (GeoJSON polygon), soil type, and irrigation system.
+      operationId: createFarm
+      tags:
+        - Farm & Land Parcels
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFarmPayload'
+      responses:
+        '201':
+          description: Farm land parcel registered successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmParcelDetail'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /farms/{farmId}:
+    get:
+      summary: Get Farm Parcel Details by ID
+      operationId: getFarmById
+      tags:
+        - Farm & Land Parcels
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Farm parcel details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmParcelDetail'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      summary: Update Farm Land Parcel
+      operationId: updateFarm
+      tags:
+        - Farm & Land Parcels
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFarmPayload'
+      responses:
+        '200':
+          description: Farm updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FarmParcelDetail'
+
+  /farms/{farmId}/soil-card:
+    get:
+      summary: Get Soil Health Card Data for Farm Parcel
+      description: Returns NPK, organic carbon, pH, EC, and micronutrients used for nutrition-first decision logic.
+      operationId: getSoilCard
+      tags:
+        - Soil Health
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Soil health metrics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoilHealthCard'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    post:
+      summary: Upsert Soil Health Card Data
+      description: Stores lab or sensor-tested soil test results.
+      operationId: upsertSoilCard
+      tags:
+        - Soil Health
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoilHealthCardPayload'
+      responses:
+        '200':
+          description: Soil health card updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoilHealthCard'
+
+  /farms/{farmId}/crop-cycles:
+    get:
+      summary: List Active & Historical Crop Cycles for Farm
+      operationId: listCropCycles
+      tags:
+        - Crop Lifecycle
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [ACTIVE, COMPLETED, ABANDONED]
+            default: ACTIVE
+      responses:
+        '200':
+          description: List of crop cycles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCycleListResponse'
+
+    post:
+      summary: Start a New Crop Cycle
+      description: Registers crop species, variety, sowing date, and seed treatment details.
+      operationId: createCropCycle
+      tags:
+        - Crop Lifecycle
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCropCyclePayload'
+      responses:
+        '201':
+          description: Crop cycle registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCycleDetail'
+
+  /crop-cycles/{cropCycleId}/stage:
+    patch:
+      summary: Update Crop Phenological Growth Stage
+      description: Updates the active phenological stage (e.g. Vegetative, Flowering, Grain filling) to calibrate AI diagnosis.
+      operationId: updateCropStage
+      tags:
+        - Crop Lifecycle
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: cropCycleId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCropStagePayload'
+      responses:
+        '200':
+          description: Growth stage updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CropCycleDetail'
+
+  /clinic/farmers:
+    get:
+      summary: (Agri-Clinic Mode) List Managed Farmers
+      description: Used by Agri-Clinics to list enrolled farmers, search by phone or village, and manage multiple farm portfolios.
+      operationId: listClinicFarmers
+      tags:
+        - Agri-Clinic Mode
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Search term (mobile number, farmer name, village)
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated farmer records.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicFarmerListResponse'
+        '403':
+          description: Forbidden. User lacks CLINIC_OPERATOR or AGRONOMIST role.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AcceptLanguageHeader:
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+        default: hi
+
+  schemas:
+    FarmerProfileResponse:
+      type: object
+      required:
+        - id
+        - mobileNumber
+        - fullName
+        - state
+        - district
+        - taluka
+        - village
+        - pinCode
+        - preferredLanguage
+        - totalFarmsCount
+      properties:
+        id:
+          type: string
+          format: uuid
+        mobileNumber:
+          type: string
+          example: '+919876543210'
+        fullName:
+          type: string
+          example: 'Ramesh Patel'
+        state:
+          type: string
+          example: 'Madhya Pradesh'
+        district:
+          type: string
+          example: 'Ujjain'
+        taluka:
+          type: string
+          example: 'Badnagar'
+        village:
+          type: string
+          example: 'Mullapura'
+        pinCode:
+          type: string
+          example: '456006'
+        preferredLanguage:
+          type: string
+          example: 'hi'
+        associatedClinicId:
+          type: string
+          format: uuid
+          nullable: true
+        totalFarmsCount:
+          type: integer
+          example: 2
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateFarmerProfilePayload:
+      type: object
+      properties:
+        fullName:
+          type: string
+        state:
+          type: string
+        district:
+          type: string
+        taluka:
+          type: string
+        village:
+          type: string
+        pinCode:
+          type: string
+        preferredLanguage:
+          type: string
+        associatedClinicId:
+          type: string
+          format: uuid
+
+    CreateFarmPayload:
+      type: object
+      required:
+        - farmName
+        - areaUnit
+        - totalArea
+        - soilType
+        - irrigationType
+        - location
+      properties:
+        farmName:
+          type: string
+          example: 'North Field Plot #4'
+        surveyNumber:
+          type: string
+          example: '142/2'
+        areaUnit:
+          type: string
+          enum: [ACRE, HECTARE, BIGHA, GUNTHA]
+          default: ACRE
+        totalArea:
+          type: number
+          format: double
+          example: 3.5
+        soilType:
+          type: string
+          enum: [BLACK_COTTON, ALLUVIAL, RED_LOAMY, LATERITE, SANDY_LOAM, CLAYEY, SALINE_ALKALINE]
+          example: BLACK_COTTON
+        irrigationType:
+          type: string
+          enum: [DRIP, SPRINKLER, FLOOD_CANAL, BOREWELL, RAINFED]
+          example: DRIP
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+
+    UpdateFarmPayload:
+      type: object
+      properties:
+        farmName:
+          type: string
+        surveyNumber:
+          type: string
+        totalArea:
+          type: number
+        soilType:
+          type: string
+        irrigationType:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+
+    GeoLocation:
+      type: object
+      required:
+        - latitude
+        - longitude
+      properties:
+        latitude:
+          type: number
+          format: double
+          example: 23.1793
+        longitude:
+          type: number
+          format: double
+          example: 75.7849
+        elevationMeters:
+          type: number
+          example: 494.0
+        polygonGeoJson:
+          type: object
+          description: Optional GeoJSON polygon representing parcel boundary coordinates.
+
+    FarmParcelDetail:
+      type: object
+      required:
+        - id
+        - farmName
+        - totalArea
+        - areaUnit
+        - soilType
+        - irrigationType
+        - location
+      properties:
+        id:
+          type: string
+          format: uuid
+        farmName:
+          type: string
+        surveyNumber:
+          type: string
+        totalArea:
+          type: number
+        areaUnit:
+          type: string
+        soilType:
+          type: string
+        irrigationType:
+          type: string
+        location:
+          $ref: '#/components/schemas/GeoLocation'
+        activeCropCycle:
+          $ref: '#/components/schemas/CropCycleSummary'
+        hasSoilCard:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    FarmListResponse:
+      type: object
+      required:
+        - farms
+        - count
+      properties:
+        farms:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmParcelDetail'
+        count:
+          type: integer
+
+    SoilHealthCardPayload:
+      type: object
+      required:
+        - testDate
+        - ph
+        - organicCarbonPercent
+        - nitrogenKgPerHa
+        - phosphorusKgPerHa
+        - potassiumKgPerHa
+      properties:
+        testDate:
+          type: string
+          format: date
+          example: '2026-06-15'
+        testingLabName:
+          type: string
+          example: 'KVK Ujjain Soil Testing Lab'
+        ph:
+          type: number
+          example: 7.4
+          description: Soil pH (4.0 - 10.0)
+        electricalConductivityDsPerM:
+          type: number
+          example: 0.45
+        organicCarbonPercent:
+          type: number
+          example: 0.58
+        nitrogenKgPerHa:
+          type: number
+          example: 210.0
+          description: Available Nitrogen (N)
+        phosphorusKgPerHa:
+          type: number
+          example: 18.5
+          description: Available Phosphorus (P2O5)
+        potassiumKgPerHa:
+          type: number
+          example: 320.0
+          description: Available Potassium (K2O)
+        zincPpm:
+          type: number
+          example: 0.65
+        ironPpm:
+          type: number
+          example: 4.2
+        boronPpm:
+          type: number
+          example: 0.48
+        sulphurPpm:
+          type: number
+          example: 11.2
+
+    SoilHealthCard:
+      allOf:
+        - $ref: '#/components/schemas/SoilHealthCardPayload'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            farmId:
+              type: string
+              format: uuid
+            isDeficientInZinc:
+              type: boolean
+            isDeficientInNitrogen:
+              type: boolean
+            nutrientStatusSummaryLocalized:
+              type: string
+              example: 'मध्यम नाइट्रोजन, मध्यम फॉस्फोरस, उच्च पोटाश, जिंक की कमी।'
+
+    CreateCropCyclePayload:
+      type: object
+      required:
+        - cropId
+        - cropName
+        - variety
+        - sowingDate
+        - currentGrowthStage
+      properties:
+        cropId:
+          type: string
+          example: 'CROP_SOYBEAN'
+        cropName:
+          type: string
+          example: 'Soybean (सोयाबीन)'
+        variety:
+          type: string
+          example: 'JS 20-34'
+        sowingDate:
+          type: string
+          format: date
+          example: '2026-06-25'
+        currentGrowthStage:
+          type: string
+          enum: [GERMINATION, SEEDLING, VEGETATIVE, FLOWERING, POD_FORMATION, GRAIN_FILLING, MATURITY, HARVEST]
+          example: VEGETATIVE
+        expectedHarvestDate:
+          type: string
+          format: date
+          example: '2026-10-15'
+        seedTreatmentApplied:
+          type: boolean
+          example: true
+
+    UpdateCropStagePayload:
+      type: object
+      required:
+        - stage
+      properties:
+        stage:
+          type: string
+          enum: [GERMINATION, SEEDLING, VEGETATIVE, FLOWERING, POD_FORMATION, GRAIN_FILLING, MATURITY, HARVEST]
+        notes:
+          type: string
+
+    CropCycleDetail:
+      type: object
+      required:
+        - id
+        - farmId
+        - cropId
+        - cropName
+        - variety
+        - sowingDate
+        - currentGrowthStage
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        farmId:
+          type: string
+          format: uuid
+        cropId:
+          type: string
+        cropName:
+          type: string
+        variety:
+          type: string
+        sowingDate:
+          type: string
+          format: date
+        currentGrowthStage:
+          type: string
+        expectedHarvestDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [ACTIVE, COMPLETED, ABANDONED]
+        daysSinceSowing:
+          type: integer
+          example: 40
+
+    CropCycleSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cropName:
+          type: string
+          example: 'Soybean'
+        variety:
+          type: string
+          example: 'JS 20-34'
+        currentGrowthStage:
+          type: string
+          example: 'VEGETATIVE'
+        sowingDate:
+          type: string
+          format: date
+
+    CropCycleListResponse:
+      type: object
+      properties:
+        cropCycles:
+          type: array
+          items:
+            $ref: '#/components/schemas/CropCycleDetail'
+
+    ClinicFarmerListResponse:
+      type: object
+      properties:
+        farmers:
+          type: array
+          items:
+            $ref: '#/components/schemas/FarmerProfileResponse'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+        - timestamp
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequestError:
+      description: Bad Request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Entity not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

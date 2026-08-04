@@ -1,0 +1,961 @@
+openapi: 3.1.0
+info:
+  title: AgriScan AI - Multimodal Diagnosis, Escalation & Recommendation Service
+  description: >
+    AI-native plant pathology & agronomic advisory engine. Supports tiered inference (on-device provisional sync +
+    cloud multimodal vision), dynamic adaptive follow-up questionnaires (55%-84% confidence), agronomist SLA escalation (<55%),
+    and Nutrition-First recommendations strictly validated against CIB&RC registers and state agro-chemical bans.
+  version: 1.0.0
+  contact:
+    name: Krishi Swasthya Sahayak Architecture Team
+    email: architecture@agriscan.gov.in
+
+servers:
+  - url: https://api.agriscan.in/v1/diagnosis
+    description: Production API Gateway
+  - url: https://staging-api.agriscan.in/v1/diagnosis
+    description: Staging API Gateway
+  - url: http://localhost:8083/v1/diagnosis
+    description: Local Development Microservice
+
+paths:
+  /media/upload-url:
+    post:
+      summary: Generate Presigned S3/Object Storage Upload URL
+      description: >
+        Provides a secure presigned PUT URL for direct encrypted media upload from client.
+        Enforces DPDP Act 2023 data minimization and on-device EXIF privacy scrub.
+      operationId: getMediaUploadUrl
+      tags:
+        - Media Upload
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaUploadRequestPayload'
+      responses:
+        '200':
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /diagnose/submit:
+    post:
+      summary: Submit Image & Context for Multimodal AI Diagnosis
+      description: >
+        Executes cloud vision + context inference. If confidence is between 55% and 84%,
+        returns ADAPTIVE_QUESTIONNAIRE_REQUIRED. If <55%, automatically routes to human agronomist escalation queue.
+        If >=85%, generates immediate nutrition-first recommendation.
+      operationId: submitDiagnosis
+      tags:
+        - AI Diagnosis Engine
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiagnosisSubmissionPayload'
+      responses:
+        '200':
+          description: Diagnosis processed or questionnaire dispatched.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntityError'
+
+  /diagnose/{diagnosisId}:
+    get:
+      summary: Get Diagnosis Case Details by ID
+      operationId: getDiagnosisById
+      tags:
+        - AI Diagnosis Engine
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: diagnosisId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: Diagnosis case details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisResultResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /diagnose/{diagnosisId}/questionnaire/submit:
+    post:
+      summary: Submit Adaptive Follow-up Questionnaire Answers
+      description: >
+        Submits structured answers to recalibrate AI confidence score from ambiguous band (55%-84%)
+        to conclusive diagnosis or agronomist escalation.
+      operationId: submitQuestionnaireAnswers
+      tags:
+        - Adaptive Questionnaire Flow
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: diagnosisId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionnaireSubmissionPayload'
+      responses:
+        '200':
+          description: Recalibrated diagnosis result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+  /diagnose/{diagnosisId}/escalate:
+    post:
+      summary: Manually Escalate Case to Human Agronomist
+      description: Allows a farmer or clinic operator to request a specialist second opinion with SLA guarantee.
+      operationId: escalateDiagnosis
+      tags:
+        - Agronomist Escalation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: diagnosisId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualEscalationPayload'
+      responses:
+        '200':
+          description: Case escalated to specialist queue with active SLA countdown.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EscalationStatusResponse'
+
+  /escalation/queue:
+    get:
+      summary: (Agronomist Console) List Escalated Cases Awaiting Review
+      description: Paginated queue for agronomists sorted by SLA urgency, crop value, and regional priority.
+      operationId: getEscalationQueue
+      tags:
+        - Agronomist Escalation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING_ASSIGNMENT, UNDER_REVIEW, RESOLVED, BREACHED_SLA]
+            default: PENDING_ASSIGNMENT
+        - name: state
+          in: query
+          description: Filter by agricultural state
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Escalated queue items.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EscalationQueueResponse'
+        '403':
+          description: User is not an authorized Agronomist.
+
+  /escalation/{escalationId}/resolve:
+    post:
+      summary: (Agronomist Console) Submit Expert Diagnosis & Prescription
+      description: Expert agronomist overrides or confirms AI diagnosis with custom or verified nutrition-first prescription.
+      operationId: resolveEscalation
+      tags:
+        - Agronomist Escalation
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: escalationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgronomistResolutionPayload'
+      responses:
+        '200':
+          description: Escalation resolved and farmer notified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisResultResponse'
+
+  /diagnose/{diagnosisId}/prescription/pdf:
+    get:
+      summary: Generate Branded PDF Recommendation Slip
+      description: >
+        Generates a printable, localized prescription slip with Agri-Clinic branding,
+        QR code for validation, nutrition-first steps, safety guidelines, and shopkeeper dosage charts.
+      operationId: generatePrescriptionPdf
+      tags:
+        - Agri-Clinic Mode
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: diagnosisId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/AcceptLanguageHeader'
+      responses:
+        '200':
+          description: PDF stream or signed download link.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionPdfResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AcceptLanguageHeader:
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+        default: hi
+
+  schemas:
+    MediaUploadRequestPayload:
+      type: object
+      required:
+        - fileName
+        - fileType
+        - fileSizeByte
+        - checksumSha256
+      properties:
+        fileName:
+          type: string
+          example: 'leaf_spot_capture_001.jpg'
+        fileType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp]
+          example: 'image/jpeg'
+        fileSizeByte:
+          type: integer
+          example: 2450320
+        checksumSha256:
+          type: string
+          example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+
+    MediaUploadResponse:
+      type: object
+      required:
+        - mediaId
+        - presignedUploadUrl
+        - publicCdnUrl
+        - expiresInSeconds
+      properties:
+        mediaId:
+          type: string
+          format: uuid
+        presignedUploadUrl:
+          type: string
+          format: uri
+        publicCdnUrl:
+          type: string
+          format: uri
+        expiresInSeconds:
+          type: integer
+          example: 900
+
+    QualityMetrics:
+      type: object
+      required:
+        - blurScore
+        - brightnessScore
+        - isAcceptableQuality
+      properties:
+        blurScore:
+          type: number
+          format: float
+          example: 0.85
+          description: Laplacian variance normalized between 0.0 (blurry) and 1.0 (sharp).
+        brightnessScore:
+          type: number
+          format: float
+          example: 0.72
+          description: Ambient lighting score between 0.0 (dark) and 1.0 (optimal).
+        isAcceptableQuality:
+          type: boolean
+          example: true
+        qualityWarnings:
+          type: array
+          items:
+            type: string
+          example: []
+
+    ProvisionalInferenceData:
+      type: object
+      description: Results generated offline on the mobile device by quantized TFLite model.
+      properties:
+        modelName:
+          type: string
+          example: 'agriscan-edge-quant-v1.4'
+        modelVersion:
+          type: string
+          example: '1.4.2'
+        inferenceLatencyMs:
+          type: integer
+          example: 180
+        topPrediction:
+          type: string
+          example: 'Soybean Rust (फाकोस्पोरा पाचिर्रहिजी)'
+        provisionalConfidence:
+          type: number
+          format: float
+          example: 0.78
+        offlineTimestamp:
+          type: string
+          format: date-time
+
+    HyperlocalContext:
+      type: object
+      properties:
+        cropCycleId:
+          type: string
+          format: uuid
+        farmId:
+          type: string
+          format: uuid
+        cropSpecies:
+          type: string
+          example: 'SOYBEAN'
+        cropVariety:
+          type: string
+          example: 'JS 20-34'
+        cropAgeDays:
+          type: integer
+          example: 45
+        cropGrowthStage:
+          type: string
+          enum: [GERMINATION, SEEDLING, VEGETATIVE, FLOWERING, POD_FORMATION, GRAIN_FILLING, MATURITY]
+          example: VEGETATIVE
+        affectedPlantPart:
+          type: string
+          enum: [LEAF, STEM, ROOT, FLOWER, POD_FRUIT, WHOLE_PLANT]
+          example: LEAF
+        gpsCoordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 23.1793
+            longitude:
+              type: number
+              example: 75.7849
+        weatherContext:
+          type: object
+          properties:
+            temperatureCelsius:
+              type: number
+              example: 28.5
+            relativeHumidityPercent:
+              type: number
+              example: 84.0
+            rainfallLast48HoursMm:
+              type: number
+              example: 32.0
+            weatherCondition:
+              type: string
+              example: 'Overcast with high humidity'
+
+    DiagnosisSubmissionPayload:
+      type: object
+      required:
+        - mediaIds
+        - qualityMetrics
+      properties:
+        mediaIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          example: ['3fa85f64-5717-4562-b3fc-2c963f66afa6']
+        qualityMetrics:
+          $ref: '#/components/schemas/QualityMetrics'
+        provisionalInference:
+          $ref: '#/components/schemas/ProvisionalInferenceData'
+        context:
+          $ref: '#/components/schemas/HyperlocalContext'
+        isClinicOperatorSubmission:
+          type: boolean
+          default: false
+        targetFarmerId:
+          type: string
+          format: uuid
+          nullable: true
+
+    DiagnosisResultResponse:
+      type: object
+      required:
+        - diagnosisId
+        - status
+        - submittedAt
+      properties:
+        diagnosisId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - COMPLETED_HIGH_CONFIDENCE
+            - ADAPTIVE_QUESTIONNAIRE_REQUIRED
+            - ESCALATED_TO_SPECIALIST
+            - SPECIALIST_RESOLVED
+            - REJECTED_POOR_QUALITY
+          example: COMPLETED_HIGH_CONFIDENCE
+        confidenceScore:
+          type: number
+          format: float
+          example: 0.92
+          description: Consolidated confidence score (0.0 to 1.0).
+        diagnosisCategory:
+          type: string
+          enum: [NUTRITIONAL_DEFICIENCY, FUNGAL_DISEASE, BACTERIAL_DISEASE, VIRAL_DISEASE, PEST_INFESTATION, PHYSIOLOGICAL_DISORDER, HEALTHY_CROP]
+          example: NUTRITIONAL_DEFICIENCY
+        primaryDiagnosis:
+          $ref: '#/components/schemas/DiseaseOrPestInfo'
+        differentialDiagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiseaseOrPestInfo'
+        adaptiveQuestionnaire:
+          $ref: '#/components/schemas/AdaptiveQuestionnaire'
+        escalationDetails:
+          $ref: '#/components/schemas/EscalationDetails'
+        recommendation:
+          $ref: '#/components/schemas/NutritionFirstRecommendation'
+        submittedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    DiseaseOrPestInfo:
+      type: object
+      required:
+        - code
+        - commonName
+        - scientificName
+        - confidence
+      properties:
+        code:
+          type: string
+          example: 'DIS_ZINC_DEFICIENCY_SOYBEAN'
+        commonName:
+          type: string
+          example: 'Zinc Deficiency (जिंक की कमी / खैरा रोग लक्षण)'
+        scientificName:
+          type: string
+          example: 'Nutritional Disorder - Micronutrient Zn'
+        severity:
+          type: string
+          enum: [LOW, MODERATE, SEVERE, CRITICAL]
+          example: MODERATE
+        confidence:
+          type: number
+          example: 0.92
+        descriptionLocalized:
+          type: string
+          example: 'पत्तियों की नसों के बीच का भाग पीला पड़ रहा है जबकि नसें हरी हैं।'
+
+    AdaptiveQuestionnaire:
+      type: object
+      description: Dynamic follow-up questionnaire served when AI confidence is in the 55%-84% range.
+      required:
+        - questionnaireId
+        - promptTextLocalized
+        - questions
+      properties:
+        questionnaireId:
+          type: string
+          format: uuid
+        promptTextLocalized:
+          type: string
+          example: 'सटीक इलाज के लिए कृपया इन 3 सवालों के जवाब दें:'
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdaptiveQuestion'
+
+    AdaptiveQuestion:
+      type: object
+      required:
+        - questionId
+        - questionTextLocalized
+        - inputType
+        - options
+      properties:
+        questionId:
+          type: string
+          example: 'Q_YELLOW_PATTERN'
+        questionTextLocalized:
+          type: string
+          example: 'पीलापन मुख्य रूप से नई पत्तियों पर है या पुरानी निचली पत्तियों पर?'
+        inputType:
+          type: string
+          enum: [SINGLE_CHOICE, MULTI_CHOICE, YES_NO, IMAGE_CONFIRM]
+          example: SINGLE_CHOICE
+        options:
+          type: array
+          items:
+            type: object
+            required:
+              - optionKey
+              - optionTextLocalized
+            properties:
+              optionKey:
+                type: string
+                example: 'NEW_TOP_LEAVES'
+              optionTextLocalized:
+                type: string
+                example: 'पौधे की सबसे ऊपरी नई पत्तियों पर'
+              iconUrl:
+                type: string
+                format: uri
+
+    QuestionnaireSubmissionPayload:
+      type: object
+      required:
+        - questionnaireId
+        - answers
+      properties:
+        questionnaireId:
+          type: string
+          format: uuid
+        answers:
+          type: array
+          items:
+            type: object
+            required:
+              - questionId
+              - selectedOptionKeys
+            properties:
+              questionId:
+                type: string
+              selectedOptionKeys:
+                type: array
+                items:
+                  type: string
+
+    ManualEscalationPayload:
+      type: object
+      properties:
+        urgencyLevel:
+          type: string
+          enum: [ROUTINE, HIGH, EMERGENCY_CROP_LOSS]
+          default: ROUTINE
+        farmerNotes:
+          type: string
+          example: 'फसल की पत्तियां पिछले 2 दिन में तेजी से सूख रही हैं।'
+
+    EscalationDetails:
+      type: object
+      required:
+        - escalationId
+        - status
+        - assignedAgronomistName
+        - slaExpiresAt
+      properties:
+        escalationId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [QUEUED, ASSIGNED, UNDER_ANALYSIS, RESOLVED, EXPIRED]
+          example: ASSIGNED
+        assignedAgronomistName:
+          type: string
+          example: 'Dr. Suresh Verma (Senior Agronomist, KVK)'
+        slaExpiresAt:
+          type: string
+          format: date-time
+          example: '2026-08-04T18:00:00Z'
+        timeRemainingMinutes:
+          type: integer
+          example: 110
+
+    EscalationStatusResponse:
+      type: object
+      required:
+        - escalationId
+        - diagnosisId
+        - status
+        - slaExpiresAt
+      properties:
+        escalationId:
+          type: string
+          format: uuid
+        diagnosisId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        slaExpiresAt:
+          type: string
+          format: date-time
+        messageLocalized:
+          type: string
+          example: 'आपका मामला विशेषज्ञ कृषि वैज्ञानिक को भेज दिया गया है। 2 घंटे में समाधान मिलेगा।'
+
+    EscalationQueueItem:
+      type: object
+      required:
+        - escalationId
+        - diagnosisId
+        - cropName
+        - farmerName
+        - state
+        - slaRemainingMinutes
+        - submittedAt
+      properties:
+        escalationId:
+          type: string
+          format: uuid
+        diagnosisId:
+          type: string
+          format: uuid
+        cropName:
+          type: string
+          example: 'Soybean'
+        farmerName:
+          type: string
+          example: 'Ramesh Patel'
+        farmerMobileMasked:
+          type: string
+          example: 'XXXXXX3210'
+        state:
+          type: string
+          example: 'Madhya Pradesh'
+        district:
+          type: string
+          example: 'Ujjain'
+        aiTentativePrediction:
+          type: string
+          example: 'Zinc Deficiency vs Rust (52% confidence)'
+        imageUrl:
+          type: string
+          format: uri
+        slaRemainingMinutes:
+          type: integer
+          example: 85
+        urgency:
+          type: string
+          enum: [NORMAL, URGENT, CRITICAL]
+        submittedAt:
+          type: string
+          format: date-time
+
+    EscalationQueueResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EscalationQueueItem'
+        totalPending:
+          type: integer
+        page:
+          type: integer
+
+    AgronomistResolutionPayload:
+      type: object
+      required:
+        - confirmedDiagnosisCode
+        - confirmedDiagnosisName
+        - diagnosisCategory
+        - agronomicAdviceLocalized
+      properties:
+        confirmedDiagnosisCode:
+          type: string
+          example: 'DIS_ZINC_DEFICIENCY_SOYBEAN'
+        confirmedDiagnosisName:
+          type: string
+          example: 'Zinc Deficiency'
+        diagnosisCategory:
+          type: string
+          enum: [NUTRITIONAL_DEFICIENCY, FUNGAL_DISEASE, BACTERIAL_DISEASE, VIRAL_DISEASE, PEST_INFESTATION, PHYSIOLOGICAL_DISORDER]
+        agronomicAdviceLocalized:
+          type: string
+          example: 'जिंक सल्फेट 21% का 5 ग्राम प्रति लीटर पानी और 10 ग्राम यूरिया का छिड़काव तुरंत करें।'
+        customRecommendation:
+          $ref: '#/components/schemas/NutritionFirstRecommendation'
+
+    NutritionFirstRecommendation:
+      type: object
+      description: >
+        Enforces Nutrition-First philosophy: Step 1 (Mineral/Foliar soil correction) is always evaluated
+        before Step 2 (Bio-controls / Organic) and Step 3 (CIB&RC registered chemical interventions).
+      required:
+        - recommendationId
+        - step1NutrientFoliarCorrection
+        - step2BiologicalOrCultural
+        - step3ChemicalIntervention
+        - complianceStatus
+      properties:
+        recommendationId:
+          type: string
+          format: uuid
+        step1NutrientFoliarCorrection:
+          $ref: '#/components/schemas/InterventionStep'
+        step2BiologicalOrCultural:
+          $ref: '#/components/schemas/InterventionStep'
+        step3ChemicalIntervention:
+          $ref: '#/components/schemas/ChemicalInterventionStep'
+        complianceStatus:
+          $ref: '#/components/schemas/ComplianceAuditStatus'
+        sprayInstructionsLocalized:
+          type: string
+          example: 'सुबह 8-11 बजे या शाम 4 बजे के बाद छिड़काव करें। तेज धूप में छिड़काव न करें।'
+
+    InterventionStep:
+      type: object
+      required:
+        - isRecommended
+        - titleLocalized
+        - actionDescriptionLocalized
+      properties:
+        isRecommended:
+          type: boolean
+          example: true
+        priorityRank:
+          type: integer
+          example: 1
+        titleLocalized:
+          type: string
+          example: 'चरण 1: सूक्ष्म पोषक तत्व एवं पर्णीय छिड़काव (Foliar Mineral Correction)'
+        actionDescriptionLocalized:
+          type: string
+          example: 'जिंक सल्फेट (ZnSO4 21%) 500 ग्राम + बुझा हुआ चूना 250 ग्राम प्रति 200 लीटर पानी प्रति एकड़ छिड़काव करें।'
+        dosageDetails:
+          $ref: '#/components/schemas/DosageDetail'
+
+    ChemicalInterventionStep:
+      type: object
+      description: Registered agro-chemicals checked against CIB&RC registers and state-level bans.
+      required:
+        - isRecommended
+        - cibrcRegistrationVerified
+        - isStateBanned
+      properties:
+        isRecommended:
+          type: boolean
+          example: false
+          description: False if nutritional/biological correction is sufficient under nutrition-first logic.
+        priorityRank:
+          type: integer
+          example: 3
+        titleLocalized:
+          type: string
+          example: 'चरण 3: रासायनिक उपचार (केवल आवश्यकता पड़ने पर)'
+        actionDescriptionLocalized:
+          type: string
+          example: 'यदि 7 दिन में सुधार न हो तो एज़ोक्सिस्ट्रोबिन 18.2% + डिफेनोकोनाज़ोल 11.4% SC का उपयोग करें।'
+        activeIngredient:
+          type: string
+          example: 'Azoxystrobin 18.2% + Difenoconazole 11.4% SC'
+        cibrcRegistrationNumber:
+          type: string
+          example: 'CIR-142857/2021-Azoxystrobin(SC)-542'
+        cibrcRegistrationVerified:
+          type: boolean
+          example: true
+        isStateBanned:
+          type: boolean
+          example: false
+        preHarvestIntervalDays:
+          type: integer
+          example: 21
+          description: Safe waiting period between spray and harvest (PHI).
+        safetyPrecautionsLocalized:
+          type: string
+          example: 'मास्क और दस्ताने पहनें। मधुमक्खी बक्से के पास छिड़काव न करें।'
+        dosageDetails:
+          $ref: '#/components/schemas/DosageDetail'
+
+    DosageDetail:
+      type: object
+      required:
+        - perLitreDilutionRate
+        - perAcreQuantity
+        - waterVolumePerAcreLitres
+      properties:
+        perLitreDilutionRate:
+          type: string
+          example: '2.5 ग्राम / मिली प्रति लीटर पानी'
+        perAcreQuantity:
+          type: string
+          example: '500 ग्राम प्रति एकड़'
+        perHectareQuantity:
+          type: string
+          example: '1.25 किग्रा प्रति हेक्टेयर'
+        waterVolumePerAcreLitres:
+          type: integer
+          example: 200
+        applicationMethod:
+          type: string
+          enum: [FOLIAR_SPRAY, SOIL_DRENCHING, BROADCAST, SEED_TREATMENT, DRIP_FERTIGATION]
+          example: FOLIAR_SPRAY
+
+    ComplianceAuditStatus:
+      type: object
+      required:
+        - cibrcCompliant
+        - stateCompliant
+        - verifiedAt
+      properties:
+        cibrcCompliant:
+          type: boolean
+          example: true
+        stateCompliant:
+          type: boolean
+          example: true
+        checkedStateName:
+          type: string
+          example: 'Madhya Pradesh'
+        bannedPesticideListVersion:
+          type: string
+          example: '2026.07-CIBRC-REV3'
+        verifiedAt:
+          type: string
+          format: date-time
+
+    PrescriptionPdfResponse:
+      type: object
+      required:
+        - pdfDownloadUrl
+        - prescriptionSlipNumber
+        - qrVerificationUrl
+      properties:
+        pdfDownloadUrl:
+          type: string
+          format: uri
+        prescriptionSlipNumber:
+          type: string
+          example: 'KSS-2026-MP-098234'
+        qrVerificationUrl:
+          type: string
+          format: uri
+          example: 'https://verify.agriscan.in/rx/KSS-2026-MP-098234'
+        generatedAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - message
+        - timestamp
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequestError:
+      description: Bad Request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnauthorizedError:
+      description: Unauthorized.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFoundError:
+      description: Not Found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    UnprocessableEntityError:
+      description: Unprocessable Entity.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

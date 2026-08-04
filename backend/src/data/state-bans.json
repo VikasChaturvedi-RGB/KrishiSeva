@@ -1,0 +1,52 @@
+{
+  "version": "2026.06-STATE-BANS",
+  "bannedMoleculesByState": {
+    "Kerala": [
+      "Endosulfan",
+      "Monocrotophos",
+      "Carbofuran",
+      "Phorate",
+      "Methyl Parathion",
+      "Methomyl",
+      "Phosphamidon",
+      "Glyphosate",
+      "Atrazine",
+      "Paraquat Dichloride"
+    ],
+    "Punjab": [
+      "Acephate",
+      "Carbendazim",
+      "Thiamethoxam",
+      "Triazophos",
+      "Tricyclazole",
+      "Buprofezin",
+      "Propiconazole",
+      "Methomyl",
+      "Chlorpyrifos",
+      "Chlorpyrifos 20% EC"
+    ],
+    "Maharashtra": [
+      "Monocrotophos 36% SL",
+      "Acephate 75% SP",
+      "Diafenthiuron 50% WP",
+      "Fipronil 5% SC"
+    ],
+    "Madhya Pradesh": [
+      "Monocrotophos",
+      "Endosulfan",
+      "Phorate 10G"
+    ],
+    "Telangana": [
+      "Glyphosate",
+      "Monocrotophos"
+    ],
+    "Andhra Pradesh": [
+      "Monocrotophos",
+      "Phorate"
+    ],
+    "Karnataka": [
+      "Endosulfan",
+      "Monocrotophos"
+    ]
+  }
+}
