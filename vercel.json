@@ -1,17 +1,11 @@
 {
-  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/web_simulator/index.html"
-    },
-    {
       "source": "/app",
-      "destination": "/web_simulator/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/web_simulator/$1"
+      "destination": "/index.html"
     }
   ]
 }

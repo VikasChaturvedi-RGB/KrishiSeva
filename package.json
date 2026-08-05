@@ -1,0 +1,10 @@
+{
+  "name": "krishi-seva-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Krishi Swasthya Sahayak (AgriScan AI) Web Platform",
+  "scripts": {
+    "build": "mkdir -p public && cp -r web_simulator/* public/",
+    "start": "cd backend && npm start"
+  }
+}

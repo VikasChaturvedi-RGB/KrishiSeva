@@ -6,6 +6,7 @@ node_modules/
 # Build Outputs
 dist/
 build/
+public/
 *.tsbuildinfo
 
 # SQLite databases & temp logs (keep structure, exclude ephemeral DB if desired or keep seed)
