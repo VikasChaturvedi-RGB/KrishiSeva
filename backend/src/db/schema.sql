@@ -7,6 +7,8 @@
 CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     mobile_number TEXT UNIQUE NOT NULL,
+    username TEXT UNIQUE,
+    password_hash TEXT,
     full_name TEXT NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('FARMER', 'CLINIC_OPERATOR', 'AGRONOMIST', 'COMPLIANCE_ADMIN', 'SUPER_ADMIN')),
     state TEXT NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_mobile ON users(mobile_number);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_users_location ON users(state, district);
 

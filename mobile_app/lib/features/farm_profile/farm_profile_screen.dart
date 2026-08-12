@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/network/api_client.dart';
 
 class FarmProfileScreen extends StatefulWidget {
@@ -72,9 +73,11 @@ class _FarmProfileScreenState extends State<FarmProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = widget.currentLanguage;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('किसान प्रोफाइल एवं मृदा स्वास्थ्य'),
+        title: Text(AppLocalizations.get('soilHealthTitle', lang)),
         backgroundColor: AppColors.primaryGreen,
       ),
       body: _isLoading
@@ -84,29 +87,47 @@ class _FarmProfileScreenState extends State<FarmProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Farmer Profile Card
+                  // Farmer Profile Header Card
                   Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
                           const CircleAvatar(
-                            radius: 30,
+                            radius: 28,
                             backgroundColor: AppColors.lightLeafTint,
-                            child: Icon(Icons.person, color: AppColors.primaryGreen, size: 40),
+                            child: Icon(Icons.person, color: AppColors.primaryGreen, size: 36),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_farmerProfile['fullName'] ?? 'Ramesh Patel', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                Text(
+                                  _farmerProfile?['fullName'] ?? 'Farmer',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '+91 ${_farmerProfile?['mobileNumber'] ?? '9876543210'}',
+                                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                                ),
                                 const SizedBox(height: 4),
-                                Text('मोबाइल: +91-${_farmerProfile['mobileNumber']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                                Text('स्थान: ${_farmerProfile['village']}, ${_farmerProfile['district']} (${_farmerProfile['state']})', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on, size: 14, color: AppColors.primaryGreen),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${_farmerProfile?['village'] ?? 'Tarana'}, ${_farmerProfile?['district'] ?? 'Ujjain'}',
+                                      style: const TextStyle(fontSize: 12, color: AppColors.primaryGreen, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -117,37 +138,58 @@ class _FarmProfileScreenState extends State<FarmProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.lightLeafTint,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
+                      gradient: const LinearGradient(
+                        colors: [AppColors.soilBrown, AppColors.clayBrown],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.soilBrown.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: const [
+                          children: [
                             Text(
-                              'सॉइल हेल्थ कार्ड (Soil Health Card)',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.soilBrown),
+                              AppLocalizations.get('soilHealthSubtitle', lang),
+                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            Icon(Icons.verified, color: AppColors.primaryGreen, size: 20),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Text('ICAR Verified', style: TextStyle(color: Colors.white, fontSize: 11)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+
+                        // Soil Metrics Grid
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _soilMetric(AppLocalizations.get('phLevel', lang), '${_soilCard?['ph'] ?? 7.6}', 'Normal (6.5-7.5)'),
+                            _soilMetric(AppLocalizations.get('organicCarbon', lang), '${_soilCard?['organicCarbonPercent'] ?? 0.42}%', 'Low (<0.50%)', isDeficient: true),
+                            _soilMetric(AppLocalizations.get('zinc', lang), '${_soilCard?['zincPpm'] ?? 0.45} ppm', 'Low (<0.60)', isDeficient: true),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Expanded(child: _buildSoilMetric('Soil pH', '${_soilCard?['ph'] ?? 7.6}', 'Alkaline', Colors.blue)),
-                            Expanded(child: _buildSoilMetric('Organic Carbon', '${_soilCard?['organicCarbonPercent'] ?? 0.42}%', 'Low', Colors.orange)),
-                            Expanded(child: _buildSoilMetric('Zinc (Zn)', '${_soilCard?['zincPpm'] ?? 0.45} ppm', 'DEFICIENT', Colors.red, isCritical: true)),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Expanded(child: _buildSoilMetric('Nitrogen (N)', '${_soilCard?['nitrogenKgPerHa'] ?? 210} kg/ha', 'Low', Colors.orange)),
-                            Expanded(child: _buildSoilMetric('Phosphorus (P)', '${_soilCard?['phosphorusKgPerHa'] ?? 14.5} kg/ha', 'Medium', Colors.green)),
-                            Expanded(child: _buildSoilMetric('Potassium (K)', '${_soilCard?['potassiumKgPerHa'] ?? 290} kg/ha', 'High', Colors.green)),
+                            _soilMetric(AppLocalizations.get('nitrogen', lang), '${_soilCard?['nitrogenKgPerHa'] ?? 210} kg', 'Low (<280)'),
+                            _soilMetric(AppLocalizations.get('phosphorus', lang), '${_soilCard?['phosphorusKgPerHa'] ?? 14.5} kg', 'Medium (10-25)'),
+                            _soilMetric(AppLocalizations.get('potassium', lang), '${_soilCard?['potassiumKgPerHa'] ?? 290} kg', 'High (>280)'),
                           ],
                         ),
                       ],
@@ -155,62 +197,73 @@ class _FarmProfileScreenState extends State<FarmProfileScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Active Crop Lifecycle Tracker
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.grass, color: AppColors.primaryGreen),
-                              SizedBox(width: 8),
-                              Text('वर्तमान फसल चक्र (Active Crop Cycle)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  // Registered Farm Parcels
+                  Text(
+                    '${AppLocalizations.get('navFarm', lang)} (${_farms.length})',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  ),
+                  const SizedBox(height: 8),
+
+                  ..._farms.map((f) => Card(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(14.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    f['farmName'] ?? 'Farm Parcel',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  ),
+                                  Text(
+                                    '${f['totalAreaAcres']} ${AppLocalizations.get('farmAreaAcres', lang)}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryGreen),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('Soil Type: ${f['soilType']}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                  Text('Irrigation: ${f['irrigationSource']}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                ],
+                              ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          const ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text('सोयाबीन - JS 20-34 (Kharif 2026)', style: TextStyle(fontWeight: FontWeight.bold)),
-                            subtitle: Text('बुवाई दिनांक: 25 जून 2026 | अवधि: 40 दिन\nवर्तमान अवस्था: वानस्पतिक वृद्धि (Vegetative V4 Stage)'),
-                            trailing: Chip(
-                              label: Text('सक्रिय (Active)', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                              backgroundColor: AppColors.primaryGreen,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                        ),
+                      )),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildSoilMetric(String label, String value, String status, Color color, {bool isCritical = false}) {
+  Widget _soilMetric(String label, String value, String status, {bool isDeficient = false}) {
     return Container(
-      margin: const EdgeInsets.all(4),
-      padding: const EdgeInsets.all(10),
+      width: 100,
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.12),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isCritical ? Colors.red : AppColors.divider),
+        border: isDeficient ? Border.all(color: Colors.amberAccent, width: 1.5) : null,
       ),
       child: Column(
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-          const SizedBox(height: 4),
-          Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isCritical ? Colors.red : AppColors.textPrimary)),
+          Text(label, style: const TextStyle(color: Colors.white70, fontSize: 10)),
           const SizedBox(height: 2),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(6),
+          Text(value, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text(
+            status,
+            style: TextStyle(
+              color: isDeficient ? Colors.amberAccent : Colors.white60,
+              fontSize: 9,
+              fontWeight: isDeficient ? FontWeight.bold : FontWeight.normal,
             ),
-            child: Text(status, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: color)),
           ),
         ],
       ),

@@ -7,6 +7,8 @@ import crypto from 'crypto';
 export interface UserRecord {
   id: string;
   mobile_number: string;
+  username?: string | null;
+  password_hash?: string | null;
   full_name: string;
   role: 'FARMER' | 'CLINIC_OPERATOR' | 'AGRONOMIST' | 'COMPLIANCE_ADMIN' | 'SUPER_ADMIN';
   state: string;
@@ -160,6 +162,12 @@ export class UserRepository {
     return row || null;
   }
 
+  static findByUsername(username: string): UserRecord | null {
+    const db = getDb();
+    const row: any = db.prepare('SELECT * FROM users WHERE LOWER(username) = LOWER(?) OR LOWER(full_name) = LOWER(?)').get(username, username);
+    return row || null;
+  }
+
   static listAllFarmers(searchQuery?: string): UserRecord[] {
     const db = getDb();
     if (searchQuery) {
@@ -175,12 +183,14 @@ export class UserRepository {
 
   static upsert(user: Partial<UserRecord> & { mobile_number: string }): UserRecord {
     const db = getDb();
-    const existing = this.findByMobile(user.mobile_number);
+    const existing = this.findByMobile(user.mobile_number) || (user.username ? this.findByUsername(user.username) : null);
     const now = new Date().toISOString();
 
     if (existing) {
       db.prepare(`
         UPDATE users SET
+          username = COALESCE(?, username),
+          password_hash = COALESCE(?, password_hash),
           full_name = COALESCE(?, full_name),
           role = COALESCE(?, role),
           state = COALESCE(?, state),
@@ -194,6 +204,8 @@ export class UserRepository {
           updated_at = ?
         WHERE id = ?
       `).run(
+        user.username ?? null,
+        user.password_hash ?? null,
         user.full_name ?? null,
         user.role ?? null,
         user.state ?? null,
@@ -212,11 +224,13 @@ export class UserRepository {
       const id = user.id || crypto.randomUUID();
       db.prepare(`
         INSERT INTO users (
-          id, mobile_number, full_name, role, state, district, taluka, village, pin_code, preferred_language, is_profile_complete, associated_clinic_id, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          id, mobile_number, username, password_hash, full_name, role, state, district, taluka, village, pin_code, preferred_language, is_profile_complete, associated_clinic_id, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         id,
         user.mobile_number,
+        user.username || null,
+        user.password_hash || null,
         user.full_name || `Kisan (+91-${user.mobile_number.slice(-4)})`,
         user.role || 'FARMER',
         user.state || 'Madhya Pradesh',
@@ -232,6 +246,46 @@ export class UserRepository {
       );
       return this.findById(id)!;
     }
+  }
+
+  static completeOnboarding(
+    userId: string,
+    data: {
+      fullName: string;
+      pinCode: string;
+      state: string;
+      district: string;
+      taluka?: string;
+      village?: string;
+      preferredLanguage?: string;
+    }
+  ): UserRecord {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+      UPDATE users SET
+        full_name = ?,
+        pin_code = ?,
+        state = ?,
+        district = ?,
+        taluka = COALESCE(?, taluka),
+        village = COALESCE(?, village),
+        preferred_language = COALESCE(?, preferred_language),
+        is_profile_complete = 1,
+        updated_at = ?
+      WHERE id = ?
+    `).run(
+      data.fullName,
+      data.pinCode,
+      data.state,
+      data.district,
+      data.taluka ?? null,
+      data.village ?? null,
+      data.preferredLanguage ?? null,
+      now,
+      userId
+    );
+    return this.findById(userId)!;
   }
 
   // OTP Sessions
@@ -325,21 +379,26 @@ export class FarmRepository {
     return db.prepare('SELECT * FROM farms WHERE farmer_id = ? ORDER BY created_at ASC').all(farmerId) as unknown as FarmRecord[];
   }
 
+  static findByFarmerId(farmerId: string): FarmRecord[] {
+    return this.listByFarmerId(farmerId);
+  }
+
   static findById(id: string): FarmRecord | null {
     const db = getDb();
     const row: any = db.prepare('SELECT * FROM farms WHERE id = ?').get(id);
     return row || null;
   }
 
-  static create(farm: Omit<FarmRecord, 'created_at' | 'updated_at'>): FarmRecord {
+  static create(farm: Omit<FarmRecord, 'id' | 'created_at' | 'updated_at'> & { id?: string }): FarmRecord {
     const db = getDb();
     const now = new Date().toISOString();
+    const farmId = farm.id || crypto.randomUUID();
     db.prepare(`
       INSERT OR REPLACE INTO farms (
         id, farmer_id, farm_name, survey_number, total_area, area_unit, soil_type, irrigation_type, latitude, longitude, elevation_meters, has_soil_card, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
-      farm.id,
+      farmId,
       farm.farmer_id,
       farm.farm_name,
       farm.survey_number || null,
@@ -354,7 +413,7 @@ export class FarmRepository {
       now,
       now
     );
-    return this.findById(farm.id)!;
+    return this.findById(farmId)!;
   }
 
   static setHasSoilCard(farmId: string, hasCard: boolean) {

@@ -8,8 +8,8 @@
       "tradeNames": ["Custodia", "Amistar Top", "Score Super"],
       "activeIngredient": "Azoxystrobin 18.2% + Difenoconazole 11.4% SC",
       "cibrcRegNo": "CIR-142857/2021-Azoxystrobin(SC)-542",
-      "targetDiseases": ["Rust", "Powdery Mildew", "Anthracnose", "Leaf Spot"],
-      "approvedCrops": ["SOYBEAN", "COTTON", "CHILLI", "TOMATO", "WHEAT", "PADDY"],
+      "targetDiseases": ["Rust", "Powdery Mildew", "Anthracnose", "Leaf Spot", "Sigatoka"],
+      "approvedCrops": ["SOYBEAN", "COTTON", "CHILLI", "TOMATO", "WHEAT", "PADDY", "BANANA"],
       "defaultDilutionRatePerLitre": "1.0 to 1.5 ml/L",
       "defaultDosePerAcre": "200 ml in 200 L water",
       "phiDays": 21,
@@ -62,6 +62,18 @@
       "defaultDosePerAcre": "50-100 ml in 200 L water",
       "phiDays": 21,
       "toxicityCategory": "YELLOW_TRIANGLE"
+    },
+    {
+      "code": "CHEM_PROPICONAZOLE",
+      "tradeNames": ["Tilt", "Bumper", "Result"],
+      "activeIngredient": "Propiconazole 25% EC",
+      "cibrcRegNo": "CIR-55210/2016-Propiconazole-211",
+      "targetDiseases": ["Sigatoka Leaf Spot", "Karnal Bunt", "Rust", "Sheath Blight"],
+      "approvedCrops": ["BANANA", "WHEAT", "PADDY", "GROUNDNUT", "SOYBEAN"],
+      "defaultDilutionRatePerLitre": "1.0 ml/L",
+      "defaultDosePerAcre": "200 ml in 200 L water",
+      "phiDays": 28,
+      "toxicityCategory": "BLUE_TRIANGLE"
     }
   ]
 }

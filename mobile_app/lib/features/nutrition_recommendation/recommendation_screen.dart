@@ -31,33 +31,41 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
   }
 
   void _handleTtsToggle() {
+    final lang = widget.currentLanguage;
     if (_isSpeaking) {
       TtsService().stop();
       setState(() => _isSpeaking = false);
     } else {
       final diag = widget.diagnosisResult['primaryDiagnosis'];
       final rec = widget.diagnosisResult['recommendation'];
+      final step1Action = lang == 'en'
+          ? (rec?['step1NutrientFoliarCorrection']?['actionEn'] ?? rec?['step1NutrientFoliarCorrection']?['actionHi'] ?? '')
+          : (rec?['step1NutrientFoliarCorrection']?['actionHi'] ?? rec?['step1NutrientFoliarCorrection']?['actionEn'] ?? '');
+      final step2Action = lang == 'en'
+          ? (rec?['step2BiologicalOrCultural']?['actionEn'] ?? rec?['step2BiologicalOrCultural']?['actionHi'] ?? '')
+          : (rec?['step2BiologicalOrCultural']?['actionHi'] ?? rec?['step2BiologicalOrCultural']?['actionEn'] ?? '');
+
       final textToSpeak = '''
-फसल निदान: ${diag?['commonName'] ?? 'जिंक की कमी'}।
-विश्वास स्कोर: ${((widget.diagnosisResult['confidenceScore'] ?? 0.94) * 100).toInt()} प्रतिशत।
+${AppLocalizations.get('rxTitle', lang)}: ${diag?['commonName'] ?? 'Zinc Deficiency'}.
+${AppLocalizations.get('confidenceScore', lang)}: ${((widget.diagnosisResult['confidenceScore'] ?? 0.94) * 100).toInt()}%.
 
-चरण 1: सूक्ष्म पोषक तत्व पर्णीय छिड़काव: ${rec?['step1NutrientFoliarCorrection']?['actionHi'] ?? ''}
-प्रति लीटर पानी में घोल दर: ${rec?['step1NutrientFoliarCorrection']?['dosage']?['perLitreDilution'] ?? '2.5 ग्राम प्रति लीटर'}।
+${AppLocalizations.get('step1Nutrient', lang)}: $step1Action
+${AppLocalizations.get('dilutionRate', lang)}: ${rec?['step1NutrientFoliarCorrection']?['dosage']?['perLitreDilution'] ?? '2.5 g/L'}.
 
-चरण 2: जैविक उपचार: ${rec?['step2BiologicalOrCultural']?['actionHi'] ?? ''}
-
-छिड़काव सलाह: ${rec?['sprayInstructionsLocalized'] ?? 'सुबह या शाम के समय छिड़काव करें।'}
+${AppLocalizations.get('step2Biological', lang)}: $step2Action
+${AppLocalizations.get('sprayInstructions', lang)}: ${rec?['sprayInstructionsLocalized'] ?? AppLocalizations.get('sprayMorningEvening', lang)}
 ''';
-      TtsService().speak(textToSpeak, widget.currentLanguage);
+      TtsService().speak(textToSpeak, lang);
       setState(() => _isSpeaking = true);
     }
   }
 
   void _downloadPdfPrescription() {
+    final lang = widget.currentLanguage;
     final diagnosisId = widget.diagnosisResult['diagnosisId'] ?? 'demo-id';
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('डाउनलोडिंग पर्चा: http://localhost:8080/v1/diagnosis/diagnose/$diagnosisId/prescription/pdf'),
+        content: Text('${AppLocalizations.get('generatePdfSlip', lang)}: /v1/diagnosis/diagnose/$diagnosisId/prescription/pdf'),
         backgroundColor: AppColors.primaryGreen,
         action: SnackBarAction(
           label: 'OK',
@@ -78,9 +86,18 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     final step3 = rec['step3ChemicalIntervention'] ?? {};
     final confidence = ((widget.diagnosisResult['confidenceScore'] as num? ?? 0.94) * 100).toInt();
 
+    final step1Title = lang == 'en' ? (step1['titleEn'] ?? step1['titleHi'] ?? AppLocalizations.get('step1Nutrient', lang)) : (step1['titleHi'] ?? AppLocalizations.get('step1Nutrient', lang));
+    final step1Action = lang == 'en' ? (step1['actionEn'] ?? step1['actionHi'] ?? '') : (step1['actionHi'] ?? step1['actionEn'] ?? '');
+
+    final step2Title = lang == 'en' ? (step2['titleEn'] ?? step2['titleHi'] ?? AppLocalizations.get('step2Biological', lang)) : (step2['titleHi'] ?? AppLocalizations.get('step2Biological', lang));
+    final step2Action = lang == 'en' ? (step2['actionEn'] ?? step2['actionHi'] ?? '') : (step2['actionHi'] ?? step2['actionEn'] ?? '');
+
+    final step3Title = lang == 'en' ? (step3['titleEn'] ?? step3['titleHi'] ?? AppLocalizations.get('step3Chemical', lang)) : (step3['titleHi'] ?? AppLocalizations.get('step3Chemical', lang));
+    final step3Action = lang == 'en' ? (step3['actionEn'] ?? step3['actionHi'] ?? '') : (step3['actionHi'] ?? step3['actionEn'] ?? '');
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('पोषण-प्रथम उपचार पर्चा'),
+        title: Text(AppLocalizations.get('rxTitle', lang)),
         actions: [
           IconButton(
             icon: Icon(_isSpeaking ? Icons.volume_up : Icons.volume_off, color: Colors.white),
@@ -99,7 +116,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Diagnosis Master Banner
+            // Diagnosis Master Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -130,249 +147,280 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          'AI सटीकता: $confidence%',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                          AppLocalizations.get('farmerPrescription', lang),
+                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text(
-                          'CIB&RC सत्यापित',
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                        child: Text(
+                          '$confidence% ${AppLocalizations.get('confidenceScore', lang)}',
+                          style: const TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    diag['commonName'] ?? 'जिंक / जस्ता की कमी (Zinc Deficiency)',
+                    diag['commonName'] ?? 'Zinc Deficiency (जिंक की कमी)',
                     style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     diag['scientificName'] ?? 'Nutritional Disorder - Micronutrient Zn',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13, fontStyle: FontStyle.italic),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12, fontStyle: FontStyle.italic),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
-                    diag['descriptionLocalized'] ?? 'पत्तियों की नसों के बीच पीलापन व पत्तियों का छोटा रह जाना।',
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    diag['descriptionLocalized'] ?? AppLocalizations.get('step1NutrientDesc', lang),
+                    style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
 
-            // Acreage Dosage Calculator Slider
+            // Step 1: Mineral & Foliar Nutrient Card (Priority 1)
             Card(
-              color: AppColors.lightLeafTint,
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: AppColors.primaryGreen, width: 1.5),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'खेत का रकबा (Acreage Calculator):',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.soilBrown),
-                        ),
-                        Text(
-                          '${_farmAcreage.toStringAsFixed(1)} एकड़',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.primaryGreen),
+                        const Icon(Icons.eco, color: AppColors.primaryGreen, size: 24),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            step1Title,
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.primaryGreen),
+                          ),
                         ),
                       ],
                     ),
-                    Slider(
-                      value: _farmAcreage,
-                      min: 0.5,
-                      max: 10.0,
-                      divisions: 19,
-                      activeColor: AppColors.primaryGreen,
-                      inactiveColor: AppColors.divider,
-                      label: '${_farmAcreage.toStringAsFixed(1)} एकड़',
-                      onChanged: (val) => setState(() => _farmAcreage = val),
-                    ),
-                    Text(
-                      'कुल पानी की आवश्यकता: ${(_farmAcreage * 200).toInt()} लीटर | कुल जिंक सल्फेट: ${(_farmAcreage * 500).toInt()} ग्राम',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                    const SizedBox(height: 10),
+                    Text(step1Action, style: const TextStyle(fontSize: 13, height: 1.4)),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightLeafTint,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(AppLocalizations.get('dilutionRate', lang), style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              Text(step1['dosage']?['perLitreDilution'] ?? '2.5 g/L', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(AppLocalizations.get('perAcreVolume', lang), style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              Text(step1['dosage']?['perAcreDose'] ?? '500g in 200L water', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-
-            const Text(
-              '3-चरणीय पोषण-प्रथम उपचार प्रोटोकॉल',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.soilBrown),
-            ),
             const SizedBox(height: 12),
 
-            // Step 1: Mineral / Foliar Correction (Green)
-            _buildProtocolCard(
-              stepNumber: '1',
-              title: step1['titleHi'] ?? 'चरण 1: सूक्ष्म पोषक तत्व पर्णीय सुधार (सर्वप्रथम)',
-              actionText: step1['actionHi'] ?? 'जिंक सल्फेट (ZnSO4 21%) 500 ग्राम + चूना 250 ग्राम प्रति 200 लीटर पानी में मिलाकर पर्णीय छिड़काव करें।',
-              dilutionRate: step1['dosage']?['perLitreDilution'] ?? '2.5 ग्राम प्रति लीटर',
-              acreDose: step1['dosage']?['perAcreDose'] ?? '500 ग्राम प्रति एकड़',
-              stepColor: AppColors.step1Nutrient,
-              badgeText: 'उच्च प्राथमिकता (Mineral First)',
-              icon: Icons.grass,
-            ),
-            const SizedBox(height: 12),
-
-            // Step 2: Biological & Soil Bio-control (Amber)
-            _buildProtocolCard(
-              stepNumber: '2',
-              title: step2['titleHi'] ?? 'चरण 2: जैविक एवं मृदा उपचार',
-              actionText: step2['actionHi'] ?? 'जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB) 1 किग्रा प्रति एकड़ 50 किग्रा गोबर की खाद के साथ मिट्टी में मिलाएं।',
-              dilutionRate: 'लागू नहीं (मृदा सुधारक)',
-              acreDose: step2['dosage']?['perAcreDose'] ?? '1.0 किग्रा ZSB प्रति एकड़',
-              stepColor: AppColors.step2Bio,
-              badgeText: 'दीर्घकालिक मृदा स्वास्थ्य',
-              icon: Icons.compost,
-            ),
-            const SizedBox(height: 12),
-
-            // Step 3: Chemical Intervention (Red / Caution / Banned Filter)
-            _buildProtocolCard(
-              stepNumber: '3',
-              title: step3['titleHi'] ?? 'चरण 3: CIB&RC रासायनिक उपचार',
-              actionText: step3['actionHi'] ?? 'पोषण की कमी के कारण रासायनिक कीटनाशक की आवश्यकता नहीं है।',
-              dilutionRate: step3['dosage']?['perLitreDilution'] ?? 'शून्य / अनुशंसित नहीं',
-              acreDose: step3['dosage']?['perAcreDose'] ?? 'शून्य',
-              stepColor: step3['isRecommended'] == true ? AppColors.step3Chemical : Colors.grey,
-              badgeText: step3['isRecommended'] == true ? 'अंतिम विकल्प (CIB&RC Reg)' : 'रासायनिक कीटनाशक वर्जित (Not Needed)',
-              icon: Icons.science,
-              isChemicalStep: true,
-              cibrcReg: step3['cibrcRegNo'],
-              phiDays: step3['preHarvestIntervalDays'],
-            ),
-            const SizedBox(height: 16),
-
-            // Spraying Advisory & Safe Practices
+            // Step 2: Biological & Soil Health Card (Priority 2)
             Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      children: const [
-                        Icon(Icons.wb_sunny, color: AppColors.harvestAmber, size: 20),
-                        SizedBox(width: 8),
-                        Text('छिड़काव सावधानियां एवं मौसम सलाह', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      children: [
+                        const Icon(Icons.nature_people, color: AppColors.soilBrown, size: 24),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            step2Title,
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.soilBrown),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(step2Action, style: const TextStyle(fontSize: 13, height: 1.4)),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Step 3: Chemical Treatment Card (CIB&RC Registered or Exempt)
+            Card(
+              elevation: 1,
+              color: step3['isRecommended'] == true ? Colors.red.shade50 : Colors.grey.shade50,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          step3['isRecommended'] == true ? Icons.warning_amber : Icons.verified,
+                          color: step3['isRecommended'] == true ? Colors.red : Colors.green,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            step3Title,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: step3['isRecommended'] == true ? Colors.red.shade800 : Colors.green.shade800,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      rec['sprayInstructionsLocalized'] ?? '• सुबह 8-11 बजे या शाम 4 बजे के बाद छिड़काव करें।\n• दोपहर की तेज धूप या बारिश की संभावना में छिड़काव न करें।\n• स्प्रेयर नोजल को पत्ती के ऊपरी और निचले दोनों भागों पर घुमाएं।',
-                      style: const TextStyle(fontSize: 13, height: 1.4, color: AppColors.textPrimary),
+                      step3Action.isNotEmpty
+                          ? step3Action
+                          : (step3['isRecommended'] == true
+                              ? AppLocalizations.get('chemicalPermitted', lang)
+                              : AppLocalizations.get('chemicalNotRequired', lang)),
+                      style: const TextStyle(fontSize: 13, height: 1.4),
                     ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+
+            // Acreage & Dynamic Dosage Calculator
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.lightLeafTint,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        AppLocalizations.get('dosageCalc', lang),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primaryGreen),
+                      ),
+                      Text(
+                        '${_farmAcreage.toStringAsFixed(1)} ${AppLocalizations.get('farmAreaAcres', lang)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      ),
+                    ],
+                  ),
+                  Slider(
+                    value: _farmAcreage,
+                    min: 0.5,
+                    max: 20.0,
+                    divisions: 39,
+                    activeColor: AppColors.primaryGreen,
+                    onChanged: (val) => setState(() => _farmAcreage = val),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _calcBadge(AppLocalizations.get('zinc', lang), '${(_farmAcreage * 500).toInt()} g'),
+                      _calcBadge('Water (पानी)', '${(_farmAcreage * 200).toInt()} L'),
+                      _calcBadge('Lime (चूना)', '${(_farmAcreage * 250).toInt()} g'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 20),
 
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('नई जांच (New Scan)'),
-                    onPressed: widget.onNewScan,
+            // Spray Schedule Guidelines
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.amber.shade300),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.wb_sunny_outlined, color: Colors.amber, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.get('sprayInstructions', lang),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.amber.shade900),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          rec['sprayInstructionsLocalized'] ?? AppLocalizations.get('sprayMorningEvening', lang),
+                          style: const TextStyle(fontSize: 12, height: 1.4),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.print),
-                    label: const Text('PDF पर्चा प्रिंट'),
-                    onPressed: _downloadPdfPrescription,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+
+            ElevatedButton.icon(
+              icon: const Icon(Icons.camera_alt),
+              label: Text(AppLocalizations.get('newScanBtn', lang)),
+              style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 50)),
+              onPressed: widget.onNewScan,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProtocolCard({
-    required String stepNumber,
-    required String title,
-    required String actionText,
-    required String dilutionRate,
-    required String acreDose,
-    required Color stepColor,
-    required String badgeText,
-    required IconData icon,
-    bool isChemicalStep = false,
-    String? cibrcReg,
-    int? phiDays,
-  }) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: stepColor.withOpacity(0.4), width: 1.5),
+  Widget _calcBadge(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.divider),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 14,
-                  backgroundColor: stepColor,
-                  child: Text(stepNumber, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: stepColor),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: stepColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(badgeText, style: TextStyle(color: stepColor, fontSize: 10, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(actionText, style: const TextStyle(fontSize: 13, height: 1.35, color: AppColors.textPrimary)),
-            const SizedBox(height: 10),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('घोल दर: $dilutionRate', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                Text('मात्रा: $acreDose', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.soilBrown)),
-              ],
-            ),
-            if (isChemicalStep && cibrcReg != null) ...[
-              const SizedBox(height: 6),
-              Text('CIB&RC Reg #: $cibrcReg | PHI: ${phiDays ?? 0} दिन', style: const TextStyle(fontSize: 11, color: Colors.redAccent, fontWeight: FontWeight.bold)),
-            ]
-          ],
-        ),
+      child: Column(
+        children: [
+          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          const SizedBox(height: 2),
+          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primaryGreen)),
+        ],
       ),
     );
   }

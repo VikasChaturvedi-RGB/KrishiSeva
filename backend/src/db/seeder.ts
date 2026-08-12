@@ -10,15 +10,34 @@ import {
   AuditRepository,
   FarmerActivityLogRepository 
 } from './repositories';
+import { AuthService } from '../services/auth-dpdp/authService';
 
 export class DatabaseSeeder {
   static seedAll() {
     console.log('🌱 Seeding production database with standard agricultural datasets...');
 
-    // 1. Seed Core User Accounts
+    // 1. Seed Core User Accounts (Including Master Admin)
+    const masterAdmin = UserRepository.upsert({
+      id: 'admin-krishi-root-01',
+      mobile_number: '9800000000',
+      username: 'Admin',
+      password_hash: AuthService.hashPassword('Vikas'),
+      full_name: 'Vikas Chaturvedi (Admin)',
+      role: 'SUPER_ADMIN',
+      state: 'Madhya Pradesh',
+      district: 'Ujjain',
+      taluka: 'Badnagar',
+      village: 'Mullapura',
+      pin_code: '456006',
+      preferred_language: 'hi',
+      is_profile_complete: 1
+    });
+
     const farmer = UserRepository.upsert({
       id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
       mobile_number: '9876543210',
+      username: 'ramesh_patel',
+      password_hash: AuthService.hashPassword('Kisan@123'),
       full_name: 'Ramesh Patel (रमेश पटेल)',
       role: 'FARMER',
       state: 'Madhya Pradesh',
@@ -33,6 +52,8 @@ export class DatabaseSeeder {
     const clinic = UserRepository.upsert({
       id: '8a2ceb3c-2a6c-4cad-8acc-1a0c6a2dca5c',
       mobile_number: '9822012345',
+      username: 'ujjain_clinic',
+      password_hash: AuthService.hashPassword('Clinic@123'),
       full_name: 'Ujjain Kisan Seva Kendra (Agri-Clinic #12)',
       role: 'CLINIC_OPERATOR',
       state: 'Madhya Pradesh',
@@ -47,6 +68,8 @@ export class DatabaseSeeder {
     const agronomist = UserRepository.upsert({
       id: '7f1bda2b-1b5b-3bac-7abb-0b9b5a1cba4b',
       mobile_number: '9811098765',
+      username: 'dr_suresh',
+      password_hash: AuthService.hashPassword('Doctor@123'),
       full_name: 'Dr. Suresh Verma (Senior Agronomist, KVK)',
       role: 'AGRONOMIST',
       state: 'Madhya Pradesh',

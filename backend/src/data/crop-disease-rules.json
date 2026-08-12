@@ -47,6 +47,34 @@
       "nameHi": "मिर्च",
       "scientificName": "Capsicum annuum",
       "majorStates": ["Andhra Pradesh", "Telangana", "Madhya Pradesh", "Karnataka"]
+    },
+    {
+      "id": "CROP_BANANA",
+      "nameEn": "Banana",
+      "nameHi": "केला",
+      "scientificName": "Musa acuminata / Musa balbisiana",
+      "majorStates": ["Maharashtra", "Tamil Nadu", "Gujarat", "Andhra Pradesh", "Karnataka", "Kerala", "Bihar", "Uttar Pradesh"]
+    },
+    {
+      "id": "CROP_SUGARCANE",
+      "nameEn": "Sugarcane",
+      "nameHi": "गन्ना",
+      "scientificName": "Saccharum officinarum",
+      "majorStates": ["Uttar Pradesh", "Maharashtra", "Karnataka", "Tamil Nadu", "Bihar"]
+    },
+    {
+      "id": "CROP_MAIZE",
+      "nameEn": "Maize / Corn",
+      "nameHi": "मक्का",
+      "scientificName": "Zea mays",
+      "majorStates": ["Karnataka", "Madhya Pradesh", "Maharashtra", "Rajasthan", "Bihar"]
+    },
+    {
+      "id": "CROP_POTATO",
+      "nameEn": "Potato",
+      "nameHi": "आलू",
+      "scientificName": "Solanum tuberosum",
+      "majorStates": ["Uttar Pradesh", "West Bengal", "Bihar", "Gujarat", "Madhya Pradesh", "Punjab"]
     }
   ],
   "diseaseRules": {
@@ -380,6 +408,164 @@
             "perAcreDose": "60 ml in 200 L water",
             "perHectareDose": "150 ml in 500 L water",
             "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    },
+    "DIS_BANANA_SIGATOKA": {
+      "code": "DIS_BANANA_SIGATOKA",
+      "category": "FUNGAL_DISEASE",
+      "nameEn": "Banana Sigatoka Leaf Spot (Pseudocercospora fijiensis / Mycosphaerella musicola)",
+      "nameHi": "केले का सिगाटोका पर्ण धब्बा रोग (Sigatoka Leaf Spot)",
+      "nameTe": "అరటి సిగటోకా ఆకుమచ్చ తెగులు",
+      "nameTa": "வாழை சிகடோகா இலைப்புள்ளி நோய்",
+      "nameMr": "केळीवरील सिगाटोका करपा रोग",
+      "namePa": "ਕੇਲੇ ਦਾ ਸਿਗਾਟੋਕਾ ਪੱਤਾ ਧੱਬਾ ਰੋਗ",
+      "descriptionHi": "केले की चौड़ी पत्तियों की नसों के समानांतर गहरे भूरे/काले रंग की लंबी धारियां व धब्बे बनते हैं, जिससे पत्तियां सूखकर झुलस जाती हैं।",
+      "descriptionEn": "Dark reddish-brown to black elongated spindle lesions running parallel to lateral leaf veins with sunken grey centers.",
+      "adaptiveQuestionnaire": {
+        "promptHi": "केले के सिगाटोका रोग की अवस्था पुष्टि हेतु बताएं:",
+        "promptEn": "Specify Sigatoka infection stage:",
+        "questions": [
+          {
+            "id": "Q_LEAF_STREAK_STAGE",
+            "textHi": "पत्तियों पर लक्षण किस रूप में दिख रहे हैं?",
+            "textEn": "What form do the foliar lesions exhibit?",
+            "options": [
+              { "key": "EARLY_STREAKS", "textHi": "हल्की पीली-लाल बारीक लकीरें (प्रारंभिक अवस्था)", "textEn": "Fine yellowish-red streaks (Early Stage)" },
+              { "key": "ADVANCED_NECROSIS", "textHi": "काले-भूरे बड़े धब्बे जिनके बीच का भाग राख जैसा सूखा है", "textEn": "Dark necrotic spots with ash-grey center" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: सिलिकॉन, पोटाश व जिंक पर्णीय पोषण (Immunity Fortification)",
+          "titleEn": "Step 1: Silicon + Potash + Zinc Fortification",
+          "actionHi": "पोटेशियम सिलिकेट (2 मिली/लीटर) + 00:00:50 घुलनशील पोटाश (5 ग्राम/लीटर) + चिलेटेड जिंक (1 ग्राम/लीटर) का 200 लीटर पानी में मिलाकर केले की दोनों सतहों पर छिड़काव करें।",
+          "actionEn": "Foliar spray of Potassium Silicate @ 2ml/L + SOP (0-0-50) @ 5g/L + Chelated Zinc @ 1g/L in 200L water per acre to harden banana cuticle.",
+          "dosage": {
+            "perLitreDilution": "2.0 ml / Litre",
+            "perAcreDose": "400 ml Pot-Silicate + 1 kg SOP + 200g Zn in 200 L water",
+            "perHectareDose": "1.0 L + 2.5 kg SOP in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: जैविक कवकनाशी व खनिज तेल (Bio-control & Mineral Oil)",
+          "titleEn": "Step 2: Bacillus subtilis + Agricultural Spray Oil",
+          "actionHi": "बैसिलस सबटिलिस (Bacillus subtilis 1% WP) @ 5 ग्राम/लीटर + कृषि स्प्रे तेल (Agricultural Mineral Oil 10 मिली/लीटर) का छिड़काव करें और सूखी ग्रसित पत्तियों को काटकर नष्ट करें।",
+          "actionEn": "Spray Bacillus subtilis @ 5g/L + Horticultural Mineral Oil @ 10ml/L. Debarker infected dried leaves to break spore cycle.",
+          "dosage": {
+            "perLitreDilution": "5.0 g / Litre",
+            "perAcreDose": "1.0 kg Bio-fungicide in 200 L water",
+            "perHectareDose": "2.5 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": true,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: CIB&RC पंजीकृत प्रोपिकोनाज़ोल अथवा एज़ोक्सिस्ट्रोबिन (Curative)",
+          "titleEn": "Step 3: CIB&RC Approved Systemic Fungicide",
+          "actionHi": "प्रोपिकोनाज़ोल 25% EC @ 200 मिली प्रति एकड़ (1 मिली/लीटर) अथवा एज़ोक्सिस्ट्रोबिन + डिफेनोकोनाज़ोल @ 200 मिली प्रति एकड़ 200 लीटर पानी में मिलाकर नोजल से छिड़कें।",
+          "actionEn": "Apply Propiconazole 25% EC @ 200 ml/acre (1.0 ml/L) or Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 200 ml/acre in 200L water.",
+          "activeIngredient": "Propiconazole 25% EC / Azoxystrobin + Difenoconazole",
+          "cibrcRegNo": "CIR-55210/2016-Propiconazole-211",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 28,
+          "dosage": {
+            "perLitreDilution": "1.0 ml / Litre",
+            "perAcreDose": "200 ml in 200 L water",
+            "perHectareDose": "500 ml in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        }
+      }
+    },
+    "DIS_BANANA_POTASSIUM_DEFICIENCY": {
+      "code": "DIS_BANANA_POTASSIUM_DEFICIENCY",
+      "category": "NUTRITIONAL_DEFICIENCY",
+      "nameEn": "Banana Potassium (K) Deficiency",
+      "nameHi": "केले में पोटाश (पोटेशियम) की कमी",
+      "nameTe": "అరటి పొటాషియం లోపం",
+      "nameTa": "வாழை பொட்டாசியம் குறைபாடு",
+      "nameMr": "केळीतील पोटॅशियम (पालाश) कमतरता",
+      "namePa": "ਕੇਲੇ ਵਿੱਚ ਪੋਟਾਸ਼ ਦੀ ਘਾਟ",
+      "descriptionHi": "पुरानी पत्तियों के किनारे तेजी से नारंगी-पीले पड़कर नीचे की ओर मुड़ते हैं और सूखकर जलने जैसे भूरे हो जाते हैं।",
+      "descriptionEn": "Rapid marginal yellowing and necrosis of older leaves with leaf tips curling downwards (Banana Potassium Hunger).",
+      "adaptiveQuestionnaire": {
+        "promptHi": "पोटाश की कमी की पुष्टि हेतु बताएं:",
+        "promptEn": "Confirm potassium deficiency symptoms:",
+        "questions": [
+          {
+            "id": "Q_LEAF_MARGIN_CURL",
+            "textHi": "क्या पत्तियों के किनारे नारंगी-पीले होकर नीचे मुड़ रहे हैं?",
+            "textEn": "Are leaf margins turning orange-yellow and curling downward?",
+            "options": [
+              { "key": "YES_MARGIN_CURL", "textHi": "हाँ, किनारे जलने जैसे सूखकर मुड़ गए हैं", "textEn": "Yes, characteristic margin scorch & curl" },
+              { "key": "NO_GENERAL_YELLOW", "textHi": "नहीं, पूरी पत्ती हल्की पीली है", "textEn": "No, general light yellowing" }
+            ]
+          }
+        ]
+      },
+      "nutritionFirstRecommendation": {
+        "step1NutrientFoliarCorrection": {
+          "isRecommended": true,
+          "priorityRank": 1,
+          "titleHi": "चरण 1: सल्फेट ऑफ पोटाश (SOP 00:00:50) पर्णीय छिड़काव",
+          "titleEn": "Step 1: Foliar Sulfate of Potash (0-0-50)",
+          "actionHi": "घुलनशील पोटाश (00:00:50) 1 किग्रा + 1 किग्रा यूरिया को 200 लीटर पानी में मिलाकर प्रति एकड़ छिड़कें। 12-15 दिन बाद दोबारा दोहराएं।",
+          "actionEn": "Foliar spray of Sulfate of Potash (SOP 00:00:50) @ 1kg + Urea 1kg in 200L water per acre. Repeat after 12-15 days.",
+          "dosage": {
+            "perLitreDilution": "5.0 g / Litre",
+            "perAcreDose": "1.0 kg in 200 L water",
+            "perHectareDose": "2.5 kg in 500 L water",
+            "waterVolumePerAcre": 200,
+            "method": "FOLIAR_SPRAY"
+          }
+        },
+        "step2BiologicalOrCultural": {
+          "isRecommended": true,
+          "priorityRank": 2,
+          "titleHi": "चरण 2: पोटाश मोबिलाइजिंग बायो-फर्टिलाइजर (KSB) मृदा उपचार",
+          "titleEn": "Step 2: Potash Solubilizing Bacteria (KSB)",
+          "actionHi": "पोटाश घोलक बैक्टीरिया (KSB / Frateuria aurantia) 1 किग्रा प्रति एकड़ 100 किग्रा गोबर की खाद के साथ मिलाकर केले के तने के चारों ओर 30 सेमी दूरी पर दें।",
+          "actionEn": "Apply Potash Solubilizing Bacteria (KSB) @ 1kg/acre mixed with 100kg FYM in ring method 30cm around pseudostem.",
+          "dosage": {
+            "perLitreDilution": "N/A (Soil application)",
+            "perAcreDose": "1.0 kg with 100 kg FYM",
+            "perHectareDose": "2.5 kg with 250 kg FYM",
+            "waterVolumePerAcre": 0,
+            "method": "RING_APPLICATION"
+          }
+        },
+        "step3ChemicalIntervention": {
+          "isRecommended": false,
+          "priorityRank": 3,
+          "titleHi": "चरण 3: रासायनिक कीटनाशक (शून्य आवश्यकता - Zero Chemical)",
+          "titleEn": "Step 3: Synthetic Chemical (Zero Required)",
+          "actionHi": "यह एक प्रमुख पोषक तत्व विकार है। किसी रासायनिक कीटनाशक की कोई आवश्यकता नहीं है।",
+          "actionEn": "Nutritional macronutrient disorder. Zero chemical pesticide needed.",
+          "activeIngredient": "None Required",
+          "cibrcRegNo": "EXEMPT_NUTRIENT",
+          "cibrcRegistrationVerified": true,
+          "isStateBanned": false,
+          "preHarvestIntervalDays": 0,
+          "dosage": {
+            "perLitreDilution": "0",
+            "perAcreDose": "0",
+            "perHectareDose": "0",
+            "waterVolumePerAcre": 0,
             "method": "FOLIAR_SPRAY"
           }
         }

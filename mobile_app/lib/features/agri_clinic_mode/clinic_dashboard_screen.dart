@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/localization/app_localizations.dart';
 import '../../core/network/api_client.dart';
 
 class ClinicDashboardScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
   List<dynamic> _farmers = [];
   List<dynamic> _escalations = [];
   bool _isLoading = true;
+  String _filterQuery = '';
 
   @override
   void initState() {
@@ -72,10 +74,19 @@ class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = widget.currentLanguage;
+    final filteredFarmers = _farmers.where((f) {
+      final name = (f['fullName'] ?? '').toString().toLowerCase();
+      final mobile = (f['mobileNumber'] ?? '').toString();
+      final village = (f['village'] ?? '').toString().toLowerCase();
+      final q = _filterQuery.toLowerCase();
+      return name.contains(q) || mobile.contains(q) || village.contains(q);
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('कृषि-क्लिनिक एवं केंद्र डैशबोर्ड (Pro Clinic)'),
-        backgroundColor: AppColors.primaryGreen,
+        title: Text(AppLocalizations.get('clinicTitle', lang)),
+        backgroundColor: AppColors.soilBrown,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
@@ -94,21 +105,21 @@ class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.local_hospital, color: Colors.white, size: 36),
-                          SizedBox(width: 12),
+                        children: [
+                          const Icon(Icons.local_hospital, color: Colors.white, size: 36),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'कृषक सेवा केंद्र एवं एग्री-क्लिनिक #MP-41',
-                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                  AppLocalizations.get('clinicTitle', lang),
+                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                                 ),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text(
-                                  'CIB&RC अधिकृत | सॉइल हेल्थ कार्ड लिंक्ड',
-                                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                                  AppLocalizations.get('clinicSubtitle', lang),
+                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
                                 ),
                               ],
                             ),
@@ -116,80 +127,87 @@ class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    // Active Agronomist Escalations (SLA Alert Queue)
+                    // Search Bar
+                    TextField(
+                      controller: _searchController,
+                      onChanged: (v) => setState(() => _filterQuery = v),
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search, color: AppColors.soilBrown),
+                        hintText: AppLocalizations.get('searchFarmer', lang),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: AppColors.divider),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Escalated SLA Queue Card
                     if (_escalations.isNotEmpty) ...[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'SLA विशेषज्ञ कतार (Pending Escalations)',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.soilBrown),
+                          Text(
+                            AppLocalizations.get('escalatedQueue', lang),
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.red),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                             child: Text(
                               '${_escalations.length} Active',
-                              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11),
+                              style: TextStyle(color: Colors.red.shade900, fontSize: 11, fontWeight: FontWeight.bold),
                             ),
-                          )
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      ..._escalations.map((esc) => Card(
+                      const SizedBox(height: 8),
+                      ..._escalations.map((e) => Card(
+                            margin: const EdgeInsets.only(bottom: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(color: Colors.redAccent, width: 1),
+                              side: BorderSide(color: Colors.red.shade200),
                             ),
                             child: ListTile(
                               leading: const CircleAvatar(
-                                backgroundColor: Color(0xFFFFEBEE),
-                                child: Icon(Icons.timer, color: Colors.red),
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                child: Icon(Icons.support_agent, size: 20),
                               ),
-                              title: Text('${esc['farmerName']} - ${esc['cropName']}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text('${esc['aiTentativePrediction']}\nSLA शेष: ${esc['slaRemainingMinutes']} मिनट'),
-                              trailing: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primaryGreen,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                ),
-                                child: const Text('समीक्षा करें', style: TextStyle(fontSize: 12)),
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('कृषि वैज्ञानिक समीक्षा विंडो खुली...')),
-                                  );
-                                },
+                              title: Text(e['farmerName'] ?? 'Farmer', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: Text('${e['cropName']} - ${e['aiTentativePrediction']}'),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.timer, color: Colors.red, size: 18),
+                                  Text(
+                                    '${e['slaRemainingMinutes']}m',
+                                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11),
+                                  ),
+                                ],
                               ),
                             ),
                           )),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                     ],
 
-                    // Farmer Portfolio Search
-                    const Text(
-                      'पंजीकृत किसान पोर्टफोलियो (Farmers)',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.soilBrown),
+                    // Registered Farmers List
+                    Text(
+                      '${AppLocalizations.get('activeFarmers', lang)} (${filteredFarmers.length})',
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                     ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'किसान का नाम या मोबाइल नंबर खोजें...',
-                        prefixIcon: const Icon(Icons.search, color: AppColors.primaryGreen),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.divider)),
-                      ),
-                      onChanged: (val) {
-                        // Dynamic filter simulation
-                      },
-                    ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
 
-                    ..._farmers.map((farmer) => Card(
-                          margin: const EdgeInsets.only(bottom: 12),
+                    ...filteredFarmers.map((f) => Card(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           child: Padding(
                             padding: const EdgeInsets.all(14.0),
                             child: Column(
@@ -198,44 +216,47 @@ class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(farmer['fullName'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                    Text(
+                                      f['fullName'] ?? 'Farmer',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                    ),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(color: AppColors.lightLeafTint, borderRadius: BorderRadius.circular(8)),
-                                      child: Text('${farmer['totalAcreage']} एकड़', style: const TextStyle(color: AppColors.primaryGreen, fontWeight: FontWeight.bold, fontSize: 12)),
-                                    )
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.lightLeafTint,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Text(
+                                        '${f['totalAcreage']} ${AppLocalizations.get('farmAreaAcres', lang)}',
+                                        style: const TextStyle(color: AppColors.primaryGreen, fontSize: 11, fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                Text('मोबाइल: +91-${farmer['mobileNumber']} | गाँव: ${farmer['village']}, ${farmer['district']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                                const SizedBox(height: 4),
-                                Text('वर्तमान फसल: ${farmer['activeCrop']}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: AppColors.soilBrown)),
-                                const SizedBox(height: 10),
                                 Row(
                                   children: [
-                                    Expanded(
-                                      child: OutlinedButton.icon(
-                                        icon: const Icon(Icons.camera_alt, size: 16),
-                                        label: const Text('जांच पर्चा बनाएँ', style: TextStyle(fontSize: 12)),
-                                        onPressed: () {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('${farmer['fullName']} के लिए त्वरित जांच प्रारंभ')),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    ElevatedButton.icon(
-                                      icon: const Icon(Icons.picture_as_pdf, size: 16),
-                                      label: const Text('PDF पर्चा', style: TextStyle(fontSize: 12)),
-                                      onPressed: () {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('अधिकृत कृषि-क्लिनिक PDF पर्चा तैयार हो रहा है...')),
-                                        );
-                                      },
-                                    )
+                                    const Icon(Icons.phone, size: 14, color: AppColors.textSecondary),
+                                    const SizedBox(width: 4),
+                                    Text('+91 ${f['mobileNumber']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                                    const SizedBox(width: 12),
+                                    const Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
+                                    const SizedBox(width: 4),
+                                    Text('${f['village']}, ${f['district']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                                   ],
-                                )
+                                ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    'Active Crop: ${f['activeCrop']}',
+                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                  ),
+                                ),
                               ],
                             ),
                           ),

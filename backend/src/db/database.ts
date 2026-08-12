@@ -88,6 +88,17 @@ export class AppDatabase {
     } else {
       console.warn('⚠️ Warning: schema.sql file not located, skipping DDL execution');
     }
+
+    // Auto-migration safeguards for existing database files
+    try {
+      this.db.exec('ALTER TABLE users ADD COLUMN username TEXT;');
+    } catch (e) {}
+    try {
+      this.db.exec('ALTER TABLE users ADD COLUMN password_hash TEXT;');
+    } catch (e) {}
+    try {
+      this.db.exec('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);');
+    } catch (e) {}
   }
 
   /**
