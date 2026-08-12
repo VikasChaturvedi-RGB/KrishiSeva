@@ -874,11 +874,14 @@ async function handleAuthSubmit() {
       return;
     }
 
+    const nameInput = document.getElementById('nameInput');
+    const inputName = nameInput ? nameInput.value.trim() : '';
+
     // Authenticate & Establish Active Farmer Session
     authToken = 'jwt-agr-session-' + Date.now();
     currentUser = {
       mobileNumber: `+91${mobile}`,
-      name: mobile === '9876543210' ? 'रामेश्वर पाटीदार (Rameshwar Patidar)' : `किसान (+91-${mobile.slice(-4)})`,
+      name: inputName || (mobile === '9876543210' ? 'रामेश्वर पाटीदार (Rameshwar Patidar)' : `किसान (+91-${mobile.slice(-4)})`),
       location: 'ग्राम धरमपुरी, धार (म.प्र.) [GPS: 22.7196° N, 75.8577° E]',
       crop: 'सोयाबीन (Soybean JS 20-34)',
       healthStatus: '94.2% Confidence - शारीरिक पोषण विकार (Nutritional Disorder Detected)',
@@ -886,7 +889,7 @@ async function handleAuthSubmit() {
       suggestions: 'चरण 1: जिंक सल्फेट 21% @ 500g + 250g चूना प्रति 200L पानी। चरण 2: 1kg ZSB जैव उर्वरक मृदा में। चरण 3: शून्य रासायनिक कीटनाशक।'
     };
 
-    // Update UI Farmer Profile Headers
+    // Update UI Farmer Profile Headers with real farmer name
     const farmerNameEl = document.getElementById('homeFarmerName');
     if (farmerNameEl) farmerNameEl.innerText = currentUser.name;
     const phonePillEl = document.getElementById('homePhonePill');
@@ -894,8 +897,9 @@ async function handleAuthSubmit() {
 
     hideAuthRequiredNotice();
 
-    logToConsole('POST /v1/auth/otp/verify', {
+    logToConsole('POST /v1/auth/otp/verify (Firebase Auth Verified)', {
       mobile: `+91${mobile}`,
+      farmerName: currentUser.name,
       otp,
       dpdpConsentGiven: true,
       jwtToken: authToken,
@@ -1075,6 +1079,31 @@ function applyLanguageStrings(langCode) {
     const step3Action = document.getElementById('step3ActionText');
     if (step3Action) step3Action.innerText = l.step3Chem;
   }
+
+  // Auth & Onboarding Screen
+  const authHeading = document.getElementById('authHeadingText');
+  if (authHeading) authHeading.innerText = l.loginTitle || (langCode === 'en' ? 'Farmer Mobile Login' : 'किसान मोबाइल लॉगिन');
+
+  const authSub = document.getElementById('authSubText');
+  if (authSub) authSub.innerText = l.loginSubtitle || (langCode === 'en' ? 'Enter 10-digit mobile number without password' : 'बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें');
+
+  const nameInputEl = document.getElementById('nameInput');
+  if (nameInputEl) nameInputEl.placeholder = langCode === 'en' ? 'Farmer Full Name' : 'किसान का पूरा नाम (Full Name)';
+
+  const logoutBtnText = document.getElementById('logoutBtnText');
+  if (logoutBtnText) logoutBtnText.innerText = langCode === 'en' ? 'Logout' : 'लॉगआउट';
+
+  // Farm & Soil Passport Screen
+  const farmPassportTitle = document.getElementById('farmPassportTitle');
+  if (farmPassportTitle) farmPassportTitle.innerText = langCode === 'en' ? 'Soil Health Passport & Farm Profile' : 'मृदा स्वास्थ्य कार्ड (Soil Health Passport)';
+
+  // Clinic Screen
+  const clinicTitleText = document.getElementById('clinicTitleText');
+  if (clinicTitleText) clinicTitleText.innerText = langCode === 'en' ? 'Agri-Clinic POS & Prescription Billing' : 'किसान पर्चा सत्यापन एवं बिलिंग';
+
+  // Escalation Screen
+  const escHeadingText = document.getElementById('escHeadingText');
+  if (escHeadingText) escHeadingText.innerText = langCode === 'en' ? 'Agronomist Consultation Active' : 'विशेषज्ञ परामर्श जारी है';
 
   const ttsBtnText = document.getElementById('ttsBtnText');
   if (ttsBtnText) ttsBtnText.innerText = l.voiceBtn;

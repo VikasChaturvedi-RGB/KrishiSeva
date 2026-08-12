@@ -125,7 +125,7 @@ class AuthSessionNotifier extends StateNotifier<AuthSessionState> {
       isAuthenticated: true,
       isNewFarmer: false,
       mobileNumber: mobileNumber,
-      fullName: fullName ?? 'Ramesh Patel',
+      fullName: (fullName != null && fullName.trim().isNotEmpty) ? fullName : 'Kisan User',
       pincode: pincode ?? '456665',
       stateName: stateName ?? 'Madhya Pradesh',
       district: district ?? 'Ujjain',

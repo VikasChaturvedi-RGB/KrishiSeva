@@ -121,9 +121,10 @@ class _AuthConsentScreenState extends ConsumerState<AuthConsentScreen> {
     } catch (e) {
       // Fallback: If 9876543210 -> existing user; else prompt new farmer onboarding
       if (mobile == '9876543210') {
+        final nameInput = _nameController.text.trim();
         ref.read(authSessionProvider.notifier).setAuthenticated(
           mobileNumber: mobile,
-          fullName: 'Ramesh Patel (रमेश पटेल)',
+          fullName: nameInput.isNotEmpty ? nameInput : 'Kisan Mobile User',
         );
         widget.onAuthenticated();
       } else {
