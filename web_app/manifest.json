@@ -1,0 +1,18 @@
+{
+  "name": "Krishi Swasthya Sahayak",
+  "short_name": "Krishi Sahayak",
+  "description": "Bilingual plant health diagnosis and nutrient/pest advisory for Indian farmers.",
+  "start_url": "/web_app/index.html",
+  "scope": "/web_app/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F2EFE4",
+  "theme_color": "#3F6B32",
+  "lang": "hi-IN",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

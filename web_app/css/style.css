@@ -1,0 +1,255 @@
+/* ============================================================
+   Krishi Swasthya Sahayak — design tokens
+   Palette drawn from Indian soil & crop colour: black-cotton
+   soil brown, leaf green, turmeric accent, laterite red alert.
+   Signature element: the Plant Health Index is rendered as a
+   Leaf Colour Chart (LCC) strip — the real paper tool Indian
+   agronomists use to read rice nitrogen status by leaf shade.
+   ============================================================ */
+
+:root {
+  --soil-dark: #2b2420;
+  --soil-mid: #6b4a32;
+  --soil-line: #d8cfb8;
+
+  --leaf-deep: #3f6b32;
+  --leaf-mid: #6b9a4f;
+  --leaf-pale: #a8c97f;
+  --leaf-bud: #dcead0;
+
+  --turmeric: #e3a82b;
+  --turmeric-deep: #a9761c;
+
+  --laterite: #b23b2e;
+  --laterite-bg: #f6e3e0;
+
+  --bg-paper: #f2efe4;
+  --bg-card: #fbf9f3;
+  --ink: #211d18;
+  --ink-soft: #5a5147;
+  --ink-faint: #8c8272;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(43, 36, 32, 0.06), 0 4px 14px rgba(43, 36, 32, 0.06);
+
+  --font-display: "Fraunces", "Noto Serif Devanagari", serif;
+  --font-ui: "Noto Sans", system-ui, sans-serif;
+  --font-data: "Spline Sans Mono", "Noto Sans Mono", monospace;
+
+  --max-w: 480px;
+}
+
+/* Per-language font stacks are applied on <html data-lang="xx"> by js/i18n.js */
+html[data-lang="hi"], html[data-lang="mr"] { --font-ui: "Noto Sans Devanagari", "Noto Sans", sans-serif; }
+html[data-lang="bn"] { --font-ui: "Noto Sans Bengali", "Noto Sans", sans-serif; }
+html[data-lang="te"] { --font-ui: "Noto Sans Telugu", "Noto Sans", sans-serif; }
+html[data-lang="ta"] { --font-ui: "Noto Sans Tamil", "Noto Sans", sans-serif; }
+html[data-lang="gu"] { --font-ui: "Noto Sans Gujarati", "Noto Sans", sans-serif; }
+html[data-lang="ur"] { --font-ui: "Noto Nastaliq Urdu", "Noto Sans Arabic", sans-serif; }
+html[data-lang="kn"] { --font-ui: "Noto Sans Kannada", "Noto Sans", sans-serif; }
+html[data-lang="or"] { --font-ui: "Noto Sans Oriya", "Noto Sans", sans-serif; }
+html[data-lang="ml"] { --font-ui: "Noto Sans Malayalam", "Noto Sans", sans-serif; }
+html[dir="rtl"] body { direction: rtl; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg-paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+#app {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg-paper);
+}
+
+.screen { display: none; flex: 1; flex-direction: column; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); }
+.screen.active { display: flex; }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--soil-dark); margin: 0 0 6px; line-height: 1.15; }
+html[data-lang]:not([data-lang="en"]) h1,
+html[data-lang]:not([data-lang="en"]) h2,
+html[data-lang]:not([data-lang="en"]) h3 { font-family: var(--font-ui); font-weight: 700; }
+h1 { font-size: 26px; }
+h2 { font-size: 20px; }
+h3 { font-size: 17px; }
+p { margin: 0 0 12px; color: var(--ink-soft); }
+.eyebrow { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--leaf-deep); font-weight: 700; margin-bottom: 6px; }
+
+/* ---------- Buttons & inputs ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px 18px; border-radius: var(--radius-pill);
+  font-family: var(--font-ui); font-size: 16px; font-weight: 700;
+  border: none; cursor: pointer; transition: transform 0.08s ease, opacity 0.15s ease;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--leaf-deep); color: #fff; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: var(--leaf-deep); border: 1.5px solid var(--leaf-deep); }
+.btn-ghost { background: transparent; color: var(--ink-soft); border: 1.5px solid var(--soil-line); }
+.btn-accent { background: var(--turmeric); color: var(--soil-dark); }
+.btn-sm { width: auto; padding: 8px 16px; font-size: 14px; }
+
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+.field input[type="text"], .field input[type="tel"], .field select {
+  width: 100%; padding: 13px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--soil-line); background: var(--bg-card);
+  font-family: var(--font-ui); font-size: 16px; color: var(--ink);
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--leaf-deep); }
+.field-hint { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+.field-error { font-size: 13px; color: var(--laterite); margin-top: 6px; display: none; }
+.field-error.visible { display: block; }
+
+.otp-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.otp-row input {
+  width: 100%; text-align: center; font-family: var(--font-data); font-size: 22px;
+  padding: 10px 0; border-radius: var(--radius-sm); border: 1.5px solid var(--soil-line);
+  background: var(--bg-card); color: var(--ink);
+}
+.otp-row input:focus { outline: none; border-color: var(--leaf-deep); }
+
+/* ---------- Language grid ---------- */
+.lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lang-pill {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 14px 14px; border-radius: var(--radius-md); border: 1.5px solid var(--soil-line);
+  background: var(--bg-card); cursor: pointer; text-align: left;
+}
+.lang-pill .native { font-size: 18px; font-weight: 700; color: var(--soil-dark); }
+.lang-pill .en { font-size: 12px; color: var(--ink-faint); }
+.lang-pill.selected { border-color: var(--leaf-deep); background: var(--leaf-bud); }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--soil-line);
+  box-shadow: var(--shadow-card); padding: 16px; margin-bottom: 12px;
+}
+
+/* ---------- Top bar ---------- */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 16px; }
+.topbar .back { font-size: 22px; color: var(--soil-dark); background: none; border: none; cursor: pointer; padding: 4px 8px; margin-left: -8px; }
+.topbar .lang-tag { font-size: 12px; font-weight: 700; color: var(--leaf-deep); background: var(--leaf-bud); padding: 4px 10px; border-radius: var(--radius-pill); }
+
+/* ---------- Stepper (diagnosis flow has a genuine sequence) ---------- */
+.stepper { display: flex; align-items: center; gap: 6px; margin-bottom: 20px; }
+.stepper .dot { flex: 1; height: 4px; border-radius: 2px; background: var(--soil-line); }
+.stepper .dot.done, .stepper .dot.current { background: var(--leaf-deep); }
+
+/* ---------- Crop grid ---------- */
+.crop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.crop-tile {
+  border-radius: var(--radius-md); border: 1.5px solid var(--soil-line); background: var(--bg-card);
+  padding: 14px 12px; cursor: pointer; text-align: left;
+}
+.crop-tile .name { font-weight: 700; color: var(--soil-dark); font-size: 15px; }
+.crop-tile .botanical { font-size: 11px; color: var(--ink-faint); font-style: italic; }
+.crop-tile.selected { border-color: var(--leaf-deep); background: var(--leaf-bud); }
+
+/* ---------- Sign chips ---------- */
+.sign-list { display: flex; flex-direction: column; gap: 8px; }
+.sign-chip {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-radius: var(--radius-md); border: 1.5px solid var(--soil-line); background: var(--bg-card);
+  cursor: pointer;
+}
+.sign-chip .box { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--soil-line); flex-shrink: 0; }
+.sign-chip.selected { border-color: var(--leaf-deep); background: var(--leaf-bud); }
+.sign-chip.selected .box { background: var(--leaf-deep); border-color: var(--leaf-deep); }
+.sign-chip span.label { font-size: 14px; color: var(--ink); }
+
+/* ---------- Leaf Colour Chart (LCC) health-index strip — signature element ---------- */
+.lcc {
+  display: flex; gap: 3px; height: 44px; border-radius: var(--radius-sm); overflow: hidden;
+  border: 1px solid var(--soil-line); position: relative;
+}
+.lcc .lcc-panel { flex: 1; }
+.lcc .lcc-marker {
+  position: absolute; top: -8px; width: 2px; height: 60px; background: var(--soil-dark);
+  transform: translateX(-1px); transition: left 0.4s ease;
+}
+.lcc .lcc-marker::after {
+  content: ""; position: absolute; top: -7px; left: -6px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--soil-dark);
+}
+.health-readout { display: flex; align-items: baseline; gap: 8px; margin: 10px 0 4px; }
+.health-readout .score { font-family: var(--font-data); font-size: 34px; font-weight: 700; color: var(--soil-dark); }
+.health-readout .of100 { font-size: 13px; color: var(--ink-faint); }
+
+/* ---------- Result issue cards ---------- */
+.issue-card { border-radius: var(--radius-md); border: 1.5px solid var(--soil-line); background: var(--bg-card); padding: 14px; margin-bottom: 10px; }
+.issue-card .type-tag { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 9px; border-radius: var(--radius-pill); margin-bottom: 8px; }
+.issue-card .type-tag.pest { background: var(--laterite-bg); color: var(--laterite); }
+.issue-card .type-tag.disease { background: #f3e6d8; color: var(--turmeric-deep); }
+.issue-card .type-tag.nutrient_deficiency { background: var(--leaf-bud); color: var(--leaf-deep); }
+.issue-card .confidence { float: right; font-family: var(--font-data); font-size: 12px; color: var(--ink-faint); }
+.issue-card h3 { margin-bottom: 4px; }
+.issue-card .symptoms { font-size: 13px; margin-bottom: 10px; }
+
+.hierarchy { display: flex; flex-direction: column; gap: 8px; }
+.hierarchy .level { border-radius: var(--radius-sm); padding: 10px 12px; border-left: 3px solid var(--leaf-deep); background: var(--leaf-bud); }
+.hierarchy .level.tier-2 { border-left-color: var(--turmeric-deep); background: #f7ecd9; }
+.hierarchy .level.tier-3 { border-left-color: var(--ink-faint); background: #efece4; opacity: 0.92; }
+.hierarchy .level .tier-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-faint); margin-bottom: 3px; }
+.hierarchy .level p { margin: 0; font-size: 13px; color: var(--ink); }
+.caution-note { display: flex; gap: 8px; align-items: flex-start; background: var(--laterite-bg); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--laterite); margin-top: 12px; }
+
+/* ---------- Home dashboard ---------- */
+.home-hero { border-radius: var(--radius-lg); background: linear-gradient(180deg, var(--leaf-deep), var(--leaf-deep)); background-color: var(--leaf-deep); color: #fff; padding: 20px; margin-bottom: 16px; }
+.home-hero p { color: rgba(255,255,255,0.82); }
+.home-hero h2 { color: #fff; }
+.history-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--soil-line); }
+.history-row:last-child { border-bottom: none; }
+.history-row .mini-lcc { width: 46px; height: 14px; border-radius: 4px; overflow: hidden; display: flex; gap: 1px; }
+.history-row .mini-lcc span, .history-row .mini-lcc .lcc-panel { flex: 1; }
+.history-row .meta { flex: 1; }
+.history-row .meta .crop { font-weight: 700; font-size: 14px; }
+.history-row .meta .date { font-size: 12px; color: var(--ink-faint); }
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav {
+  display: flex; border-top: 1px solid var(--soil-line); background: var(--bg-card);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+}
+.bottom-nav button {
+  flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; color: var(--ink-faint); font-family: var(--font-ui); cursor: pointer; padding: 4px;
+}
+.bottom-nav button.active { color: var(--leaf-deep); font-weight: 700; }
+.bottom-nav .icon { font-size: 20px; line-height: 1; }
+
+/* ---------- Misc ---------- */
+.center-note { text-align: center; color: var(--ink-faint); font-size: 13px; margin-top: 16px; }
+.spacer { flex: 1; }
+.photo-drop {
+  border: 2px dashed var(--soil-line); border-radius: var(--radius-md); padding: 28px 16px; text-align: center;
+  color: var(--ink-faint); font-size: 13px; margin-bottom: 12px; background: var(--bg-card); cursor: pointer;
+}
+.photo-preview { width: 100%; border-radius: var(--radius-md); margin-bottom: 12px; display: none; }
+.offline-badge {
+  display: none; background: var(--turmeric); color: var(--soil-dark); text-align: center;
+  font-size: 12px; font-weight: 700; padding: 6px; border-radius: var(--radius-sm); margin-bottom: 12px;
+}
+.offline-badge.visible { display: block; }
+.skeleton { background: linear-gradient(90deg, var(--soil-line) 25%, var(--bg-card) 50%, var(--soil-line) 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: var(--radius-sm); height: 14px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .lcc .lcc-marker, .skeleton { transition: none; animation: none; }
+}

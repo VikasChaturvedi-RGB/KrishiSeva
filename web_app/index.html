@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="hi" dir="ltr" data-lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3f6b32">
+<meta name="description" content="Krishi Swasthya Sahayak — bilingual plant health diagnosis and nutrient/pest advisory for Indian farmers.">
+<title>Krishi Swasthya Sahayak</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Krishi Sahayak">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Noto+Sans:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&family=Noto+Sans+Tamil:wght@400;700&family=Noto+Sans+Gujarati:wght@400;700&family=Noto+Sans+Kannada:wght@400;700&family=Noto+Sans+Oriya:wght@400;700&family=Noto+Sans+Malayalam:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Spline+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============== ONBOARDING FLOW ============== -->
+  <div id="onboarding-flow">
+
+    <section class="screen active" id="screen-language">
+      <div class="offline-badge" data-i18n="offline_notice"></div>
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+        <div style="text-align:center; margin-bottom:24px;">
+          <img src="icons/icon-192.png" width="64" height="64" alt="" style="border-radius:16px; margin-bottom:10px;">
+          <h1 data-i18n="app_name"></h1>
+          <p data-i18n="app_tagline"></p>
+        </div>
+        <p class="eyebrow" data-i18n="select_language" style="text-align:center;"></p>
+        <div class="lang-grid" id="lang-grid"></div>
+      </div>
+      <button class="btn btn-primary" id="lang-continue-btn" data-i18n="continue" disabled style="margin-top:16px;"></button>
+    </section>
+
+    <section class="screen" id="screen-auth-mobile">
+      <div class="topbar">
+        <button class="back" data-back-to="screen-language" data-i18n-aria-label="back" aria-label="Back">&#8592;</button>
+      </div>
+      <h2 data-i18n="mobile_number_label"></h2>
+      <div class="field">
+        <label data-i18n="mobile_number_label" for="mobile-input"></label>
+        <input type="tel" id="mobile-input" inputmode="numeric" maxlength="10" data-i18n-placeholder="mobile_number_placeholder" placeholder="">
+        <div class="field-error" id="mobile-error"></div>
+      </div>
+      <button class="btn btn-primary" id="send-otp-btn" data-i18n="send_otp"></button>
+      <p class="center-note" data-i18n="kvk_helpline"></p>
+    </section>
+
+    <section class="screen" id="screen-auth-otp">
+      <div class="topbar">
+        <button class="back" data-back-to="screen-auth-mobile" data-i18n-aria-label="back" aria-label="Back">&#8592;</button>
+      </div>
+      <h2 data-i18n="enter_otp"></h2>
+      <p><span data-i18n="otp_sent_to"></span> <strong id="otp-sent-number"></strong></p>
+      <div class="otp-row">
+        <input type="text" inputmode="numeric" maxlength="1">
+        <input type="text" inputmode="numeric" maxlength="1">
+        <input type="text" inputmode="numeric" maxlength="1">
+        <input type="text" inputmode="numeric" maxlength="1">
+        <input type="text" inputmode="numeric" maxlength="1">
+        <input type="text" inputmode="numeric" maxlength="1">
+      </div>
+      <div class="field-error" id="otp-error"></div>
+      <button class="btn btn-primary" id="verify-otp-btn" data-i18n="verify" style="margin-top:12px;"></button>
+      <p class="center-note">
+        <a href="#" id="resend-otp-link" data-i18n="resend_otp"></a> &middot;
+        <a href="#" id="change-number-link" data-i18n="change_number"></a>
+      </p>
+    </section>
+
+    <section class="screen" id="screen-location">
+      <div class="topbar">
+        <button class="back" data-back-to="screen-auth-otp" data-i18n-aria-label="back" aria-label="Back">&#8592;</button>
+      </div>
+      <h2 data-i18n="select_state"></h2>
+      <div class="field">
+        <label data-i18n="select_state" for="state-select"></label>
+        <select id="state-select"></select>
+      </div>
+      <label style="display:flex; gap:10px; align-items:flex-start; margin:8px 0 16px; font-size:13px; color:var(--ink-soft);">
+        <input type="checkbox" id="consent-checkbox" style="margin-top:3px; flex-shrink:0;">
+        <span data-i18n="consent_text"></span>
+      </label>
+      <div class="field-error" id="location-error"></div>
+      <button class="btn btn-primary" id="location-continue-btn" data-i18n="agree_continue"></button>
+    </section>
+
+  </div>
+
+  <!-- ============== MAIN APP (post-login) ============== -->
+  <div id="main-flow" style="display:none; flex:1; flex-direction:column;">
+
+    <section class="screen active" id="screen-home">
+      <div class="topbar">
+        <h2 data-i18n="home_greeting" style="margin:0;"></h2>
+        <span class="lang-tag" id="home-lang-tag"></span>
+      </div>
+      <p id="home-greeting-name" style="font-weight:700; color:var(--soil-dark); margin-top:-6px;"></p>
+      <div class="offline-badge" data-i18n="offline_notice"></div>
+      <div class="home-hero">
+        <h2 data-i18n="new_diagnosis"></h2>
+        <p data-i18n="app_tagline"></p>
+        <button class="btn btn-accent" id="home-new-diagnosis-btn" data-i18n="new_diagnosis"></button>
+      </div>
+      <h3 data-i18n="recent_diagnoses"></h3>
+      <div id="home-history-list"></div>
+    </section>
+
+    <section class="screen" id="screen-crop">
+      <div class="topbar"><button class="back" data-back-to="screen-home" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
+      <div class="stepper"><div class="dot current"></div><div class="dot"></div><div class="dot"></div></div>
+      <h2 data-i18n="select_crop"></h2>
+      <div class="crop-grid" id="crop-grid"></div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="crop-continue-btn" data-i18n="continue" disabled style="margin-top:16px;"></button>
+    </section>
+
+    <section class="screen" id="screen-input">
+      <div class="topbar"><button class="back" data-back-to="screen-crop" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
+      <div class="stepper"><div class="dot done"></div><div class="dot current"></div><div class="dot"></div></div>
+      <h2 data-i18n="select_organ"></h2>
+      <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:16px;">
+        <button type="button" class="crop-tile organ-btn" data-organ="LEAF" style="padding:10px 2px; text-align:center;"><div class="name" style="font-size:11px;" data-i18n="organ_leaf"></div></button>
+        <button type="button" class="crop-tile organ-btn" data-organ="STEM" style="padding:10px 2px; text-align:center;"><div class="name" style="font-size:11px;" data-i18n="organ_stem"></div></button>
+        <button type="button" class="crop-tile organ-btn" data-organ="FRUIT" style="padding:10px 2px; text-align:center;"><div class="name" style="font-size:11px;" data-i18n="organ_fruit"></div></button>
+        <button type="button" class="crop-tile organ-btn" data-organ="ROOT" style="padding:10px 2px; text-align:center;"><div class="name" style="font-size:11px;" data-i18n="organ_root"></div></button>
+        <button type="button" class="crop-tile organ-btn" data-organ="FLOWER" style="padding:10px 2px; text-align:center;"><div class="name" style="font-size:11px;" data-i18n="organ_flower"></div></button>
+      </div>
+
+      <h3 data-i18n="input_mode_prompt"></h3>
+      <div style="display:flex; gap:10px; margin-bottom:16px;">
+        <button type="button" class="btn btn-secondary btn-sm" id="mode-checklist-btn" data-i18n="use_checklist" style="flex:1;"></button>
+        <button type="button" class="btn btn-secondary btn-sm" id="mode-photo-btn" data-i18n="use_photo" style="flex:1;"></button>
+      </div>
+
+      <div id="sign-checklist-block" style="display:none;">
+        <p class="eyebrow" data-i18n="select_signs"></p>
+        <div class="sign-list" id="sign-list"></div>
+      </div>
+
+      <div id="photo-block" style="display:none;">
+        <label class="photo-drop" for="photo-file-input" data-i18n="use_photo"></label>
+        <input type="file" id="photo-file-input" accept="image/*" capture="environment" style="display:none;">
+        <img id="photo-preview" class="photo-preview" alt="">
+      </div>
+
+      <div class="field" style="margin-top:16px;">
+        <label data-i18n="field_size_acres" for="acreage-input"></label>
+        <input type="text" inputmode="decimal" id="acreage-input">
+      </div>
+
+      <div class="field-error" id="input-error"></div>
+      <button class="btn btn-primary" id="get-diagnosis-btn" data-i18n="get_diagnosis" style="margin-top:8px;"></button>
+    </section>
+
+    <section class="screen" id="screen-result">
+      <div class="topbar"><button class="back" data-back-to="screen-input" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
+      <div class="stepper"><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div></div>
+      <h2 data-i18n="plant_health_index"></h2>
+      <div class="lcc" id="result-lcc-wrap">
+        <div id="result-lcc" style="display:flex; width:100%; height:100%;"></div>
+        <div class="lcc-marker" id="result-lcc-marker"></div>
+      </div>
+      <div class="health-readout"><span class="score" id="result-score">&ndash;&ndash;</span><span class="of100">/100</span></div>
+
+      <h3 data-i18n="possible_issues"></h3>
+      <div id="result-issues"></div>
+
+      <p class="field-hint" id="acreage-scaling-note" style="display:none;"></p>
+      <div class="caution-note"><span aria-hidden="true">&#9888;</span><span id="chemical-caution-text"></span></div>
+      <p class="center-note" data-i18n="disclaimer_short"></p>
+      <p class="center-note" style="color:var(--leaf-deep); font-weight:700;" data-i18n="saved_to_history"></p>
+
+      <button class="btn btn-primary" id="result-done-btn" data-i18n="nav_home" style="margin-top:16px;"></button>
+    </section>
+
+    <section class="screen" id="screen-history">
+      <div class="topbar"><h2 data-i18n="history_title" style="margin:0;"></h2></div>
+      <div class="offline-badge" data-i18n="offline_notice"></div>
+      <div id="history-full-list"></div>
+    </section>
+
+    <section class="screen" id="screen-profile">
+      <div class="topbar"><h2 data-i18n="profile_title" style="margin:0;"></h2></div>
+      <div class="card">
+        <p class="field-hint" data-i18n="mobile_number_label"></p>
+        <p id="profile-mobile" style="font-weight:700; margin-top:-8px;"></p>
+      </div>
+      <div class="card">
+        <p class="field-hint" data-i18n="profile_location"></p>
+        <p id="profile-state" style="font-weight:700; margin-top:-8px;"></p>
+      </div>
+      <div class="card">
+        <p class="field-hint" data-i18n="profile_language"></p>
+        <p id="profile-lang-name" style="font-weight:700; margin-top:-8px;"></p>
+        <button class="btn btn-ghost btn-sm" id="profile-change-language-btn" data-i18n="change_language" style="margin-top:8px;"></button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-secondary" id="profile-log-out-btn" data-i18n="log_out"></button>
+      <p class="center-note" data-i18n="kvk_helpline"></p>
+    </section>
+
+    <nav class="bottom-nav">
+      <button data-nav="screen-home" class="active">
+        <span class="icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/></svg></span>
+        <span data-i18n="nav_home"></span>
+      </button>
+      <button data-nav="screen-history">
+        <span class="icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3.5 2"/></svg></span>
+        <span data-i18n="nav_history"></span>
+      </button>
+      <button data-nav="screen-profile">
+        <span class="icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6"/></svg></span>
+        <span data-i18n="nav_profile"></span>
+      </button>
+    </nav>
+
+  </div>
+
+</div>
+
+<script src="js/i18n.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
