@@ -4,6 +4,7 @@ const APP_SHELL = [
   "index.html",
   "manifest.json",
   "css/style.css",
+  "js/data.js",
   "js/i18n.js",
   "js/api.js",
   "js/app.js",

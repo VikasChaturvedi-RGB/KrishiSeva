@@ -1,10 +1,10 @@
 const App = (() => {
   const state = {
-    languages: [],
-    states: [],
-    crops: [],
-    signs: [],
-    selectedLangCode: null,
+    languages: (window.KSH_DATA && window.KSH_DATA.languages) || [],
+    states: (window.KSH_DATA && window.KSH_DATA.states) || [],
+    crops: (window.KSH_DATA && window.KSH_DATA.crops) || [],
+    signs: (window.KSH_DATA && window.KSH_DATA.signs) || [],
+    selectedLangCode: localStorage.getItem("ksh_lang") || "hi",
     pendingMobile: null,
     selectedStateCode: null,
     selectedCropId: null,
@@ -41,10 +41,21 @@ const App = (() => {
   // ---------------- Language screen ----------------
   function renderLanguageGrid() {
     const grid = document.getElementById("lang-grid");
+    if (!grid) return;
     grid.innerHTML = "";
+
+    if ((!state.languages || state.languages.length === 0) && window.KSH_DATA) {
+      state.languages = window.KSH_DATA.languages;
+    }
+
+    const activeLang = state.selectedLangCode || "hi";
+
     state.languages.forEach((lang) => {
       const pill = document.createElement("button");
       pill.className = "lang-pill";
+      if (lang.code === activeLang) {
+        pill.classList.add("selected");
+      }
       pill.type = "button";
       pill.innerHTML = `<span class="native">${lang.name_native}</span><span class="en">${lang.name_en}</span>`;
       pill.addEventListener("click", async () => {
@@ -53,10 +64,16 @@ const App = (() => {
         state.selectedLangCode = lang.code;
         await I18N.load(lang.code);
         updateLangTags();
-        document.getElementById("lang-continue-btn").disabled = false;
+        const continueBtn = document.getElementById("lang-continue-btn");
+        if (continueBtn) continueBtn.disabled = false;
       });
       grid.appendChild(pill);
     });
+
+    const continueBtn = document.getElementById("lang-continue-btn");
+    if (continueBtn) {
+      continueBtn.disabled = false;
+    }
   }
 
   function updateLangTags() {
@@ -66,7 +83,9 @@ const App = (() => {
   }
 
   function bindLanguageScreen() {
-    document.getElementById("lang-continue-btn").addEventListener("click", async () => {
+    const continueBtn = document.getElementById("lang-continue-btn");
+    if (!continueBtn) return;
+    continueBtn.addEventListener("click", async () => {
       if (state.languageScreenMode === "change") {
         renderProfile();
         show("screen-profile");
@@ -90,9 +109,14 @@ const App = (() => {
       const btn = document.getElementById("send-otp-btn");
       btn.disabled = true;
       try {
-        await API.requestOtp(raw, "registration");
+        const res = await API.requestOtp(raw, "registration");
         state.pendingMobile = raw;
-        document.getElementById("otp-sent-number").textContent = raw;
+        const otpSentEl = document.getElementById("otp-sent-number");
+        if (res && res.offline && res.demoOtp) {
+          otpSentEl.textContent = `${raw} (डेमो OTP: ${res.demoOtp})`;
+        } else {
+          otpSentEl.textContent = raw;
+        }
         document.querySelectorAll(".otp-row input").forEach((i) => (i.value = ""));
         show("screen-auth-otp");
       } catch (e) {
@@ -148,7 +172,10 @@ const App = (() => {
     document.getElementById("resend-otp-link").addEventListener("click", async (e) => {
       e.preventDefault();
       try {
-        await API.requestOtp(state.pendingMobile, "registration");
+        const res = await API.requestOtp(state.pendingMobile, "registration");
+        if (res && res.offline && res.demoOtp) {
+          document.getElementById("otp-sent-number").textContent = `${state.pendingMobile} (डेमो OTP: ${res.demoOtp})`;
+        }
       } catch {
         /* cooldown or transient error; silent no-op is fine here, farmer can just retry */
       }
@@ -163,11 +190,18 @@ const App = (() => {
   // ---------------- Location + consent ----------------
   function renderStateGrid() {
     const select = document.getElementById("state-select");
+    if (!select) return;
+    if ((!state.states || state.states.length === 0) && window.KSH_DATA) {
+      state.states = window.KSH_DATA.states;
+    }
     select.innerHTML = `<option value="" disabled selected></option>`;
     state.states.forEach((s) => {
       const opt = document.createElement("option");
       opt.value = s.code;
       opt.textContent = s.name;
+      if (state.selectedStateCode === s.code) {
+        opt.selected = true;
+      }
       select.appendChild(opt);
     });
   }
@@ -264,17 +298,25 @@ const App = (() => {
   // ---------------- Diagnosis flow: crop ----------------
   function renderCropGrid() {
     const grid = document.getElementById("crop-grid");
+    if (!grid) return;
+    if ((!state.crops || state.crops.length === 0) && window.KSH_DATA) {
+      state.crops = window.KSH_DATA.crops;
+    }
     grid.innerHTML = "";
     state.crops.forEach((crop) => {
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "crop-tile";
+      if (state.selectedCropId === crop.id) {
+        tile.classList.add("selected");
+      }
       tile.innerHTML = `<div class="name">${crop.name_hi || crop.name_en}</div><div class="botanical">${crop.name_en}</div>`;
       tile.addEventListener("click", () => {
         document.querySelectorAll(".crop-tile").forEach((t) => t.classList.remove("selected"));
         tile.classList.add("selected");
         state.selectedCropId = crop.id;
-        document.getElementById("crop-continue-btn").disabled = false;
+        const contBtn = document.getElementById("crop-continue-btn");
+        if (contBtn) contBtn.disabled = false;
       });
       grid.appendChild(tile);
     });
@@ -326,10 +368,17 @@ const App = (() => {
 
   function renderSignChips() {
     const list = document.getElementById("sign-list");
+    if (!list) return;
+    if ((!state.signs || state.signs.length === 0) && window.KSH_DATA) {
+      state.signs = window.KSH_DATA.signs;
+    }
     list.innerHTML = "";
     state.signs.forEach((sign) => {
       const chip = document.createElement("div");
       chip.className = "sign-chip";
+      if (state.selectedSignIds.has(sign.id)) {
+        chip.classList.add("selected");
+      }
       chip.innerHTML = `<div class="box"></div><span class="label">${sign.label_hi || sign.label_en}</span>`;
       chip.addEventListener("click", () => {
         if (state.selectedSignIds.has(sign.id)) {
@@ -437,28 +486,38 @@ const App = (() => {
 
   // ---------------- Profile ----------------
   function bindProfileScreen() {
-    document.getElementById("profile-change-language-btn").addEventListener("click", () => {
-      state.languageScreenMode = "change";
-      document.getElementById("lang-continue-btn").disabled = false;
-      show("screen-language");
-    });
-    document.getElementById("profile-log-out-btn").addEventListener("click", async () => {
-      try {
-        await API.logout();
-      } catch {
-        /* if this fails (e.g. offline), still clear locally so the device logs out */
-      }
-      API.clearSession();
-      location.reload();
-    });
+    const changeLangBtn = document.getElementById("profile-change-language-btn");
+    if (changeLangBtn) {
+      changeLangBtn.addEventListener("click", () => {
+        state.languageScreenMode = "change";
+        const continueBtn = document.getElementById("lang-continue-btn");
+        if (continueBtn) continueBtn.disabled = false;
+        show("screen-language");
+      });
+    }
+    const logoutBtn = document.getElementById("profile-log-out-btn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+        try {
+          await API.logout();
+        } catch {
+          /* if this fails (e.g. offline), still clear locally so the device logs out */
+        }
+        API.clearSession();
+        location.reload();
+      });
+    }
   }
 
   function renderProfile() {
     const user = API.getUser();
-    document.getElementById("profile-mobile").textContent = user ? user.mobileNumber : "";
+    const profileMobile = document.getElementById("profile-mobile");
+    if (profileMobile) profileMobile.textContent = user ? user.mobileNumber : "";
     const st = state.states.find((s) => s.code === state.selectedStateCode);
-    document.getElementById("profile-state").textContent = st ? st.name : "—";
-    document.getElementById("profile-lang-name").textContent = I18N.getCurrentLang().toUpperCase();
+    const profileState = document.getElementById("profile-state");
+    if (profileState) profileState.textContent = st ? st.name : "—";
+    const profileLang = document.getElementById("profile-lang-name");
+    if (profileLang) profileLang.textContent = I18N.getCurrentLang().toUpperCase();
   }
 
   // ---------------- Bottom nav + back buttons ----------------
@@ -474,26 +533,39 @@ const App = (() => {
     document.querySelectorAll("[data-back-to]").forEach((btn) => {
       btn.addEventListener("click", () => show(btn.dataset.backTo));
     });
-    document.getElementById("home-new-diagnosis-btn").addEventListener("click", () => {
-      state.selectedCropId = null;
-      state.selectedOrgan = null;
-      state.selectedSignIds.clear();
-      state.photoBase64 = null;
-      state.acreage = null;
-      document.querySelectorAll(".crop-tile").forEach((t) => t.classList.remove("selected"));
-      document.getElementById("crop-continue-btn").disabled = true;
-      show("screen-crop");
-    });
-    document.getElementById("crop-continue-btn").addEventListener("click", () => {
-      document.getElementById("photo-preview").style.display = "none";
-      document.getElementById("photo-block").style.display = "none";
-      document.getElementById("sign-checklist-block").style.display = "none";
-      show("screen-input");
-    });
-    document.getElementById("result-done-btn").addEventListener("click", () => {
-      show("screen-home");
-      renderHome();
-    });
+    const homeNewBtn = document.getElementById("home-new-diagnosis-btn");
+    if (homeNewBtn) {
+      homeNewBtn.addEventListener("click", () => {
+        state.selectedCropId = null;
+        state.selectedOrgan = null;
+        state.selectedSignIds.clear();
+        state.photoBase64 = null;
+        state.acreage = null;
+        document.querySelectorAll(".crop-tile").forEach((t) => t.classList.remove("selected"));
+        const cropContBtn = document.getElementById("crop-continue-btn");
+        if (cropContBtn) cropContBtn.disabled = true;
+        show("screen-crop");
+      });
+    }
+    const cropContBtn = document.getElementById("crop-continue-btn");
+    if (cropContBtn) {
+      cropContBtn.addEventListener("click", () => {
+        const preview = document.getElementById("photo-preview");
+        if (preview) preview.style.display = "none";
+        const photoBlock = document.getElementById("photo-block");
+        if (photoBlock) photoBlock.style.display = "none";
+        const signBlock = document.getElementById("sign-checklist-block");
+        if (signBlock) signBlock.style.display = "none";
+        show("screen-input");
+      });
+    }
+    const resultDoneBtn = document.getElementById("result-done-btn");
+    if (resultDoneBtn) {
+      resultDoneBtn.addEventListener("click", () => {
+        show("screen-home");
+        renderHome();
+      });
+    }
   }
 
   // ---------------- Boot ----------------
@@ -525,12 +597,17 @@ const App = (() => {
     } catch {
       const cached = JSON.parse(localStorage.getItem("ksh_ref_cache") || "null");
       if (cached) {
-        state.languages = cached.languages;
-        state.states = cached.states;
-        state.crops = cached.crops;
-        state.signs = cached.signs;
+        if (cached.languages && cached.languages.length > 0) state.languages = cached.languages;
+        if (cached.states && cached.states.length > 0) state.states = cached.states;
+        if (cached.crops && cached.crops.length > 0) state.crops = cached.crops;
+        if (cached.signs && cached.signs.length > 0) state.signs = cached.signs;
+      } else if (window.KSH_DATA) {
+        state.languages = window.KSH_DATA.languages;
+        state.states = window.KSH_DATA.states;
+        state.crops = window.KSH_DATA.crops;
+        state.signs = window.KSH_DATA.signs;
       }
-      toggleOfflineBadge(true);
+      toggleOfflineBadge(!API.isOnline());
     }
   }
 
@@ -542,6 +619,11 @@ const App = (() => {
     window.addEventListener("offline", () => toggleOfflineBadge(true));
     toggleOfflineBadge(!navigator.onLine);
 
+    const savedLang = localStorage.getItem("ksh_lang") || "hi";
+    state.selectedLangCode = savedLang;
+    await I18N.load(savedLang);
+    updateLangTags();
+
     await loadReferenceDataWithFallback();
     renderLanguageGrid();
     renderStateGrid();
@@ -551,11 +633,6 @@ const App = (() => {
     bindInputScreen();
     bindProfileScreen();
     bindNav();
-
-    const savedLang = localStorage.getItem("ksh_lang") || "hi";
-    state.selectedLangCode = savedLang;
-    await I18N.load(savedLang);
-    updateLangTags();
 
     const token = API.getToken();
     const user = API.getUser();
@@ -567,7 +644,14 @@ const App = (() => {
     }
   }
 
-  return { init };
+  return { init, state, show };
 })();
+
+if (typeof window !== "undefined") {
+  window.App = App;
+}
+if (typeof module !== "undefined") {
+  module.exports = App;
+}
 
 document.addEventListener("DOMContentLoaded", App.init);

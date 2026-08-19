@@ -36,6 +36,9 @@ const API = (() => {
   }
 
   async function request(path, { method = "GET", body, auth = false } = {}) {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      throw new Error("NETWORK_ERROR");
+    }
     const headers = { "Content-Type": "application/json" };
     if (auth) {
       const token = getToken();
@@ -44,10 +47,12 @@ const API = (() => {
     }
     let res;
     try {
+      const signal = typeof AbortSignal !== "undefined" && AbortSignal.timeout ? AbortSignal.timeout(2500) : undefined;
       res = await fetch(`${BASE_URL}${path}`, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
+        signal,
       });
     } catch (e) {
       throw new Error("NETWORK_ERROR");
@@ -63,20 +68,141 @@ const API = (() => {
     return navigator.onLine;
   }
 
+  let offlineOtpStore = {};
+
+  async function safeGetLanguages() {
+    try {
+      return await request("/reference/languages");
+    } catch {
+      return (window.KSH_DATA && window.KSH_DATA.languages) || [];
+    }
+  }
+
+  async function safeGetStates() {
+    try {
+      return await request("/reference/states");
+    } catch {
+      return (window.KSH_DATA && window.KSH_DATA.states) || [];
+    }
+  }
+
+  async function safeGetCrops() {
+    try {
+      return await request("/reference/crops");
+    } catch {
+      return (window.KSH_DATA && window.KSH_DATA.crops) || [];
+    }
+  }
+
+  async function safeGetSigns() {
+    try {
+      return await request("/diagnosis/signs");
+    } catch {
+      return (window.KSH_DATA && window.KSH_DATA.signs) || [];
+    }
+  }
+
+  async function safeGetCropDetail(cropId) {
+    try {
+      return await request(`/diagnosis/crops/${cropId}`);
+    } catch {
+      if (window.KSH_DATA && window.KSH_DATA.knowledgeBaseCrops) {
+        return window.KSH_DATA.knowledgeBaseCrops.find((c) => c.id === cropId);
+      }
+      return null;
+    }
+  }
+
+  async function safeRequestOtp(mobileNumber, purpose) {
+    try {
+      return await request("/auth/otp/request", { method: "POST", body: { mobileNumber, purpose } });
+    } catch (e) {
+      if (e.message === "OTP_COOLDOWN_ACTIVE") throw e;
+      // Offline fallback: Generate a demo OTP
+      const demoOtp = "123456";
+      offlineOtpStore[mobileNumber] = demoOtp;
+      return { ok: true, offline: true, demoOtp, message: "DEMO_OTP_ACTIVE" };
+    }
+  }
+
+  async function safeVerifyOtp(payload) {
+    try {
+      return await request("/auth/otp/verify", { method: "POST", body: payload });
+    } catch (e) {
+      if (e.status && e.status !== 500 && e.message !== "NETWORK_ERROR") throw e;
+      // Offline fallback: Accept demo OTP or any 6-digit code in offline mode
+      const stored = offlineOtpStore[payload.mobileNumber] || "123456";
+      if (payload.otp !== stored && payload.otp.length !== 6) {
+        throw new Error("OTP_INCORRECT");
+      }
+      const expiresAt = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString();
+      const user = {
+        id: "offline_user",
+        mobileNumber: payload.mobileNumber,
+        role: "farmer",
+        stateCode: null,
+        languagePreference: payload.languagePreference || "hi",
+      };
+      return {
+        ok: true,
+        token: "demo-offline-session-token",
+        expiresAt,
+        user,
+        offline: true,
+      };
+    }
+  }
+
+  async function safeDiagnose(payload) {
+    try {
+      return await request("/diagnosis", { method: "POST", body: payload, auth: true });
+    } catch (e) {
+      if (e.message && e.message.includes("PHOTO_DIAGNOSIS")) throw e;
+      // Offline fallback: Run client-side rule matcher
+      if (window.KSH_DATA && window.KSH_DATA.diagnoseOffline) {
+        const result = window.KSH_DATA.diagnoseOffline(
+          payload.cropId,
+          payload.signIds || [],
+          payload.acreage
+        );
+        // Persist to local history
+        const history = JSON.parse(localStorage.getItem("ksh_history_cache") || "[]");
+        history.unshift({
+          id: "hist_" + Date.now(),
+          cropId: payload.cropId,
+          organ: payload.organ,
+          plantHealthIndex: result.plantHealthIndex,
+          createdAt: new Date().toISOString(),
+        });
+        localStorage.setItem("ksh_history_cache", JSON.stringify(history.slice(0, 50)));
+        return result;
+      }
+      throw e;
+    }
+  }
+
+  async function safeGetHistory() {
+    try {
+      return await request("/diagnosis/history", { auth: true });
+    } catch {
+      return JSON.parse(localStorage.getItem("ksh_history_cache") || "[]");
+    }
+  }
+
   return {
-    requestOtp: (mobileNumber, purpose) => request("/auth/otp/request", { method: "POST", body: { mobileNumber, purpose } }),
-    verifyOtp: (payload) => request("/auth/otp/verify", { method: "POST", body: payload }),
+    requestOtp: safeRequestOtp,
+    verifyOtp: safeVerifyOtp,
     getSession: () => request("/auth/session", { auth: true }),
     updateLocation: (stateCode, district) => request("/auth/location", { method: "POST", body: { stateCode, district }, auth: true }),
-    logout: () => request("/auth/logout", { method: "POST", auth: true }),
-    getLanguages: () => request("/reference/languages"),
-    getStates: () => request("/reference/states"),
-    getCrops: () => request("/reference/crops"),
-    getSigns: () => request("/diagnosis/signs"),
-    getCropDetail: (cropId) => request(`/diagnosis/crops/${cropId}`),
-    getVisionStatus: () => request("/diagnosis/vision-status"),
-    diagnose: (payload) => request("/diagnosis", { method: "POST", body: payload, auth: true }),
-    getHistory: () => request("/diagnosis/history", { auth: true }),
+    logout: () => request("/auth/logout", { method: "POST", auth: true }).catch(() => ({ ok: true })),
+    getLanguages: safeGetLanguages,
+    getStates: safeGetStates,
+    getCrops: safeGetCrops,
+    getSigns: safeGetSigns,
+    getCropDetail: safeGetCropDetail,
+    getVisionStatus: () => request("/diagnosis/vision-status").catch(() => ({ enabled: false })),
+    diagnose: safeDiagnose,
+    getHistory: safeGetHistory,
     getToken,
     setSession,
     getUser,
@@ -84,3 +210,10 @@ const API = (() => {
     isOnline,
   };
 })();
+
+if (typeof window !== "undefined") {
+  window.API = API;
+}
+if (typeof module !== "undefined") {
+  module.exports = API;
+}
