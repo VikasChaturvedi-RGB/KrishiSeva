@@ -1015,17 +1015,30 @@ const KSH_DATA = (() => {
       }
 
       if (matchedIssue) {
+        const isDef = issueType === "nutrient_deficiency";
+        const isPest = issueType === "pest";
+
+        const detailedTier1 = isDef
+          ? (matchedIssue.correction_foliar || "Foliar application of micronutrient solution (0.5% Zinc Sulfate / 0.2% Borax). Apply well-decomposed FYM @ 5 tonnes/acre.")
+          : `${matchedIssue.cultural_control || matchedIssue.ipm_cultural || "Clean field and remove weed hosts."} Install 10-15 sticky traps/acre (yellow for whitefly/aphids, blue for thrips) or 5 pheromone traps/acre. Maintain optimum row spacing for ventilation.`;
+
+        const detailedTier2 = matchedIssue.biological
+          ? `${matchedIssue.biological} Spray Neem formulation (Azadirachtin 1500 ppm) @ 3-5 ml/L water during early morning or evening. For fungal/bacterial diseases, spray Trichoderma viride or Pseudomonas fluorescens @ 5g/L water.`
+          : "Spray Neem oil (Azadirachtin 1500 ppm) @ 3-5 ml per litre of water. Release Trichogramma egg parasitoids @ 20,000/acre upon initial infestation.";
+
+        const detailedTier3 = `${matchedIssue.chemical_class_generic || "Consult local KVK / SAU for registered chemical products."} Apply ONLY if infestation crosses Economic Threshold Level (ETL). Use a knapsack sprayer with 150-200 L water per acre. Always wear protective mask and gloves.`;
+
         visionNote = `फोटो विश्लेषण: ${crop.name_hi || crop.name_en} के ${organ || "पौधे"} पर ${matchedIssue.name_hi || matchedIssue.name_en} के दृश्य लक्षण पाए गए।`;
         visionAnalysis = {
           detectedIssue: matchedIssue.name_en,
           detectedIssueHi: matchedIssue.name_hi || matchedIssue.name_en,
           issueType,
           confidence: 84,
-          visualDescription: `Visual AI analysis detected signs of ${matchedIssue.name_en} on ${crop.name_en}. ${matchedIssue.symptoms || ""}`,
+          visualDescription: `Visual AI analysis detected symptoms consistent with ${matchedIssue.name_en} on ${crop.name_en}. ${matchedIssue.symptoms || ""}`,
           visualDescriptionHi: visionNote,
-          tier1_cultural_mineral: matchedIssue.correction_foliar || matchedIssue.cultural_control || matchedIssue.ipm_cultural || "Remove affected parts and sanitize field",
-          tier2_biological: matchedIssue.biological || "Spray neem oil (Azadirachtin 1500 ppm) @ 3 ml/L or Trichoderma",
-          tier3_chemical_class: matchedIssue.chemical_class_generic || "Consult KVK for CIB&RC-registered active ingredients",
+          tier1_cultural_mineral: detailedTier1,
+          tier2_biological: detailedTier2,
+          tier3_chemical_class: detailedTier3,
           plantHealthIndex: 72,
         };
 
@@ -1036,7 +1049,12 @@ const KSH_DATA = (() => {
           name_hi: matchedIssue.name_hi,
           confidence: 84,
           severity: matchedIssue.severity || "medium",
-          details: matchedIssue
+          details: {
+            ...matchedIssue,
+            correction_foliar: detailedTier1,
+            biological: detailedTier2,
+            chemical_class_generic: detailedTier3,
+          }
         }];
 
         return {

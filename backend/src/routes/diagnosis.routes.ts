@@ -33,12 +33,13 @@ diagnosisRouter.get("/vision-status", (_req, res) => {
  * Either signIds (manual checklist) or imageBase64 (photo analysed with Multimodal LLM Vision).
  */
 diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
-  const { cropId, organ, signIds, imageBase64, imageMediaType, stateCode, acreage } = req.body || {};
+  const { cropId, organ, signIds, imageBase64, imageMediaType, stateCode, acreage, lang } = req.body || {};
   if (!cropId) return res.status(400).json({ error: "CROP_ID_REQUIRED" });
 
   const crop = (knowledgeBase.crops as any[]).find((c) => c.id === cropId);
   if (!crop) return res.status(400).json({ error: "UNKNOWN_CROP_ID" });
 
+  const userLanguage = lang || req.user?.languagePreference || "hi";
   let finalSignIds: string[] = Array.isArray(signIds) ? signIds : [];
   let visionAnalysis: llmVision.VisionDiagnosisResult | null = null;
   let inputMode: "symptom_checklist" | "photo" = "symptom_checklist";
@@ -53,7 +54,8 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
         imageMediaType || "image/jpeg",
         crop.name_en,
         organ,
-        stateCode
+        stateCode,
+        userLanguage
       );
 
       if (visionAnalysis.signIds && visionAnalysis.signIds.length > 0) {
@@ -64,7 +66,17 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
       // Check if rule engine can match any curated knowledgeBase items
       const ruleResult = diagnose(cropId, finalSignIds);
       if (ruleResult.matches && ruleResult.matches.length > 0) {
-        matches = ruleResult.matches;
+        // Overlay localized detailed tiers if provided by vision
+        matches = ruleResult.matches.map((m) => ({
+          ...m,
+          name_hi: userLanguage === "hi" ? (m.name_hi || m.name_en) : (visionAnalysis?.detectedIssueLocalized || m.name_en),
+          details: {
+            ...m.details,
+            correction_foliar: visionAnalysis?.tier1_cultural_mineral_localized || m.details?.correction_foliar || m.details?.ipm_cultural,
+            biological: visionAnalysis?.tier2_biological_localized || m.details?.biological,
+            chemical_class_generic: visionAnalysis?.tier3_chemical_class_localized || m.details?.chemical_class_generic,
+          },
+        }));
       } else {
         // Construct structured issue from LLM vision analysis
         matches = [
@@ -72,14 +84,14 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
             crop_id: cropId,
             type: visionAnalysis.issueType,
             name_en: visionAnalysis.detectedIssue,
-            name_hi: visionAnalysis.detectedIssueHi,
+            name_hi: visionAnalysis.detectedIssueLocalized || visionAnalysis.detectedIssue,
             confidence: visionAnalysis.confidence,
             severity: visionAnalysis.severity,
             details: {
-              symptoms: visionAnalysis.visualDescription,
-              correction_foliar: visionAnalysis.tier1_cultural_mineral,
-              biological: visionAnalysis.tier2_biological,
-              chemical_class_generic: visionAnalysis.tier3_chemical_class,
+              symptoms: visionAnalysis.visualDescriptionLocalized || visionAnalysis.visualDescription,
+              correction_foliar: visionAnalysis.tier1_cultural_mineral_localized || visionAnalysis.tier1_cultural_mineral,
+              biological: visionAnalysis.tier2_biological_localized || visionAnalysis.tier2_biological,
+              chemical_class_generic: visionAnalysis.tier3_chemical_class_localized || visionAnalysis.tier3_chemical_class,
             },
           },
         ];
@@ -116,13 +128,14 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
     cropId,
     cropName: crop.name_en,
     inputMode,
-    visionNote: visionAnalysis ? visionAnalysis.visualDescription : null,
+    lang: userLanguage,
+    visionNote: visionAnalysis ? (visionAnalysis.visualDescriptionLocalized || visionAnalysis.visualDescription) : null,
     visionAnalysis,
     plantHealthIndex: computedPlantHealthIndex,
     matches,
     dosageScalingNote: scaleNote(acreage),
     disclaimer:
-      "Guidance synthesized using agricultural knowledge base and AI vision advisory. Always confirm registered active ingredients with your local KVK or SAU before chemical application.",
+      "AI-generated advisory. AI can make mistakes — always cross-verify recommendations and dosages with your local KVK or Agriculture Officer before application.",
   });
 });
 

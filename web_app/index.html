@@ -107,7 +107,10 @@
         <p data-i18n="app_tagline"></p>
         <button class="btn btn-accent" id="home-new-diagnosis-btn" data-i18n="new_diagnosis"></button>
       </div>
-      <h3 data-i18n="recent_diagnoses"></h3>
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <h3 data-i18n="recent_diagnoses" style="margin-bottom:4px;"></h3>
+      </div>
+      <p class="history-tap-hint" data-i18n="history_tap_hint"></p>
       <div id="home-history-list"></div>
     </section>
 
@@ -166,8 +169,17 @@
     </section>
 
     <section class="screen" id="screen-result">
-      <div class="topbar"><button class="back" data-back-to="screen-input" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
+      <div class="topbar"><button class="back" data-back-to="screen-home" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
       <div class="stepper"><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div></div>
+
+      <!-- AI Disclaimer Banner -->
+      <div class="ai-disclaimer-banner">
+        <span class="icon">&#9888;&#65039;</span>
+        <div class="disclaimer-text">
+          <strong data-i18n="ai_disclaimer_title"></strong>
+          <span data-i18n="ai_disclaimer_warning"></span>
+        </div>
+      </div>
 
       <div id="ai-vision-container"></div>
 
@@ -191,6 +203,7 @@
 
     <section class="screen" id="screen-history">
       <div class="topbar"><h2 data-i18n="history_title" style="margin:0;"></h2></div>
+      <p class="history-tap-hint" data-i18n="history_tap_hint"></p>
       <div class="offline-badge" data-i18n="offline_notice"></div>
       <div id="history-full-list"></div>
     </section>

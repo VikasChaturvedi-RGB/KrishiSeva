@@ -271,22 +271,63 @@ const App = (() => {
 
   function renderHistoryRows(rows, targetId) {
     const target = document.getElementById(targetId);
+    if (!target) return;
     target.innerHTML = "";
     if (!rows || rows.length === 0) {
       target.innerHTML = `<p class="center-note">${I18N.t("no_diagnoses_yet")}</p>`;
       return;
     }
     rows.forEach((r) => {
-      const crop = state.crops.find((c) => c.id === r.cropId);
+      const crop = (state.crops || []).find((c) => c.id === r.cropId) || (window.KSH_DATA?.crops || []).find((c) => c.id === r.cropId);
+      const isHi = I18N.getCurrentLang() === "hi";
+      const cropName = crop ? (isHi ? (crop.name_hi || crop.name_en) : crop.name_en) : r.cropId;
       const row = document.createElement("div");
       row.className = "history-row";
       const { panels } = lccPanelsHtml(r.plantHealthIndex);
       row.innerHTML = `
         <div class="mini-lcc">${panels}</div>
         <div class="meta">
-          <div class="crop">${crop ? crop.name_en : r.cropId}</div>
+          <div class="crop">${cropName}</div>
           <div class="date">${new Date(r.createdAt).toLocaleDateString()} · ${r.plantHealthIndex}/100</div>
-        </div>`;
+        </div>
+        <div class="chevron">&#8250;</div>`;
+
+      row.addEventListener("click", () => {
+        let matches = r.matches;
+        let visionAnalysis = r.visionAnalysis;
+        let visionNote = r.visionNote;
+
+        if ((!matches || matches.length === 0) && window.KSH_DATA?.diagnoseOffline) {
+          const offlineRes = window.KSH_DATA.diagnoseOffline(
+            r.cropId,
+            r.symptoms || [],
+            r.acreage,
+            r.organ,
+            r.inputMode === "photo"
+          );
+          matches = offlineRes.matches;
+          visionAnalysis = visionAnalysis || offlineRes.visionAnalysis;
+          visionNote = visionNote || offlineRes.visionNote;
+        }
+
+        const fullRecord = {
+          ok: true,
+          cropId: r.cropId,
+          cropName: cropName,
+          organ: r.organ,
+          inputMode: r.inputMode || "symptom_checklist",
+          plantHealthIndex: r.plantHealthIndex,
+          matches: matches || [],
+          visionNote: visionNote,
+          visionAnalysis: visionAnalysis,
+          dosageScalingNote: r.dosageScalingNote,
+        };
+
+        state.lastResult = fullRecord;
+        renderResult(fullRecord);
+        show("screen-result");
+      });
+
       target.appendChild(row);
     });
   }
@@ -322,8 +363,8 @@ const App = (() => {
     });
   }
 
-  // ---------------- Diagnosis flow: organ + input mode ----------------
-  function bindInputScreen() {
+  // ---------------- Diagnosis flow: organ & input ----------------
+  function bindOrganAndInputScreen() {
     document.querySelectorAll(".organ-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".organ-btn").forEach((b) => b.classList.remove("selected"));
@@ -332,60 +373,88 @@ const App = (() => {
       });
     });
 
-    document.getElementById("mode-checklist-btn").addEventListener("click", () => {
-      document.getElementById("sign-checklist-block").style.display = "block";
-      document.getElementById("photo-block").style.display = "none";
-      state.photoBase64 = null;
-      renderSignChips();
-    });
-    document.getElementById("mode-photo-btn").addEventListener("click", () => {
-      document.getElementById("photo-block").style.display = "block";
-      document.getElementById("sign-checklist-block").style.display = "none";
-      state.selectedSignIds.clear();
-    });
+    const checklistBtn = document.getElementById("mode-checklist-btn");
+    const photoBtn = document.getElementById("mode-photo-btn");
+    const checklistBlock = document.getElementById("sign-checklist-block");
+    const photoBlock = document.getElementById("photo-block");
 
-    document.getElementById("photo-file-input").addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result;
-        state.photoMediaType = file.type;
-        state.photoBase64 = result.split(",")[1];
-        const preview = document.getElementById("photo-preview");
-        preview.src = result;
-        preview.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    });
+    if (checklistBtn) {
+      checklistBtn.addEventListener("click", () => {
+        checklistBtn.classList.remove("btn-secondary");
+        checklistBtn.classList.add("btn-primary");
+        photoBtn.classList.remove("btn-primary");
+        photoBtn.classList.add("btn-secondary");
+        checklistBlock.style.display = "block";
+        photoBlock.style.display = "none";
+        renderSignList();
+      });
+    }
 
-    document.getElementById("acreage-input").addEventListener("input", (e) => {
-      state.acreage = e.target.value ? Number(e.target.value) : null;
-    });
+    if (photoBtn) {
+      photoBtn.addEventListener("click", () => {
+        photoBtn.classList.remove("btn-secondary");
+        photoBtn.classList.add("btn-primary");
+        checklistBtn.classList.remove("btn-primary");
+        checklistBtn.classList.add("btn-secondary");
+        photoBlock.style.display = "block";
+        checklistBlock.style.display = "none";
+      });
+    }
 
-    document.getElementById("get-diagnosis-btn").addEventListener("click", runDiagnosis);
+    const fileInput = document.getElementById("photo-file-input");
+    const preview = document.getElementById("photo-preview");
+    if (fileInput) {
+      fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        state.photoMediaType = file.type || "image/jpeg";
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          state.photoBase64 = dataUrl.split(",")[1];
+          if (preview) {
+            preview.src = dataUrl;
+            preview.style.display = "block";
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const acreageInput = document.getElementById("acreage-input");
+    if (acreageInput) {
+      acreageInput.addEventListener("input", () => {
+        const v = parseFloat(acreageInput.value);
+        state.acreage = !isNaN(v) && v > 0 ? v : null;
+      });
+    }
+
+    const getDiagBtn = document.getElementById("get-diagnosis-btn");
+    if (getDiagBtn) {
+      getDiagBtn.addEventListener("click", runDiagnosis);
+    }
   }
 
-  function renderSignChips() {
+  function renderSignList() {
     const list = document.getElementById("sign-list");
     if (!list) return;
     if ((!state.signs || state.signs.length === 0) && window.KSH_DATA) {
       state.signs = window.KSH_DATA.signs;
     }
     list.innerHTML = "";
-    state.signs.forEach((sign) => {
+    state.signs.forEach((s) => {
       const chip = document.createElement("div");
       chip.className = "sign-chip";
-      if (state.selectedSignIds.has(sign.id)) {
-        chip.classList.add("selected");
-      }
-      chip.innerHTML = `<div class="box"></div><span class="label">${sign.label_hi || sign.label_en}</span>`;
+      if (state.selectedSignIds.has(s.id)) chip.classList.add("selected");
+      chip.innerHTML = `
+        <div class="box"></div>
+        <span class="label">${I18N.getCurrentLang() === "hi" ? s.label_hi : s.label_en}</span>`;
       chip.addEventListener("click", () => {
-        if (state.selectedSignIds.has(sign.id)) {
-          state.selectedSignIds.delete(sign.id);
+        if (state.selectedSignIds.has(s.id)) {
+          state.selectedSignIds.delete(s.id);
           chip.classList.remove("selected");
         } else {
-          state.selectedSignIds.add(sign.id);
+          state.selectedSignIds.add(s.id);
           chip.classList.add("selected");
         }
       });
@@ -424,6 +493,7 @@ const App = (() => {
         organ: state.selectedOrgan,
         stateCode: state.selectedStateCode,
         acreage: state.acreage,
+        lang: I18N.getCurrentLang(),
       };
       if (usingPhoto) {
         payload.imageBase64 = state.photoBase64;
@@ -448,15 +518,17 @@ const App = (() => {
 
   // ---------------- Result screen ----------------
   function renderResult(result) {
+    const currentLang = I18N.getCurrentLang();
+    const isHi = currentLang === "hi";
+
     // Render AI Vision card if visual diagnosis was performed
     const visionWrap = document.getElementById("ai-vision-container");
     if (visionWrap) {
       if (result.inputMode === "photo" || result.visionAnalysis || result.visionNote) {
         const va = result.visionAnalysis || {};
-        const isHi = I18N.getCurrentLang() === "hi";
-        const issueName = (isHi ? va.detectedIssueHi : va.detectedIssue) || va.detectedIssue || (result.matches?.[0]?.name_hi || result.matches?.[0]?.name_en) || "Identified Plant Issue";
+        const issueName = va.detectedIssueLocalized || (isHi ? va.detectedIssueHi : va.detectedIssue) || va.detectedIssue || (result.matches?.[0]?.name_hi || result.matches?.[0]?.name_en) || "Identified Plant Issue";
         const pathogen = va.pathogenOrPest ? `(${va.pathogenOrPest})` : "";
-        const desc = (isHi ? va.visualDescriptionHi : va.visualDescription) || va.visualDescription || result.visionNote || "";
+        const desc = va.visualDescriptionLocalized || (isHi ? va.visualDescriptionHi : va.visualDescription) || va.visualDescription || result.visionNote || "";
         const conf = va.confidence || result.matches?.[0]?.confidence || 85;
         const imgTag = state.photoBase64 ? `<img src="data:${state.photoMediaType || 'image/jpeg'};base64,${state.photoBase64}" class="ai-vision-thumb" alt="Crop Photo">` : "";
 
@@ -501,14 +573,18 @@ const App = (() => {
         const card = document.createElement("div");
         card.className = "issue-card";
         const details = m.details || {};
-        const tier1 = details.correction_foliar || details.ipm_cultural || details.cultural_control || "";
-        const tier2 = details.correction_soil || details.biological || "";
-        const tier3 = details.chemical_class_generic || "";
-        const symptoms = details.symptoms || "";
+        const va = result.visionAnalysis;
+
+        const tier1 = details.correction_foliar || details.ipm_cultural || details.cultural_control || va?.tier1_cultural_mineral_localized || va?.tier1_cultural_mineral || "";
+        const tier2 = details.correction_soil || details.biological || va?.tier2_biological_localized || va?.tier2_biological || "";
+        const tier3 = details.chemical_class_generic || va?.tier3_chemical_class_localized || va?.tier3_chemical_class || "";
+        const symptoms = details.symptoms || va?.visualDescriptionLocalized || va?.visualDescription || "";
+        const title = isHi ? (m.name_hi || m.name_en) : (m.name_en || m.name_hi);
+
         card.innerHTML = `
           <span class="type-tag ${m.type}">${m.type.replace("_", " ")}</span>
           <span class="confidence">${m.confidence}% ${I18N.t("confidence_label")}</span>
-          <h3>${m.name_hi || m.name_en}</h3>
+          <h3>${title}</h3>
           ${symptoms ? `<p class="symptoms">${symptoms}</p>` : ""}
           <p class="eyebrow" style="margin-top:10px;">${I18N.t("nutrition_first_hierarchy")}</p>
           <div class="hierarchy">
@@ -680,7 +756,7 @@ const App = (() => {
     bindLanguageScreen();
     bindAuthScreens();
     bindLocationScreen();
-    bindInputScreen();
+    bindOrganAndInputScreen();
     bindProfileScreen();
     bindNav();
 
@@ -694,7 +770,7 @@ const App = (() => {
     }
   }
 
-  return { init, state, show };
+  return { init, state, show, renderHome, renderResult };
 })();
 
 if (typeof window !== "undefined") {

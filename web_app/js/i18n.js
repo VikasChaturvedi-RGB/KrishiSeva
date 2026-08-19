@@ -67,7 +67,10 @@ const I18N = (() => {
       ai_analysing_title: "AI फोटो का विश्लेषण कर रहा है...",
       ai_analysing_desc: "कीट, रोग और पोषक तत्वों की कमी की पहचान की जा रही है",
       ai_vision_diagnosis: "AI दृश्य निदान",
-      ai_findings_label: "दृश्य निष्कर्ष:"
+      ai_findings_label: "दृश्य निष्कर्ष:",
+      ai_disclaimer_title: "महत्वपूर्ण AI परामर्श सूचना",
+      ai_disclaimer_warning: "यह AI द्वारा उत्पन्न सलाह है और AI से त्रुटि हो सकती है — किसी भी रासायनिक दवा या मात्रा का प्रयोग करने से पहले अपने नजदीकी कृषि विज्ञान केंद्र (KVK) या राज्य कृषि अधिकारी से अवश्य पुष्टि करें।",
+      history_tap_hint: "विस्तृत निदान व सलाह देखने के लिए किसी भी केस पर टैप करें"
     },
     en: {
       app_name: "Krishi Swasthya Sahayak",
@@ -132,18 +135,29 @@ const I18N = (() => {
       ai_analysing_title: "AI is analysing crop photo...",
       ai_analysing_desc: "Identifying pests, diseases, and nutrient stress...",
       ai_vision_diagnosis: "AI Vision Assessment",
-      ai_findings_label: "Visual Findings:"
+      ai_findings_label: "Visual Findings:",
+      ai_disclaimer_title: "Important AI Advisory Notice",
+      ai_disclaimer_warning: "AI-generated advisory. AI can make mistakes — always cross-verify chemical recommendations and dosages with your local KVK or Agriculture Officer before application.",
+      history_tap_hint: "Tap any case to view full diagnosis & recommendations"
     }
   };
 
   async function load(langCode) {
     if (cache[langCode]) {
       dict = cache[langCode];
+    } else if (fallbackDicts[langCode]) {
+      dict = fallbackDicts[langCode];
+      cache[langCode] = dict;
     } else {
       try {
-        const res = await fetch(`locales/${langCode}.json`);
-        dict = await res.json();
-        cache[langCode] = dict;
+        if (typeof window !== "undefined" && window.location && window.location.origin) {
+          const res = await fetch(`locales/${langCode}.json`);
+          dict = await res.json();
+          cache[langCode] = dict;
+        } else {
+          dict = fallbackDicts.hi;
+          cache[langCode] = dict;
+        }
       } catch {
         dict = fallbackDicts[langCode] || fallbackDicts.hi || {};
         cache[langCode] = dict;

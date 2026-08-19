@@ -155,7 +155,23 @@ const API = (() => {
 
   async function safeDiagnose(payload) {
     try {
-      return await request("/diagnosis", { method: "POST", body: payload, auth: true });
+      const res = await request("/diagnosis", { method: "POST", body: payload, auth: true });
+      // Persist full result to local history cache
+      const history = JSON.parse(localStorage.getItem("ksh_history_cache") || "[]");
+      history.unshift({
+        id: "hist_" + Date.now(),
+        cropId: payload.cropId,
+        organ: payload.organ,
+        inputMode: res.inputMode || (payload.imageBase64 ? "photo" : "symptom_checklist"),
+        plantHealthIndex: res.plantHealthIndex,
+        matches: res.matches || [],
+        visionNote: res.visionNote,
+        visionAnalysis: res.visionAnalysis,
+        dosageScalingNote: res.dosageScalingNote,
+        createdAt: new Date().toISOString(),
+      });
+      localStorage.setItem("ksh_history_cache", JSON.stringify(history.slice(0, 50)));
+      return res;
     } catch (e) {
       // Offline fallback: Run client-side rule matcher & visual heuristic
       if (window.KSH_DATA && window.KSH_DATA.diagnoseOffline) {
@@ -172,7 +188,12 @@ const API = (() => {
           id: "hist_" + Date.now(),
           cropId: payload.cropId,
           organ: payload.organ,
+          inputMode: result.inputMode || (payload.imageBase64 ? "photo" : "symptom_checklist"),
           plantHealthIndex: result.plantHealthIndex,
+          matches: result.matches || [],
+          visionNote: result.visionNote,
+          visionAnalysis: result.visionAnalysis,
+          dosageScalingNote: result.dosageScalingNote,
           createdAt: new Date().toISOString(),
         });
         localStorage.setItem("ksh_history_cache", JSON.stringify(history.slice(0, 50)));
