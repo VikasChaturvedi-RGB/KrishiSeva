@@ -63,7 +63,11 @@ const I18N = (() => {
       no_signs_selected: "कम से कम एक लक्षण चुनें, या फोटो जोड़ें",
       kvk_helpline: "किसान कॉल सेंटर: 1800-180-1551",
       disclaimer_short: "केवल संदर्भ मार्गदर्शन — अपने स्थानीय कृषि विशेषज्ञ का विकल्प नहीं।",
-      acreage_scaling_prefix: "आपके खेत के आकार के अनुसार:"
+      acreage_scaling_prefix: "आपके खेत के आकार के अनुसार:",
+      ai_analysing_title: "AI फोटो का विश्लेषण कर रहा है...",
+      ai_analysing_desc: "कीट, रोग और पोषक तत्वों की कमी की पहचान की जा रही है",
+      ai_vision_diagnosis: "AI दृश्य निदान",
+      ai_findings_label: "दृश्य निष्कर्ष:"
     },
     en: {
       app_name: "Krishi Swasthya Sahayak",
@@ -124,7 +128,11 @@ const I18N = (() => {
       no_signs_selected: "Please select at least one sign, or provide a photo",
       kvk_helpline: "Kisan Call Centre: 1800-180-1551 (toll-free)",
       disclaimer_short: "Reference guidance only — not a substitute for your local agronomist.",
-      acreage_scaling_prefix: "Scaled for your field size:"
+      acreage_scaling_prefix: "Scaled for your field size:",
+      ai_analysing_title: "AI is analysing crop photo...",
+      ai_analysing_desc: "Identifying pests, diseases, and nutrient stress...",
+      ai_vision_diagnosis: "AI Vision Assessment",
+      ai_findings_label: "Visual Findings:"
     }
   };
 

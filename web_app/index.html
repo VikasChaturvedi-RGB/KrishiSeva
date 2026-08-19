@@ -155,12 +155,22 @@
       </div>
 
       <div class="field-error" id="input-error"></div>
+
+      <div class="ai-scanner-box" id="ai-scanner-box">
+        <div class="ai-scanner-pulse"></div>
+        <h4 data-i18n="ai_analysing_title">AI फोटो का विश्लेषण कर रहा है...</h4>
+        <p data-i18n="ai_analysing_desc">कीट, रोग और पोषक तत्वों की कमी की पहचान की जा रही है</p>
+      </div>
+
       <button class="btn btn-primary" id="get-diagnosis-btn" data-i18n="get_diagnosis" style="margin-top:8px;"></button>
     </section>
 
     <section class="screen" id="screen-result">
       <div class="topbar"><button class="back" data-back-to="screen-input" data-i18n-aria-label="back" aria-label="Back">&#8592;</button></div>
       <div class="stepper"><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div></div>
+
+      <div id="ai-vision-container"></div>
+
       <h2 data-i18n="plant_health_index"></h2>
       <div class="lcc" id="result-lcc-wrap">
         <div id="result-lcc" style="display:flex; width:100%; height:100%;"></div>

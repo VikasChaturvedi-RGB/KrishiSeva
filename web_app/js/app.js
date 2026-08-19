@@ -396,6 +396,8 @@ const App = (() => {
   async function runDiagnosis() {
     const err = document.getElementById("input-error");
     const usingPhoto = document.getElementById("photo-block").style.display === "block";
+    const scannerBox = document.getElementById("ai-scanner-box");
+
     if (usingPhoto && !state.photoBase64) {
       err.textContent = I18N.t("no_signs_selected");
       err.classList.add("visible");
@@ -412,6 +414,10 @@ const App = (() => {
     btn.disabled = true;
     btn.textContent = "…";
 
+    if (usingPhoto && scannerBox) {
+      scannerBox.classList.add("active");
+    }
+
     try {
       const payload = {
         cropId: state.selectedCropId,
@@ -421,7 +427,7 @@ const App = (() => {
       };
       if (usingPhoto) {
         payload.imageBase64 = state.photoBase64;
-        payload.imageMediaType = state.photoMediaType;
+        payload.imageMediaType = state.photoMediaType || "image/jpeg";
       } else {
         payload.signIds = Array.from(state.selectedSignIds);
       }
@@ -436,51 +442,95 @@ const App = (() => {
     } finally {
       btn.disabled = false;
       btn.textContent = I18N.t("get_diagnosis");
+      if (scannerBox) scannerBox.classList.remove("active");
     }
   }
 
   // ---------------- Result screen ----------------
   function renderResult(result) {
+    // Render AI Vision card if visual diagnosis was performed
+    const visionWrap = document.getElementById("ai-vision-container");
+    if (visionWrap) {
+      if (result.inputMode === "photo" || result.visionAnalysis || result.visionNote) {
+        const va = result.visionAnalysis || {};
+        const isHi = I18N.getCurrentLang() === "hi";
+        const issueName = (isHi ? va.detectedIssueHi : va.detectedIssue) || va.detectedIssue || (result.matches?.[0]?.name_hi || result.matches?.[0]?.name_en) || "Identified Plant Issue";
+        const pathogen = va.pathogenOrPest ? `(${va.pathogenOrPest})` : "";
+        const desc = (isHi ? va.visualDescriptionHi : va.visualDescription) || va.visualDescription || result.visionNote || "";
+        const conf = va.confidence || result.matches?.[0]?.confidence || 85;
+        const imgTag = state.photoBase64 ? `<img src="data:${state.photoMediaType || 'image/jpeg'};base64,${state.photoBase64}" class="ai-vision-thumb" alt="Crop Photo">` : "";
+
+        visionWrap.innerHTML = `
+          <div class="ai-vision-card">
+            <div class="ai-vision-header">
+              <span class="ai-vision-badge"><span aria-hidden="true">&#10024;</span> ${I18N.t("ai_vision_diagnosis")}</span>
+              <span class="confidence" style="float:none;">${conf}% ${I18N.t("confidence_label")}</span>
+            </div>
+            <div class="ai-vision-body">
+              ${imgTag}
+              <div class="ai-vision-findings">
+                <h4>${issueName}</h4>
+                ${pathogen ? `<div class="pathogen">${pathogen}</div>` : ""}
+              </div>
+            </div>
+            ${desc ? `<div class="ai-vision-description"><strong>${I18N.t("ai_findings_label")}</strong> ${desc}</div>` : ""}
+          </div>
+        `;
+        visionWrap.style.display = "block";
+      } else {
+        visionWrap.innerHTML = "";
+        visionWrap.style.display = "none";
+      }
+    }
+
     const { panels, markerLeft } = lccPanelsHtml(result.plantHealthIndex);
-    document.getElementById("result-lcc").innerHTML = panels;
-    document.getElementById("result-lcc-marker").style.left = markerLeft;
-    document.getElementById("result-score").textContent = result.plantHealthIndex;
+    const lccEl = document.getElementById("result-lcc");
+    if (lccEl) lccEl.innerHTML = panels;
+    const lccMarker = document.getElementById("result-lcc-marker");
+    if (lccMarker) lccMarker.style.left = markerLeft;
+    const scoreEl = document.getElementById("result-score");
+    if (scoreEl) scoreEl.textContent = result.plantHealthIndex;
 
     const list = document.getElementById("result-issues");
-    list.innerHTML = "";
-    if (!result.matches || result.matches.length === 0) {
-      list.innerHTML = `<p class="center-note">${I18N.t("no_diagnoses_yet")}</p>`;
+    if (list) {
+      list.innerHTML = "";
+      if (!result.matches || result.matches.length === 0) {
+        list.innerHTML = `<p class="center-note">${I18N.t("no_diagnoses_yet")}</p>`;
+      }
+      (result.matches || []).forEach((m) => {
+        const card = document.createElement("div");
+        card.className = "issue-card";
+        const details = m.details || {};
+        const tier1 = details.correction_foliar || details.ipm_cultural || details.cultural_control || "";
+        const tier2 = details.correction_soil || details.biological || "";
+        const tier3 = details.chemical_class_generic || "";
+        const symptoms = details.symptoms || "";
+        card.innerHTML = `
+          <span class="type-tag ${m.type}">${m.type.replace("_", " ")}</span>
+          <span class="confidence">${m.confidence}% ${I18N.t("confidence_label")}</span>
+          <h3>${m.name_hi || m.name_en}</h3>
+          ${symptoms ? `<p class="symptoms">${symptoms}</p>` : ""}
+          <p class="eyebrow" style="margin-top:10px;">${I18N.t("nutrition_first_hierarchy")}</p>
+          <div class="hierarchy">
+            ${tier1 ? `<div class="level tier-1"><div class="tier-label">${I18N.t("tier1_label")}</div><p>${tier1}</p></div>` : ""}
+            ${tier2 ? `<div class="level tier-2"><div class="tier-label">${I18N.t("tier2_label")}</div><p>${tier2}</p></div>` : ""}
+            ${tier3 ? `<div class="level tier-3"><div class="tier-label">${I18N.t("tier3_label")}</div><p>${tier3}</p></div>` : ""}
+          </div>
+        `;
+        list.appendChild(card);
+      });
     }
-    (result.matches || []).forEach((m) => {
-      const card = document.createElement("div");
-      card.className = "issue-card";
-      const details = m.details || {};
-      const tier1 = details.correction_foliar || details.ipm_cultural || details.cultural_control || "";
-      const tier2 = details.correction_soil || details.biological || "";
-      const tier3 = details.chemical_class_generic || "";
-      const symptoms = details.symptoms || "";
-      card.innerHTML = `
-        <span class="type-tag ${m.type}">${m.type.replace("_", " ")}</span>
-        <span class="confidence">${m.confidence}% ${I18N.t("confidence_label")}</span>
-        <h3>${m.name_hi || m.name_en}</h3>
-        ${symptoms ? `<p class="symptoms">${symptoms}</p>` : ""}
-        <p class="eyebrow" style="margin-top:10px;">${I18N.t("nutrition_first_hierarchy")}</p>
-        <div class="hierarchy">
-          ${tier1 ? `<div class="level tier-1"><div class="tier-label">${I18N.t("tier1_label")}</div><p>${tier1}</p></div>` : ""}
-          ${tier2 ? `<div class="level tier-2"><div class="tier-label">${I18N.t("tier2_label")}</div><p>${tier2}</p></div>` : ""}
-          ${tier3 ? `<div class="level tier-3"><div class="tier-label">${I18N.t("tier3_label")}</div><p>${tier3}</p></div>` : ""}
-        </div>
-      `;
-      list.appendChild(card);
-    });
 
-    document.getElementById("chemical-caution-text").textContent = I18N.t("chemical_caution");
+    const cautionText = document.getElementById("chemical-caution-text");
+    if (cautionText) cautionText.textContent = I18N.t("chemical_caution");
     const scalingNote = document.getElementById("acreage-scaling-note");
-    if (result.dosageScalingNote) {
-      scalingNote.textContent = `${I18N.t("acreage_scaling_prefix")} ${result.dosageScalingNote}`;
-      scalingNote.style.display = "block";
-    } else {
-      scalingNote.style.display = "none";
+    if (scalingNote) {
+      if (result.dosageScalingNote) {
+        scalingNote.textContent = `${I18N.t("acreage_scaling_prefix")} ${result.dosageScalingNote}`;
+        scalingNote.style.display = "block";
+      } else {
+        scalingNote.style.display = "none";
+      }
     }
   }
 

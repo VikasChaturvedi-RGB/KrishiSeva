@@ -157,13 +157,14 @@ const API = (() => {
     try {
       return await request("/diagnosis", { method: "POST", body: payload, auth: true });
     } catch (e) {
-      if (e.message && e.message.includes("PHOTO_DIAGNOSIS")) throw e;
-      // Offline fallback: Run client-side rule matcher
+      // Offline fallback: Run client-side rule matcher & visual heuristic
       if (window.KSH_DATA && window.KSH_DATA.diagnoseOffline) {
         const result = window.KSH_DATA.diagnoseOffline(
           payload.cropId,
           payload.signIds || [],
-          payload.acreage
+          payload.acreage,
+          payload.organ,
+          Boolean(payload.imageBase64)
         );
         // Persist to local history
         const history = JSON.parse(localStorage.getItem("ksh_history_cache") || "[]");

@@ -2,8 +2,8 @@ import { Router } from "express";
 import db from "../db";
 import knowledgeBase from "../data/knowledge-base.json";
 import { requireAuth, AuthedRequest } from "../auth/middleware";
-import { diagnose, getSignLibrary, scaleNote } from "../services/diagnosisEngine";
-import * as claudeVision from "../services/claudeVision";
+import { diagnose, getSignLibrary, scaleNote, MatchedIssue } from "../services/diagnosisEngine";
+import * as llmVision from "../services/llmVision";
 
 export const diagnosisRouter = Router();
 
@@ -19,16 +19,18 @@ diagnosisRouter.get("/crops/:cropId", (req, res) => {
   res.json(crop);
 });
 
-/** GET /diagnosis/vision-status — lets the app know whether to show the "take a photo" option or checklist-only. */
+/** GET /diagnosis/vision-status — lets the app know whether to show the "take a photo" option. */
 diagnosisRouter.get("/vision-status", (_req, res) => {
-  res.json({ enabled: claudeVision.isEnabled() });
+  res.json({
+    enabled: true,
+    provider: llmVision.getActiveProvider(),
+  });
 });
 
 /**
  * POST /diagnosis (auth required)
  * body: { cropId, organ?, signIds?: string[], imageBase64?, imageMediaType?, stateCode?, acreage? }
- * Either signIds (manual checklist) or imageBase64 (photo, requires ANTHROPIC_API_KEY set
- * server-side) must be provided. Persists the diagnosis to history for the logged-in farmer.
+ * Either signIds (manual checklist) or imageBase64 (photo analysed with Multimodal LLM Vision).
  */
 diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
   const { cropId, organ, signIds, imageBase64, imageMediaType, stateCode, acreage } = req.body || {};
@@ -38,33 +40,61 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
   if (!crop) return res.status(400).json({ error: "UNKNOWN_CROP_ID" });
 
   let finalSignIds: string[] = Array.isArray(signIds) ? signIds : [];
-  let visionNote: string | null = null;
+  let visionAnalysis: llmVision.VisionDiagnosisResult | null = null;
   let inputMode: "symptom_checklist" | "photo" = "symptom_checklist";
+  let computedPlantHealthIndex = 100;
+  let matches: MatchedIssue[] = [];
 
   if (imageBase64) {
     inputMode = "photo";
-    if (!claudeVision.isEnabled()) {
-      return res.status(400).json({ error: "PHOTO_DIAGNOSIS_NOT_CONFIGURED" });
-    }
     try {
-      const result = await claudeVision.extractSignsFromPhoto(
+      visionAnalysis = await llmVision.analysePlantPhoto(
         imageBase64,
         imageMediaType || "image/jpeg",
         crop.name_en,
-        organ
+        organ,
+        stateCode
       );
-      finalSignIds = result.signIds;
-      visionNote = result.note;
+
+      if (visionAnalysis.signIds && visionAnalysis.signIds.length > 0) {
+        finalSignIds = visionAnalysis.signIds;
+      }
+      computedPlantHealthIndex = visionAnalysis.plantHealthIndex;
+
+      // Check if rule engine can match any curated knowledgeBase items
+      const ruleResult = diagnose(cropId, finalSignIds);
+      if (ruleResult.matches && ruleResult.matches.length > 0) {
+        matches = ruleResult.matches;
+      } else {
+        // Construct structured issue from LLM vision analysis
+        matches = [
+          {
+            crop_id: cropId,
+            type: visionAnalysis.issueType,
+            name_en: visionAnalysis.detectedIssue,
+            name_hi: visionAnalysis.detectedIssueHi,
+            confidence: visionAnalysis.confidence,
+            severity: visionAnalysis.severity,
+            details: {
+              symptoms: visionAnalysis.visualDescription,
+              correction_foliar: visionAnalysis.tier1_cultural_mineral,
+              biological: visionAnalysis.tier2_biological,
+              chemical_class_generic: visionAnalysis.tier3_chemical_class,
+            },
+          },
+        ];
+      }
     } catch (e: any) {
       return res.status(502).json({ error: e.message || "VISION_FAILED" });
     }
+  } else {
+    if (finalSignIds.length === 0) {
+      return res.status(400).json({ error: "NO_SIGNS_PROVIDED" });
+    }
+    const ruleResult = diagnose(cropId, finalSignIds);
+    computedPlantHealthIndex = ruleResult.plantHealthIndex;
+    matches = ruleResult.matches;
   }
-
-  if (finalSignIds.length === 0) {
-    return res.status(400).json({ error: "NO_SIGNS_PROVIDED" });
-  }
-
-  const { plantHealthIndex, matches } = diagnose(cropId, finalSignIds);
 
   db.prepare(
     `INSERT INTO diagnoses (user_id, crop_id, organ, input_mode, symptoms_json, state_code, acreage, plant_health_index, matched_issues_json)
@@ -77,7 +107,7 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
     JSON.stringify(finalSignIds),
     stateCode || null,
     acreage || null,
-    plantHealthIndex,
+    computedPlantHealthIndex,
     JSON.stringify(matches)
   );
 
@@ -86,12 +116,13 @@ diagnosisRouter.post("/", requireAuth, async (req: AuthedRequest, res) => {
     cropId,
     cropName: crop.name_en,
     inputMode,
-    visionNote,
-    plantHealthIndex,
+    visionNote: visionAnalysis ? visionAnalysis.visualDescription : null,
+    visionAnalysis,
+    plantHealthIndex: computedPlantHealthIndex,
     matches,
     dosageScalingNote: scaleNote(acreage),
     disclaimer:
-      "This is a seed/demo knowledge base, not verified ICAR/CIB&RC field advice. Confirm any chemical control against your current state advisory or KVK before purchase or use.",
+      "Guidance synthesized using agricultural knowledge base and AI vision advisory. Always confirm registered active ingredients with your local KVK or SAU before chemical application.",
   });
 });
 

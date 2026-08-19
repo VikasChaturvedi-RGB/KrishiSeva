@@ -248,6 +248,110 @@ p { margin: 0 0 12px; color: var(--ink-soft); }
 }
 .offline-badge.visible { display: block; }
 .skeleton { background: linear-gradient(90deg, var(--soil-line) 25%, var(--bg-card) 50%, var(--soil-line) 75%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: var(--radius-sm); height: 14px; }
+
+/* ---------- AI Multimodal Vision Analysis UI ---------- */
+.ai-vision-card {
+  border-radius: var(--radius-md);
+  border: 1.5px solid #2d6a4f;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  padding: 14px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(45, 106, 79, 0.08);
+}
+.ai-vision-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ai-vision-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #1b4332;
+  color: #d8f3dc;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.03em;
+}
+.ai-vision-body {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.ai-vision-thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--soil-line);
+  flex-shrink: 0;
+}
+.ai-vision-findings {
+  flex: 1;
+}
+.ai-vision-findings h4 {
+  font-size: 16px;
+  color: var(--soil-dark);
+  margin: 0 0 4px;
+}
+.ai-vision-findings .pathogen {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.ai-vision-description {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.45;
+  background: rgba(255,255,255,0.7);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(45, 106, 79, 0.3);
+}
+
+/* AI Scanner Loading State */
+.ai-scanner-box {
+  display: none;
+  background: var(--bg-card);
+  border: 1.5px solid var(--leaf-deep);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  text-align: center;
+  margin: 16px 0;
+}
+.ai-scanner-box.active {
+  display: block;
+}
+.ai-scanner-pulse {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: var(--leaf-bud);
+  border: 3px solid var(--leaf-deep);
+  position: relative;
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+  100% { transform: scale(0.9); opacity: 1; }
+}
+.ai-scanner-box h4 {
+  margin: 0 0 6px;
+  color: var(--leaf-deep);
+  font-size: 15px;
+}
+.ai-scanner-box p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
