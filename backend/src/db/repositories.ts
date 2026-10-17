@@ -878,3 +878,403 @@ export class FarmerActivityLogRepository {
   }
 }
 
+// -------------------------------------------------------------
+// 7. Mandi Prices, Government Schemes & Community Outbreaks Repositories
+// -------------------------------------------------------------
+export interface MandiPriceRecord {
+  id: string;
+  crop_code: string;
+  crop_name_en: string;
+  crop_name_hi: string;
+  variety: string;
+  mandi_name: string;
+  state: string;
+  district: string;
+  min_price_qtl: number;
+  modal_price_qtl: number;
+  max_price_qtl: number;
+  msp_price_qtl: number;
+  price_change_24h: number;
+  arrival_tonnes: number;
+  distance_km: number;
+  sell_hold_signal: 'STRONG_SELL' | 'HOLD_FOR_RISE' | 'SELL_AT_MSP';
+  advisory_en: string;
+  advisory_hi: string;
+  updated_at?: string;
+}
+
+export class MandiPriceRepository {
+  static listAll(cropCode?: string, state?: string, search?: string): MandiPriceRecord[] {
+    const db = getDb();
+    let sql = 'SELECT * FROM mandi_prices WHERE 1=1';
+    const params: any[] = [];
+
+    if (cropCode && cropCode !== 'ALL') {
+      const normalized = cropCode.replace(/^CROP_/, '').toUpperCase();
+      sql += ' AND (UPPER(crop_code) = ? OR UPPER(crop_code) = ?)';
+      params.push(normalized, `CROP_${normalized}`);
+    }
+    if (state && state !== 'ALL') {
+      sql += ' AND LOWER(state) = LOWER(?)';
+      params.push(state);
+    }
+    if (search) {
+      const q = `%${search}%`;
+      sql += ' AND (mandi_name LIKE ? OR district LIKE ? OR crop_name_en LIKE ? OR crop_name_hi LIKE ?)';
+      params.push(q, q, q, q);
+    }
+    sql += ' ORDER BY distance_km ASC, modal_price_qtl DESC';
+    return db.prepare(sql).all(...params) as unknown as MandiPriceRecord[];
+  }
+
+  static upsert(record: MandiPriceRecord): void {
+    const db = getDb();
+    const now = record.updated_at || new Date().toISOString();
+    db.prepare(`
+      INSERT OR REPLACE INTO mandi_prices (
+        id, crop_code, crop_name_en, crop_name_hi, variety, mandi_name, state, district,
+        min_price_qtl, modal_price_qtl, max_price_qtl, msp_price_qtl, price_change_24h,
+        arrival_tonnes, distance_km, sell_hold_signal, advisory_en, advisory_hi, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      record.id,
+      record.crop_code,
+      record.crop_name_en,
+      record.crop_name_hi,
+      record.variety,
+      record.mandi_name,
+      record.state,
+      record.district,
+      record.min_price_qtl,
+      record.modal_price_qtl,
+      record.max_price_qtl,
+      record.msp_price_qtl,
+      record.price_change_24h,
+      record.arrival_tonnes,
+      record.distance_km,
+      record.sell_hold_signal,
+      record.advisory_en,
+      record.advisory_hi,
+      now
+    );
+  }
+}
+
+export interface SchemeApplicationRecord {
+  id?: string;
+  reference_no?: string;
+  user_id?: string | null;
+  farmer_name: string;
+  mobile_number: string;
+  scheme_code: string;
+  scheme_name: string;
+  application_type: 'SCHEME_ENROLLMENT' | 'PMFBY_72H_CLAIM' | 'KCC_CREDIT_APPLICATION' | 'SOLAR_PUMP_SUBSIDY';
+  state: string;
+  district: string;
+  crop_name: string;
+  acreage: number;
+  estimated_benefit_inr: number;
+  claim_reason?: string | null;
+  diagnosis_id?: string | null;
+  status?: string;
+  created_at?: string;
+}
+
+export class SchemeApplicationRepository {
+  static create(data: SchemeApplicationRecord): SchemeApplicationRecord {
+    const db = getDb();
+    const id = data.id || crypto.randomUUID();
+    const refNo = data.reference_no || `KSS-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const now = data.created_at || new Date().toISOString();
+    const status = data.status || 'SUBMITTED_UNDER_VERIFICATION';
+
+    db.prepare(`
+      INSERT OR REPLACE INTO scheme_applications (
+        id, reference_no, user_id, farmer_name, mobile_number, scheme_code, scheme_name,
+        application_type, state, district, crop_name, acreage, estimated_benefit_inr,
+        claim_reason, diagnosis_id, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      refNo,
+      data.user_id || null,
+      data.farmer_name,
+      data.mobile_number,
+      data.scheme_code,
+      data.scheme_name,
+      data.application_type,
+      data.state,
+      data.district,
+      data.crop_name,
+      data.acreage,
+      data.estimated_benefit_inr,
+      data.claim_reason || null,
+      data.diagnosis_id || null,
+      status,
+      now
+    );
+
+    return {
+      ...data,
+      id,
+      reference_no: refNo,
+      status,
+      created_at: now
+    };
+  }
+
+  static listByMobileOrAll(mobileNumber?: string): SchemeApplicationRecord[] {
+    const db = getDb();
+    if (mobileNumber) {
+      return db.prepare(`
+        SELECT * FROM scheme_applications
+        WHERE mobile_number = ? OR mobile_number = ?
+        ORDER BY created_at DESC
+      `).all(mobileNumber, mobileNumber.replace(/^\+91/, '')) as unknown as SchemeApplicationRecord[];
+    }
+    return db.prepare('SELECT * FROM scheme_applications ORDER BY created_at DESC LIMIT 50').all() as unknown as SchemeApplicationRecord[];
+  }
+}
+
+export interface CommunityOutbreakRecord {
+  id?: string;
+  state: string;
+  district: string;
+  village: string;
+  crop_code: string;
+  crop_name_en: string;
+  crop_name_hi: string;
+  disease_name_en: string;
+  disease_name_hi: string;
+  severity: 'HIGH_ALERT' | 'MODERATE_WATCH' | 'CONTAINED';
+  affected_farms_count: number;
+  distance_km: number;
+  preventive_step_en: string;
+  preventive_step_hi: string;
+  reported_by: string;
+  verified_by_kvk: number;
+  created_at?: string;
+}
+
+export class CommunityOutbreakRepository {
+  static listAll(state?: string, cropCode?: string): CommunityOutbreakRecord[] {
+    const db = getDb();
+    let sql = 'SELECT * FROM community_outbreaks WHERE 1=1';
+    const params: any[] = [];
+    if (state && state !== 'ALL') {
+      sql += ' AND LOWER(state) = LOWER(?)';
+      params.push(state);
+    }
+    if (cropCode && cropCode !== 'ALL') {
+      const norm = cropCode.replace(/^CROP_/, '').toUpperCase();
+      sql += ' AND (UPPER(crop_code) = ? OR UPPER(crop_code) = ?)';
+      params.push(norm, `CROP_${norm}`);
+    }
+    sql += ' ORDER BY distance_km ASC, affected_farms_count DESC';
+    return db.prepare(sql).all(...params) as unknown as CommunityOutbreakRecord[];
+  }
+
+  static upsert(item: CommunityOutbreakRecord): CommunityOutbreakRecord {
+    const db = getDb();
+    const id = item.id || crypto.randomUUID();
+    const now = item.created_at || new Date().toISOString();
+    db.prepare(`
+      INSERT OR REPLACE INTO community_outbreaks (
+        id, state, district, village, crop_code, crop_name_en, crop_name_hi,
+        disease_name_en, disease_name_hi, severity, affected_farms_count, distance_km,
+        preventive_step_en, preventive_step_hi, reported_by, verified_by_kvk, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      item.state,
+      item.district,
+      item.village,
+      item.crop_code,
+      item.crop_name_en,
+      item.crop_name_hi,
+      item.disease_name_en,
+      item.disease_name_hi,
+      item.severity,
+      item.affected_farms_count,
+      item.distance_km,
+      item.preventive_step_en,
+      item.preventive_step_hi,
+      item.reported_by,
+      item.verified_by_kvk ?? 1,
+      now
+    );
+    return { ...item, id, created_at: now };
+  }
+}
+
+// -------------------------------------------------------------
+// 8. State-Wise Agro Challenges & CHC/Drone Bookings Repositories
+// -------------------------------------------------------------
+export interface StateAgroChallengeRecord {
+  id: string;
+  state_code: string;
+  state_name_en: string;
+  state_name_hi: string;
+  agro_climatic_zone_hi: string;
+  dominant_crops_hi: string;
+  soil_water_challenge_hi: string;
+  soil_water_challenge_en: string;
+  pest_disease_challenge_hi: string;
+  pest_disease_challenge_en: string;
+  market_policy_challenge_hi: string;
+  banned_pesticides_list: string;
+  tech_solution_title_hi: string;
+  tech_solution_title_en: string;
+  tech_solution_steps_hi: string[];
+  tech_solution_steps_en: string[];
+  chc_equipment_name_hi: string;
+  chc_subsidy_pct: number;
+  chc_rent_per_acre_inr: number;
+  estimated_roi_per_acre_inr: number;
+  state_scheme_highlight_hi: string;
+  updated_at?: string;
+}
+
+export class StateAgroChallengeRepository {
+  static listAll(stateCode?: string): StateAgroChallengeRecord[] {
+    const db = getDb();
+    let rows: any[] = [];
+    if (stateCode && stateCode !== 'ALL') {
+      rows = db
+        .prepare('SELECT * FROM state_agro_challenges WHERE UPPER(state_code) = UPPER(?)')
+        .all(stateCode) as any[];
+    }
+    if (rows.length === 0) {
+      rows = db.prepare('SELECT * FROM state_agro_challenges ORDER BY id ASC').all() as any[];
+    }
+    return rows.map((r) => ({
+      ...r,
+      tech_solution_steps_hi: JSON.parse(r.tech_solution_steps_hi || '[]'),
+      tech_solution_steps_en: JSON.parse(r.tech_solution_steps_en || '[]')
+    }));
+  }
+
+  static upsert(record: StateAgroChallengeRecord): void {
+    const db = getDb();
+    const now = record.updated_at || new Date().toISOString();
+    db.prepare(`
+      INSERT OR REPLACE INTO state_agro_challenges (
+        id, state_code, state_name_en, state_name_hi, agro_climatic_zone_hi, dominant_crops_hi,
+        soil_water_challenge_hi, soil_water_challenge_en, pest_disease_challenge_hi, pest_disease_challenge_en,
+        market_policy_challenge_hi, banned_pesticides_list, tech_solution_title_hi, tech_solution_title_en,
+        tech_solution_steps_hi, tech_solution_steps_en, chc_equipment_name_hi, chc_subsidy_pct,
+        chc_rent_per_acre_inr, estimated_roi_per_acre_inr, state_scheme_highlight_hi, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      record.id,
+      record.state_code,
+      record.state_name_en,
+      record.state_name_hi,
+      record.agro_climatic_zone_hi,
+      record.dominant_crops_hi,
+      record.soil_water_challenge_hi,
+      record.soil_water_challenge_en,
+      record.pest_disease_challenge_hi,
+      record.pest_disease_challenge_en,
+      record.market_policy_challenge_hi,
+      record.banned_pesticides_list,
+      record.tech_solution_title_hi,
+      record.tech_solution_title_en,
+      JSON.stringify(record.tech_solution_steps_hi || []),
+      JSON.stringify(record.tech_solution_steps_en || []),
+      record.chc_equipment_name_hi,
+      record.chc_subsidy_pct,
+      record.chc_rent_per_acre_inr,
+      record.estimated_roi_per_acre_inr,
+      record.state_scheme_highlight_hi,
+      now
+    );
+  }
+}
+
+export interface ChcMachineryBookingRecord {
+  id?: string;
+  booking_ref?: string;
+  farmer_name: string;
+  mobile_number: string;
+  state_code: string;
+  state_name_hi: string;
+  district: string;
+  crop_name: string;
+  acreage: number;
+  intervention_type:
+    | 'KISAN_DRONE_SPRAY'
+    | 'HAPPY_SEEDER_PUSA_DECOMPOSER'
+    | 'BBF_TRACTOR_PLANTER'
+    | 'BIO_IPM_KIT'
+    | 'SOLAR_DRIP_FERTIGATION'
+    | 'ANTI_HAIL_OR_LIME_KIT';
+  equipment_name_hi: string;
+  scheduled_date: string;
+  gross_cost_inr: number;
+  subsidy_amount_inr: number;
+  net_farmer_payable_inr: number;
+  carbon_or_water_reward_hi: string;
+  status?: string;
+  created_at?: string;
+}
+
+export class ChcMachineryBookingRepository {
+  static create(data: ChcMachineryBookingRecord): ChcMachineryBookingRecord {
+    const db = getDb();
+    const id = data.id || crypto.randomUUID();
+    const bookingRef =
+      data.booking_ref || `CHC-${data.state_code}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const now = data.created_at || new Date().toISOString();
+    const status = data.status || 'CONFIRMED_CHC_ALLOCATED';
+
+    db.prepare(`
+      INSERT OR REPLACE INTO chc_machinery_bookings (
+        id, booking_ref, farmer_name, mobile_number, state_code, state_name_hi,
+        district, crop_name, acreage, intervention_type, equipment_name_hi,
+        scheduled_date, gross_cost_inr, subsidy_amount_inr, net_farmer_payable_inr,
+        carbon_or_water_reward_hi, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      bookingRef,
+      data.farmer_name,
+      data.mobile_number,
+      data.state_code,
+      data.state_name_hi,
+      data.district,
+      data.crop_name,
+      data.acreage,
+      data.intervention_type,
+      data.equipment_name_hi,
+      data.scheduled_date,
+      data.gross_cost_inr,
+      data.subsidy_amount_inr,
+      data.net_farmer_payable_inr,
+      data.carbon_or_water_reward_hi,
+      status,
+      now
+    );
+
+    return {
+      ...data,
+      id,
+      booking_ref: bookingRef,
+      status,
+      created_at: now
+    };
+  }
+
+  static listByStateOrAll(stateCode?: string): ChcMachineryBookingRecord[] {
+    const db = getDb();
+    if (stateCode && stateCode !== 'ALL') {
+      return db
+        .prepare('SELECT * FROM chc_machinery_bookings WHERE UPPER(state_code) = UPPER(?) ORDER BY created_at DESC')
+        .all(stateCode) as unknown as ChcMachineryBookingRecord[];
+    }
+    return db
+      .prepare('SELECT * FROM chc_machinery_bookings ORDER BY created_at DESC LIMIT 30')
+      .all() as unknown as ChcMachineryBookingRecord[];
+  }
+}
+

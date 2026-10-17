@@ -7,6 +7,7 @@ import { PdfPrescriptionService } from '../services/pdf-prescription/pdfService'
 import { AppDatabase } from '../db/database';
 import { DatabaseSeeder } from '../db/seeder';
 import { InventoryRepository, AuditRepository, FarmerActivityLogRepository } from '../db/repositories';
+import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
 import fs from 'fs';
 import path from 'path';
 
@@ -519,5 +520,167 @@ router.get('/admin/farmer-logs/:phoneNumber', requireAdmin, (req: Request, res: 
     count: logs.length,
     logs
   });
+});
+
+// -------------------------------------------------------------
+// 8. INDIAN FARMER MARKET STUDY ECOSYSTEM SERVICES
+//    (Mandi Bhav, Spray Weather, Crop Calendar & NPK, Sarkari Schemes, Kisan e-Mitra Voice)
+// -------------------------------------------------------------
+
+// 8.1 Real-Time e-NAM / APMC Mandi Prices & Net Profit Realization Calculator
+router.get('/market/mandi-prices', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getMandiIntelligence({
+      crop: req.query.crop ? String(req.query.crop) : undefined,
+      state: req.query.state ? String(req.query.state) : undefined,
+      search: req.query.search ? String(req.query.search) : undefined,
+      quantityQtl: req.query.quantityQtl ? Number(req.query.quantityQtl) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'MANDI_ERROR', message: err.message });
+  }
+});
+
+// 8.2 Hyperlocal IMD Weather, Spray Suitability Window & Irrigation Advisory
+router.get('/weather/spray-advisory', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getHyperlocalWeatherAndSprayWindow({
+      state: req.query.state ? String(req.query.state) : undefined,
+      district: req.query.district ? String(req.query.district) : undefined,
+      crop: req.query.crop ? String(req.query.crop) : undefined,
+      windSpeedKmh: req.query.windSpeedKmh ? Number(req.query.windSpeedKmh) : undefined,
+      rainProbPct: req.query.rainProbPct ? Number(req.query.rainProbPct) : undefined,
+      tempC: req.query.tempC ? Number(req.query.tempC) : undefined,
+      humidityPct: req.query.humidityPct ? Number(req.query.humidityPct) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'WEATHER_SPRAY_ERROR', message: err.message });
+  }
+});
+
+// 8.3 Scientific Crop Calendar & Soil-Linked NPK Fertilizer Bag Calculator
+router.get('/advisory/crop-calendar', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getCropCalendarAndNpkCalculator({
+      crop: req.query.crop ? String(req.query.crop) : undefined,
+      acreage: req.query.acreage ? Number(req.query.acreage) : undefined,
+      sowingDate: req.query.sowingDate ? String(req.query.sowingDate) : undefined,
+      soilN: req.query.soilN ? Number(req.query.soilN) : undefined,
+      soilP: req.query.soilP ? Number(req.query.soilP) : undefined,
+      soilK: req.query.soilK ? Number(req.query.soilK) : undefined,
+      soilZn: req.query.soilZn ? Number(req.query.soilZn) : undefined,
+      soilPh: req.query.soilPh ? Number(req.query.soilPh) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'CROP_CALENDAR_ERROR', message: err.message });
+  }
+});
+
+router.post('/advisory/fertilizer-calculator', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getCropCalendarAndNpkCalculator(req.body || {});
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'FERTILIZER_CALC_ERROR', message: err.message });
+  }
+});
+
+// 8.4 Sarkari Yojana, KCC Limit Calculator & PMFBY 72-Hour Crop Damage Claim
+router.get('/schemes/eligibility', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getGovernmentSchemesAndKcc({
+      state: req.query.state ? String(req.query.state) : undefined,
+      district: req.query.district ? String(req.query.district) : undefined,
+      acreage: req.query.acreage ? Number(req.query.acreage) : undefined,
+      crop: req.query.crop ? String(req.query.crop) : undefined,
+      mobileNumber: req.query.mobileNumber ? String(req.query.mobileNumber) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'SCHEMES_ERROR', message: err.message });
+  }
+});
+
+router.post('/schemes/claim', (req: Request, res: Response) => {
+  const user = extractUser(req);
+  try {
+    const result = FarmerEcosystemService.submitSchemeOrInsuranceClaim({
+      ...req.body,
+      userId: req.body.userId || user?.userId
+    });
+    return res.status(201).json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'CLAIM_SUBMIT_ERROR', message: err.message });
+  }
+});
+
+// 8.5 Hyperlocal Community Disease Outbreak Radar & Voice Kisan e-Mitra AI
+router.get('/community/outbreaks', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getOutbreakRadar({
+      state: req.query.state ? String(req.query.state) : undefined,
+      crop: req.query.crop ? String(req.query.crop) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'OUTBREAK_RADAR_ERROR', message: err.message });
+  }
+});
+
+router.post('/community/outbreaks', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.reportCommunityOutbreak(req.body || {});
+    return res.status(201).json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'OUTBREAK_REPORT_ERROR', message: err.message });
+  }
+});
+
+router.post('/assistant/ask', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.askKisanEMitra({
+      query: String(req.body.query || ''),
+      language: req.body.language ? String(req.body.language) : 'hi',
+      crop: req.body.crop ? String(req.body.crop) : undefined,
+      state: req.body.state ? String(req.body.state) : undefined,
+      acreage: req.body.acreage ? Number(req.body.acreage) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'ASSISTANT_ERROR', message: err.message });
+  }
+});
+
+// 8.6 State-Wise Agro-Climatic Challenges & CHC/Drone Tech Intervention Booking
+router.get('/states/challenges', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.getStateWiseChallengesAndTechSolutions({
+      stateCode: req.query.state ? String(req.query.state) : undefined,
+      acreage: req.query.acreage ? Number(req.query.acreage) : undefined
+    });
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'STATE_CHALLENGES_ERROR', message: err.message });
+  }
+});
+
+router.post('/states/tech-intervention-book', (req: Request, res: Response) => {
+  try {
+    const result = FarmerEcosystemService.bookStateTechIntervention({
+      stateCode: String(req.body.stateCode || 'MP'),
+      acreage: req.body.acreage ? Number(req.body.acreage) : undefined,
+      farmerName: req.body.farmerName ? String(req.body.farmerName) : undefined,
+      mobileNumber: req.body.mobileNumber ? String(req.body.mobileNumber) : undefined,
+      district: req.body.district ? String(req.body.district) : undefined,
+      cropName: req.body.cropName ? String(req.body.cropName) : undefined,
+      interventionType: req.body.interventionType
+    });
+    return res.status(201).json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'CHC_BOOKING_ERROR', message: err.message });
+  }
 });
 

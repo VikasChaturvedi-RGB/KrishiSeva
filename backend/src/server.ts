@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { router } from './routes/apiRoutes';
 import { AppDatabase } from './db/database';
 import { DatabaseSeeder } from './db/seeder';
-import { UserRepository } from './db/repositories';
+import { UserRepository, MandiPriceRepository } from './db/repositories';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -22,6 +22,8 @@ try {
   const existingUsers = UserRepository.listAllFarmers();
   if (existingUsers.length === 0) {
     DatabaseSeeder.seedAll();
+  } else if (MandiPriceRepository.listAll().length === 0) {
+    DatabaseSeeder.seedEcosystemData(existingUsers[0].id);
   }
 } catch (err) {
   console.error('Database initialization warning:', err);

@@ -2606,3 +2606,799 @@ body.farmer-portal-body {
   color: white;
 }
 
+/* ==========================================================================
+   INDIAN FARMER ECOSYSTEM MODULES (Mandi, Spray/NPK, Schemes, Kisan e-Mitra)
+   ========================================================================== */
+.mitra-home-strip {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.22);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.mitra-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mitra-mic-pulse {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+  flex-shrink: 0;
+}
+
+.mitra-strip-left strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.mitra-strip-left p {
+  font-size: 10.5px;
+  color: #d1fae5;
+  margin: 1px 0 0 0;
+}
+
+.mitra-radar-pill {
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mandi-icon { background: #dcfce7; color: #15803d; }
+.cal-icon { background: #e0f2fe; color: #0369a1; }
+.scheme-icon { background: #fef3c7; color: #b45309; }
+.mitra-icon { background: #fee2e2; color: #b91c1c; }
+
+.ecosystem-screen-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 18px;
+}
+
+.ecosystem-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eco-section-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.eco-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.eco-card-header h5 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.eco-badge-green {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eco-badge-amber {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eco-badge-red {
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.eco-desc-text {
+  font-size: 11.5px;
+  color: #334155;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+/* Mandi Cards */
+.mandi-item-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.mandi-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.mandi-item-top h5 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.mandi-sub-loc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.mandi-signal-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.signal-sell { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+.signal-hold { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+.mandi-price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.mp-col span {
+  display: block;
+  font-size: 10px;
+  color: #64748b;
+}
+
+.mp-col strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.mp-col.modal-highlight strong {
+  color: #15803d;
+  font-size: 14.5px;
+}
+
+.mandi-net-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ecfdf5;
+  border: 1px dashed #10b981;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #065f46;
+  margin-bottom: 6px;
+}
+
+.mandi-advisory-note {
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+/* Spray Weather Slots & NPK Grid */
+.btn-sim-weather {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.spray-slots-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.spray-slot-pill {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 8px;
+  background: #f8fafc;
+}
+
+.spray-slot-pill.slot-safe { border-left: 3.5px solid #16a34a; background: #f0fdf4; }
+.spray-slot-pill.slot-caution { border-left: 3.5px solid #d97706; background: #fffbeb; }
+.spray-slot-pill.slot-avoid { border-left: 3.5px solid #dc2626; background: #fef2f2; }
+
+.slot-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+}
+
+.slot-meta {
+  font-size: 10px;
+  color: #475569;
+}
+
+.badge-soil-linked {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 999px;
+}
+
+.npk-controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.eco-select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.npk-acre-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.npk-bags-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.npk-bag-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.npk-bag-card h6 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.npk-bag-count {
+  font-size: 15px;
+  font-weight: 800;
+  color: #15803d;
+  display: block;
+}
+
+.npk-bag-sub {
+  font-size: 10px;
+  color: #64748b;
+  display: block;
+  margin-top: 2px;
+}
+
+.npk-cost-footer {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11.5px;
+  color: #166534;
+}
+
+/* Crop Calendar Timeline */
+.calendar-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-stage-item {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 10px;
+  padding-bottom: 6px;
+}
+
+.cal-stage-item.cal-active {
+  border-left-color: #16a34a;
+  background: #f0fdf4;
+  border-radius: 0 10px 10px 0;
+  padding: 8px 10px;
+}
+
+.cal-stage-item.cal-done {
+  border-left-color: #10b981;
+}
+
+.cal-das-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #047857;
+  text-transform: uppercase;
+}
+
+.cal-stage-item h6 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 2px 0 4px 0;
+}
+
+.cal-stage-item ul {
+  margin: 0;
+  padding-left: 15px;
+  font-size: 11px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+/* Sarkari Schemes & PMFBY Claim */
+.schemes-summary-hero {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #fff;
+  padding: 10px;
+  border-radius: 14px;
+  text-align: center;
+}
+
+.scheme-stat-box .stat-lbl {
+  display: block;
+  font-size: 9.5px;
+  color: #cbd5e1;
+}
+
+.scheme-stat-box .stat-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.pmfby-claim-card {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.pmfby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.badge-72h {
+  background: #d97706;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.badge-ai-linked {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 999px;
+}
+
+.pmfby-desc {
+  font-size: 11px;
+  color: #78350f;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.mt-1 { margin-top: 8px; }
+
+/* Voice Kisan e-Mitra & Outbreak Radar */
+.mitra-voice-card {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.mitra-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mitra-bot-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #15803d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.mitra-header-row h5 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  color: #064e3b;
+}
+
+.mitra-header-row p {
+  font-size: 10.5px;
+  color: #475569;
+  margin: 2px 0 0 0;
+}
+
+.mitra-prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.prompt-chip {
+  background: #ffffff;
+  border: 1px solid #10b981;
+  color: #065f46;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 5px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.prompt-chip:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.mitra-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.btn-mic-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: #dc2626;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+}
+
+.btn-mic-circle.listening {
+  animation: pulseScale 0.9s infinite;
+  background: #ef4444;
+}
+
+.mitra-input-bar input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.btn-send-mitra {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  background: #15803d;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mitra-answer-bubble {
+  background: #064e3b;
+  color: #ecfdf5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mitra-ans-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #6ee7b7;
+  margin-bottom: 4px;
+}
+
+.btn-report-outbreak {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.outbreak-item-card {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-left: 4px solid #e11d48;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.outbreak-item-card h6 {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #881337;
+  margin: 0 0 3px 0;
+}
+
+.outbreak-meta {
+  font-size: 10.5px;
+  color: #9f1239;
+  margin-bottom: 5px;
+}
+
+.outbreak-shield {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 11px;
+  color: #1e293b;
+}
+
+.phone-bottom-nav .nav-item {
+  font-size: 9.5px;
+  padding: 6px 2px;
+}
+
+/* ==========================================================================
+   16. STATE-WISE AGRO CHALLENGES & CHC / DRONE TECH HUB (viewStateMatrix)
+   ========================================================================== */
+.state-tech-home-strip {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+  border: 1px solid rgba(147, 197, 253, 0.35);
+}
+
+.state-strip-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.state-map-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #93c5fd;
+  flex-shrink: 0;
+}
+
+.state-strip-left strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.state-strip-left p {
+  font-size: 10.5px;
+  color: #dbeafe;
+  margin: 2px 0 0 0;
+}
+
+.state-drone-pill {
+  background: #f59e0b;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.state-challenge-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.state-challenge-hero h4 {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 4px;
+}
+
+.state-zone-badge {
+  display: inline-block;
+  background: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.state-problem-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.problem-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #ef4444;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.problem-card.soil {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.problem-card.pest {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+.problem-card.ban {
+  border-left-color: #7c3aed;
+  background: #f5f3ff;
+}
+
+.problem-card h6 {
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 3px;
+  color: #1e293b;
+}
+
+.problem-card p {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #334155;
+  margin: 0;
+}
+
+.tech-resolution-card {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.tech-resolution-card h5 {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #14532d;
+  margin-bottom: 8px;
+}
+
+.tech-step-row {
+  background: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #1e293b;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.chc-booking-cta-box {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1.5px solid #34d399;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+

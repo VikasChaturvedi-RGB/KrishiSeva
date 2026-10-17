@@ -264,3 +264,130 @@ CREATE INDEX IF NOT EXISTS idx_activity_phone ON farmer_login_activity_logs(phon
 CREATE INDEX IF NOT EXISTS idx_activity_crop ON farmer_login_activity_logs(crop);
 CREATE INDEX IF NOT EXISTS idx_activity_time ON farmer_login_activity_logs(created_at);
 
+-- 14. Real-Time e-NAM / APMC Mandi Prices & Market Intelligence
+CREATE TABLE IF NOT EXISTS mandi_prices (
+    id TEXT PRIMARY KEY,
+    crop_code TEXT NOT NULL,
+    crop_name_en TEXT NOT NULL,
+    crop_name_hi TEXT NOT NULL,
+    variety TEXT NOT NULL,
+    mandi_name TEXT NOT NULL,
+    state TEXT NOT NULL,
+    district TEXT NOT NULL,
+    min_price_qtl REAL NOT NULL,
+    modal_price_qtl REAL NOT NULL,
+    max_price_qtl REAL NOT NULL,
+    msp_price_qtl REAL NOT NULL,
+    price_change_24h REAL NOT NULL DEFAULT 0,
+    arrival_tonnes REAL NOT NULL DEFAULT 0,
+    distance_km REAL NOT NULL DEFAULT 15,
+    sell_hold_signal TEXT NOT NULL CHECK(sell_hold_signal IN ('STRONG_SELL', 'HOLD_FOR_RISE', 'SELL_AT_MSP')),
+    advisory_en TEXT NOT NULL,
+    advisory_hi TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_mandi_crop ON mandi_prices(crop_code);
+CREATE INDEX IF NOT EXISTS idx_mandi_state ON mandi_prices(state, district);
+
+-- 15. Government Schemes, KCC & PMFBY 72-Hour Crop Loss Claims
+CREATE TABLE IF NOT EXISTS scheme_applications (
+    id TEXT PRIMARY KEY,
+    reference_no TEXT UNIQUE NOT NULL,
+    user_id TEXT,
+    farmer_name TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    scheme_code TEXT NOT NULL,
+    scheme_name TEXT NOT NULL,
+    application_type TEXT NOT NULL CHECK(application_type IN ('SCHEME_ENROLLMENT', 'PMFBY_72H_CLAIM', 'KCC_CREDIT_APPLICATION', 'SOLAR_PUMP_SUBSIDY')),
+    state TEXT NOT NULL,
+    district TEXT NOT NULL,
+    crop_name TEXT NOT NULL,
+    acreage REAL NOT NULL DEFAULT 2.0,
+    estimated_benefit_inr REAL NOT NULL DEFAULT 0,
+    claim_reason TEXT,
+    diagnosis_id TEXT,
+    status TEXT NOT NULL DEFAULT 'SUBMITTED_UNDER_VERIFICATION',
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_scheme_mobile ON scheme_applications(mobile_number);
+CREATE INDEX IF NOT EXISTS idx_scheme_code ON scheme_applications(scheme_code);
+
+-- 16. Hyperlocal District / Tehsil Pest & Disease Outbreak Radar
+CREATE TABLE IF NOT EXISTS community_outbreaks (
+    id TEXT PRIMARY KEY,
+    state TEXT NOT NULL,
+    district TEXT NOT NULL,
+    village TEXT NOT NULL,
+    crop_code TEXT NOT NULL,
+    crop_name_en TEXT NOT NULL,
+    crop_name_hi TEXT NOT NULL,
+    disease_name_en TEXT NOT NULL,
+    disease_name_hi TEXT NOT NULL,
+    severity TEXT NOT NULL CHECK(severity IN ('HIGH_ALERT', 'MODERATE_WATCH', 'CONTAINED')),
+    affected_farms_count INTEGER NOT NULL DEFAULT 1,
+    distance_km REAL NOT NULL DEFAULT 5.0,
+    preventive_step_en TEXT NOT NULL,
+    preventive_step_hi TEXT NOT NULL,
+    reported_by TEXT NOT NULL,
+    verified_by_kvk INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_outbreak_loc ON community_outbreaks(state, district);
+CREATE INDEX IF NOT EXISTS idx_outbreak_crop ON community_outbreaks(crop_code);
+
+-- 17. State-Wise Agro-Climatic Challenges & Technology Resolution Matrix
+CREATE TABLE IF NOT EXISTS state_agro_challenges (
+    id TEXT PRIMARY KEY,
+    state_code TEXT UNIQUE NOT NULL,
+    state_name_en TEXT NOT NULL,
+    state_name_hi TEXT NOT NULL,
+    agro_climatic_zone_hi TEXT NOT NULL,
+    dominant_crops_hi TEXT NOT NULL,
+    soil_water_challenge_hi TEXT NOT NULL,
+    soil_water_challenge_en TEXT NOT NULL,
+    pest_disease_challenge_hi TEXT NOT NULL,
+    pest_disease_challenge_en TEXT NOT NULL,
+    market_policy_challenge_hi TEXT NOT NULL,
+    banned_pesticides_list TEXT NOT NULL,
+    tech_solution_title_hi TEXT NOT NULL,
+    tech_solution_title_en TEXT NOT NULL,
+    tech_solution_steps_hi TEXT NOT NULL, -- JSON Array of actionable tech interventions
+    tech_solution_steps_en TEXT NOT NULL, -- JSON Array
+    chc_equipment_name_hi TEXT NOT NULL,
+    chc_subsidy_pct INTEGER NOT NULL DEFAULT 50,
+    chc_rent_per_acre_inr REAL NOT NULL DEFAULT 600,
+    estimated_roi_per_acre_inr REAL NOT NULL DEFAULT 3500,
+    state_scheme_highlight_hi TEXT NOT NULL,
+    updated_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_state_challenge_code ON state_agro_challenges(state_code);
+
+-- 18. Custom Hiring Center (CHC), Kisan Drone & Bio-Input Tech Intervention Bookings
+CREATE TABLE IF NOT EXISTS chc_machinery_bookings (
+    id TEXT PRIMARY KEY,
+    booking_ref TEXT UNIQUE NOT NULL,
+    farmer_name TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    state_code TEXT NOT NULL,
+    state_name_hi TEXT NOT NULL,
+    district TEXT NOT NULL,
+    crop_name TEXT NOT NULL,
+    acreage REAL NOT NULL DEFAULT 2.0,
+    intervention_type TEXT NOT NULL CHECK(intervention_type IN ('KISAN_DRONE_SPRAY', 'HAPPY_SEEDER_PUSA_DECOMPOSER', 'BBF_TRACTOR_PLANTER', 'BIO_IPM_KIT', 'SOLAR_DRIP_FERTIGATION', 'ANTI_HAIL_OR_LIME_KIT')),
+    equipment_name_hi TEXT NOT NULL,
+    scheduled_date TEXT NOT NULL,
+    gross_cost_inr REAL NOT NULL,
+    subsidy_amount_inr REAL NOT NULL,
+    net_farmer_payable_inr REAL NOT NULL,
+    carbon_or_water_reward_hi TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'CONFIRMED_CHC_ALLOCATED',
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_chc_booking_state ON chc_machinery_bookings(state_code);
+CREATE INDEX IF NOT EXISTS idx_chc_booking_mobile ON chc_machinery_bookings(mobile_number);
+

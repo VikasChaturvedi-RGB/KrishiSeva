@@ -154,7 +154,12 @@ export class AppDatabase {
       'clinic_inventory',
       'inventory_batches',
       'audit_trail_logs',
-      'farmer_login_activity_logs'
+      'farmer_login_activity_logs',
+      'mandi_prices',
+      'scheme_applications',
+      'community_outbreaks',
+      'state_agro_challenges',
+      'chc_machinery_bookings'
     ];
 
     const tableCounts: Record<string, number> = {};
