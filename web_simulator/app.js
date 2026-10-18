@@ -792,6 +792,7 @@ function switchView(viewId, pushHistory = true) {
   } else if (viewId === 'viewClinic') {
     const navClinic = document.getElementById('navClinic');
     if (navClinic) navClinic.classList.add('active');
+    loadAgriGraduateClinicHub();
   } else if (viewId === 'viewMandi') {
     const navMandi = document.getElementById('navMandi');
     if (navMandi) navMandi.classList.add('active');
@@ -3174,5 +3175,668 @@ function speakStateChallengeSummary() {
   const text = `${st.state_name_hi} में किसानों की मुख्य चुनौती: ${st.soil_water_challenge_hi} इसका तकनीकी समाधान: ${st.tech_solution_title_hi}, जिससे प्रति एकड़ ${st.estimated_roi_per_acre_inr} रुपये की बचत होती है।`;
   speakHindiText(text);
 }
+
+// ============================================================================
+// 19. LICENSED AGRICULTURE GRADUATE STATUTORY COMMERCE & CLINICAL ADVISORY
+// ============================================================================
+let currentAgriGraduateProfile = null;
+let currentClinicProductCategory = 'ALL';
+let lastActivePrescriptionData = null;
+let activeFarmerKhataData = null;
+
+// Offline Fallback Datasets for Edge/Offline Functionality
+const OFFLINE_LICENSED_PRODUCTS = [
+  {
+    product_code: 'SEED-SOY-JS2034',
+    category: 'CERTIFIED_SEED',
+    crop_code: 'SOYBEAN',
+    product_name_hi: 'प्रमाणित सोयाबीन बीज (JS 20-34) - ब्लू टैग',
+    product_name_en: 'Certified Soybean Seed (JS 20-34) - Blue Tag',
+    brand_or_source: 'JNKVV / MP State Seeds Dev Corp',
+    composition_or_variety: 'JS 20-34 (कम वर्षा व तना मक्खी प्रतिरोधी, 85 दिन)',
+    lot_number: 'MP-UJ-2026-SOY-901',
+    germination_pct: 88.5,
+    purity_pct: 99.2,
+    unit_spec: '30 kg Bag',
+    mrp_inr: 3200,
+    farmer_price_inr: 2850,
+    stock_quantity: 120,
+    prescribed_dosage_per_acre: '25-30 किग्रा प्रति एकड़ (बीजोपचार उपरांत)',
+    scientific_solution_note_hi: 'बीज विकास निगम द्वारा प्रमाणित। 88% से अधिक अंकुरण गारंटी। तना मक्खी व चारकोल रॉट प्रतिरोधी।',
+    cibrc_or_fco_reg: 'Seeds Act 1966 Sec 7 / MP-SCA-8420'
+  },
+  {
+    product_code: 'SEED-WHT-HI1544',
+    category: 'CERTIFIED_SEED',
+    crop_code: 'WHEAT',
+    product_name_hi: 'प्रमाणित गेहूं बीज (पूर्णा HI-1544) - आधार/प्रमाणित',
+    product_name_en: 'Certified Wheat Seed (HI-1544 Purna)',
+    brand_or_source: 'IARI Regional Station Indore / NSC',
+    composition_or_variety: 'HI-1544 Purna (मध्य भारत चपाती श्रेष्ठ, रस्ट प्रतिरोधी)',
+    lot_number: 'MP-UJ-2026-WHT-410',
+    germination_pct: 93.0,
+    purity_pct: 99.6,
+    unit_spec: '40 kg Bag',
+    mrp_inr: 1800,
+    farmer_price_inr: 1650,
+    stock_quantity: 250,
+    prescribed_dosage_per_acre: '40 किग्रा प्रति एकड़ (सिंचित मध्य मालवा)',
+    scientific_solution_note_hi: 'उत्कृष्ट चमक व प्रोटीन सामग्री। भूरा व पीला रतुआ प्रतिरोधी। औसत उपज 22-25 क्विंटल/एकड़।',
+    cibrc_or_fco_reg: 'Seeds Act 1966 Sec 7 / NSC-7712'
+  },
+  {
+    product_code: 'NUT-ZN-BORON-01',
+    category: 'CUSTOM_MICRONUTRIENT',
+    crop_code: 'ALL',
+    product_name_hi: 'चिलेटेड जिंक 12% (Zn-EDTA) + बोरॉन 20% कॉम्बो पैक',
+    product_name_en: 'Chelated Zinc 12% (Zn-EDTA) + Boron 20% Chelate',
+    brand_or_source: 'Krishi Graduate Custom Formulation (FCO Grade)',
+    composition_or_variety: 'Zn-EDTA 12% (250g) + Disodium Octaborate Tetrahydrate 20% (250g)',
+    lot_number: 'MN-2026-ZB-402',
+    germination_pct: null,
+    purity_pct: 99.0,
+    unit_spec: '500 gm Combo',
+    mrp_inr: 550,
+    farmer_price_inr: 450,
+    stock_quantity: 300,
+    prescribed_dosage_per_acre: '1.0 ग्राम जिंक + 0.75 ग्राम बोरॉन प्रति लीटर पानी (200L/एकड़)',
+    scientific_solution_note_hi: 'काली मिट्टी में जिंक लॉक-अप को 100% बायपास करता है। फूलों का झड़ना रोकता है एवं फली भराई में 18% वृद्धि।',
+    cibrc_or_fco_reg: 'FCO 1985 Schedule I(f) Reg: MP-FCO-4910'
+  },
+  {
+    product_code: 'KIT-SOY-YMV-01',
+    category: 'DISEASE_SOLUTION_KIT',
+    crop_code: 'SOYBEAN',
+    product_name_hi: 'सोयाबीन पीला मोजेक वायरस (YMV) डॉक्टर क्योर किट',
+    product_name_en: 'Soybean Yellow Mosaic Virus Vector Control Doctor Kit',
+    brand_or_source: 'Dr. Vikas Agri-Clinic Tailored Curative Pack',
+    composition_or_variety: 'इमिडाक्लोप्रिड 17.8% SL (100ml) + बायो-शील्ड नीम (250ml) + चिलेटेड जिंक व सूक्ष्म पोषक (250g)',
+    lot_number: 'KIT-2026-SYMV-012',
+    germination_pct: null,
+    purity_pct: 100,
+    unit_spec: '1 Complete Acre Kit',
+    mrp_inr: 1050,
+    farmer_price_inr: 850,
+    stock_quantity: 90,
+    prescribed_dosage_per_acre: '1 किट प्रति एकड़ (150-200 लीटर पानी में मिलाकर सुबह छिड़काव)',
+    scientific_solution_note_hi: 'व्हाइटफ्लाई वाहक का तुरंत नियंत्रण + पत्तियों में क्लोरोफिल पुनर्जनन हेतु संपूर्ण 3-इन-1 क्लीनिकल किट।',
+    cibrc_or_fco_reg: 'Approved by Registered Agronomist under FCO & CIB&RC'
+  },
+  {
+    product_code: 'BIO-ZSB-RHIZO-01',
+    category: 'BIO_FERTILIZER',
+    crop_code: 'SOYBEAN',
+    product_name_hi: 'जिंक सोल्यूबिलाइजिंग बायो-कल्चर (ZSB) + राइजोबियम कल्चर',
+    product_name_en: 'Zinc Solubilizing Bio-Culture + Rhizobium Consortium',
+    brand_or_source: 'ICAR-IISR Indore Technology Transfer / Agri-Clinic Lab',
+    composition_or_variety: 'Pseudomonas striata (ZSB) + Bradyrhizobium japonicum (1x10^9 CFU/ml)',
+    lot_number: 'BIO-2026-ZSB-882',
+    germination_pct: null,
+    purity_pct: 99.5,
+    unit_spec: '1000 ml Bottle',
+    mrp_inr: 450,
+    farmer_price_inr: 360,
+    stock_quantity: 150,
+    prescribed_dosage_per_acre: '500 मिली प्रति एकड़ (ड्रिप / स्प्रे) अथवा 10 मिली/किग्रा बीज उपचार',
+    scientific_solution_note_hi: 'मिट्टी में फिक्स जिंक को घुलनशील बनाकर जड़ों को उपलब्ध कराता है। रासायनिक जिंक पर निर्भरता 40% कम करता है।',
+    cibrc_or_fco_reg: 'FCO 1985 Biofertilizer Specs Cl. 28B'
+  },
+  {
+    product_code: 'BIO-TRICHO-WP-01',
+    category: 'BIO_PESTICIDE',
+    crop_code: 'ALL',
+    product_name_hi: 'ट्राइकोडर्मा विरिडी 1% WP (बायो-फंगीसाइड)',
+    product_name_en: 'Trichoderma viride 1% WP Bio-Fungicide',
+    brand_or_source: 'IIHR Formula / CIB&RC Licensed',
+    composition_or_variety: 'Trichoderma viride strain 2x10^8 cfu/gm',
+    lot_number: 'TRI-2026-WP-312',
+    germination_pct: null,
+    purity_pct: 98.5,
+    unit_spec: '1 kg Foil Pack',
+    mrp_inr: 280,
+    farmer_price_inr: 220,
+    stock_quantity: 200,
+    prescribed_dosage_per_acre: '1-2 किग्रा/एकड़ गोबर खाद के साथ अथवा 5 ग्राम/ली पानी छिड़काव',
+    scientific_solution_note_hi: 'जड़ सड़न, उकठा (Wilt) और कॉलर रॉट के विरुद्ध 100% जैविक सुरक्षा। जड़ तंत्र को मजबूत करता है।',
+    cibrc_or_fco_reg: 'Insecticides Act 1968 / CIB-CIR-9921'
+  }
+];
+
+// 19.1 Load Agri Graduate Hub Main Entry Point
+async function loadAgriGraduateClinicHub() {
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/profile`);
+    const data = await res.json();
+    currentAgriGraduateProfile = data;
+    renderGraduateProfileBanner(data);
+  } catch (err) {
+    // Offline fallback profile
+    const fallbackProfile = {
+      graduate: {
+        graduate_name: 'Vikas Chaturvedi, B.Sc. (Hons) Agriculture',
+        qualification: 'B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Technology',
+        university: 'Jawaharlal Nehru Krishi Vishwa Vidyalaya (JNKVV), Jabalpur',
+        clinic_name_hi: 'विकास कृषि क्लिनिक एवं अधिकृत बीज-समाधान केंद्र'
+      }
+    };
+    currentAgriGraduateProfile = fallbackProfile;
+    renderGraduateProfileBanner(fallbackProfile);
+  }
+
+  // Load active tab data
+  loadClinicProducts(currentClinicProductCategory);
+  lookupAgriGraduateRx('9876543210');
+  loadFarmerKhataLedger('9876543210');
+  loadRecentConsultationBookings();
+}
+
+function renderGraduateProfileBanner(profileData) {
+  const g = profileData?.graduate;
+  if (!g) return;
+
+  const nameEl = document.getElementById('gradNameText');
+  const degEl = document.getElementById('gradDegreeText');
+  const uniEl = document.getElementById('gradUniText');
+
+  if (nameEl) nameEl.innerText = g.graduate_name;
+  if (degEl) degEl.innerText = g.qualification;
+  if (uniEl) uniEl.innerText = g.university;
+}
+
+// 19.2 Clinic Sub-Tabs Switcher
+function switchClinicSubTab(tabName) {
+  const tabs = ['products', 'rx', 'khata', 'consult'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`btnClinicTab${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    const pane = document.getElementById(`clinicTabContent${t.charAt(0).toUpperCase() + t.slice(1)}`);
+    if (btn) btn.classList.toggle('active', t === tabName);
+    if (pane) pane.classList.toggle('hidden', t !== tabName);
+  });
+
+  if (tabName === 'products') {
+    loadClinicProducts(currentClinicProductCategory);
+  } else if (tabName === 'rx') {
+    lookupAgriGraduateRx('9876543210');
+  } else if (tabName === 'khata') {
+    loadFarmerKhataLedger('9876543210');
+  } else if (tabName === 'consult') {
+    loadRecentConsultationBookings();
+  }
+}
+
+// 19.3 Filter Products by Category
+function filterClinicProducts(category, chipBtn) {
+  currentClinicProductCategory = category;
+  document.querySelectorAll('.product-category-bar .prod-cat-chip').forEach(b => b.classList.remove('active'));
+  if (chipBtn) chipBtn.classList.add('active');
+  loadClinicProducts(category);
+}
+
+// 19.4 Load Certified Products Catalog
+async function loadClinicProducts(category = 'ALL') {
+  const listEl = document.getElementById('clinicProductList');
+  if (!listEl) return;
+
+  let products = [];
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/products?category=${encodeURIComponent(category)}`);
+    const data = await res.json();
+    products = data.products || [];
+  } catch (err) {
+    products = OFFLINE_LICENSED_PRODUCTS.filter(p => category === 'ALL' || p.category === category);
+  }
+
+  if (products.length === 0) {
+    products = OFFLINE_LICENSED_PRODUCTS.filter(p => category === 'ALL' || p.category === category);
+  }
+
+  listEl.innerHTML = products.map(p => {
+    let catBadgeClass = 'seed';
+    let catBadgeText = 'प्रमाणित बीज (Certified Seed)';
+    if (p.category === 'CUSTOM_MICRONUTRIENT') {
+      catBadgeClass = 'nutrient';
+      catBadgeText = 'कस्टम पोषक तत्व (FCO Chelate)';
+    } else if (p.category === 'DISEASE_SOLUTION_KIT') {
+      catBadgeClass = 'kit';
+      catBadgeText = 'डॉक्टर क्योर किट (Curative Pack)';
+    } else if (p.category === 'BIO_FERTILIZER') {
+      catBadgeClass = 'bio';
+      catBadgeText = 'बायो-फर्टिलाइजर (ICAR Tech)';
+    } else if (p.category === 'BIO_PESTICIDE') {
+      catBadgeClass = 'bio';
+      catBadgeText = 'बायो-पेस्टीसाइड (CIB&RC)';
+    }
+
+    return `
+      <div class="agri-product-card">
+        <div class="prod-card-top">
+          <div class="prod-title-group">
+            <span class="prod-badge ${catBadgeClass}">${catBadgeText}</span>
+            <h5>${p.product_name_hi}</h5>
+            <p class="prod-variety">${p.composition_or_variety}</p>
+          </div>
+        </div>
+
+        <div class="prod-meta-tags">
+          <span class="lot-pill">लॉट: ${p.lot_number}</span>
+          ${p.germination_pct ? `<span class="quality-pill"><i class="fa-solid fa-check"></i> अंकुरण: ${p.germination_pct}%</span>` : ''}
+          ${p.purity_pct ? `<span class="quality-pill">शुद्धता: ${p.purity_pct}%</span>` : ''}
+          <span class="lot-pill">${p.unit_spec}</span>
+        </div>
+
+        <div class="prod-solution-note">
+          <strong>अनुशंसित प्रयोग:</strong> ${p.prescribed_dosage_per_acre}
+          <br><small style="color:#64748b;">${p.scientific_solution_note_hi}</small>
+        </div>
+
+        <div class="prod-bottom-row">
+          <div class="prod-pricing">
+            <span class="prod-mrp">MRP: ₹${p.mrp_inr}</span>
+            <span class="prod-farmer-price">₹${p.farmer_price_inr}</span>
+            <span class="prod-unit">प्रति ${p.unit_spec}</span>
+          </div>
+          <button class="btn-buy-prod" onclick="orderProductDirect('${p.product_code}', '${p.product_name_hi}', ${p.farmer_price_inr})">
+            <i class="fa-solid fa-cart-plus"></i> ऑर्डर करें
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 19.5 Direct Catalog Order Handler
+async function orderProductDirect(productCode, productName, price) {
+  const confirmOrder = confirm(`क्या आप "${productName}" (मूल्य: ₹${price}) का आर्डर दर्ज करना चाहते हैं?\n\n- अधिकृत कृषि स्नातक द्वारा प्रमाणित लॉट\n- फसल कटाई बाद भुगतान (Pay-After-Harvest) अथवा UPI उपलब्ध`);
+  if (!confirmOrder) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        farmerName: 'रमेश पटेल (Ramesh Patel)',
+        mobileNumber: '9876543210',
+        village: 'मुल्लापुरा, बड़नगर, उज्जैन',
+        items: [{ productCode, productName, quantity: 1, rate: price }],
+        paymentMode: 'PAY_AFTER_HARVEST_CREDIT',
+        harvestCreditDueDate: '2026-11-20 (सोयाबीन विक्रय उपरांत)'
+      })
+    });
+    const data = await res.json();
+    alert(`✅ ऑर्डर सफलतापूर्वक दर्ज किया गया!\n\nआर्डर नं: ${data.order?.order_no || 'ORD-2026-NEW'}\nचालान: ${data.order?.invoice_docket || 'INV-2026-OK'}\nभुगतान मोड: फसल कटाई बाद भुगतान (बही-खाता दर्ज)`);
+    switchClinicSubTab('khata');
+  } catch (err) {
+    alert(`✅ ऑर्डर सफलतापूर्वक दर्ज किया गया!\n\nउत्पाद: ${productName}\nभुगतान मोड: फसल कटाई बाद भुगतान (बही-खाता में दर्ज किया गया)`);
+    switchClinicSubTab('khata');
+  }
+}
+
+// 19.6 Look Up Agri-Rx Digital Prescription
+async function lookupAgriGraduateRx(mobileOrRxNo) {
+  const defaultRx = {
+    prescription_no: 'AGRI-RX-2026-0814',
+    farmer_name: 'रमेश पटेल (Ramesh Patel)',
+    mobile_number: '9876543210',
+    village: 'मुल्लापुरा, बड़नगर, उज्जैन',
+    crop_name: 'SOYBEAN',
+    acreage: 3.5,
+    primary_diagnosis_hi: 'सोयाबीन पीला मोजेक वायरस (YMV) एवं तीव्र जिंक-आयरन कमी',
+    doctor_notes_hi: 'दिन की तेज धूप में छिड़काव कदापि न करें। सुबह 07:00 से 10:00 बजे के मध्य सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप दें।',
+    graduate_reg_no: 'MANAGE/ACABC/MP-UJ/2022/9481',
+    digital_signature_stamp: 'DIGI-STAMP-JNKVV-AGRI-GRAD-7749',
+    rx_items_json: [
+      {
+        product_code: 'KIT-SOY-YMV-01',
+        product_name: 'सोयाबीन पीला मोजेक डॉक्टर किट (3-इन-1 क्लीनिकल पैक)',
+        quantity: 3,
+        dosage_instructions: '1 किट प्रति एकड़ (150-200 लीटर पानी में घोलकर सुबह स्प्रे करें)',
+        rate_inr: 850
+      },
+      {
+        product_code: 'NUT-ZN-BORON-01',
+        product_name: 'चिलेटेड जिंक 12% + बोरॉन 20% कॉम्बो पैक',
+        quantity: 2,
+        dosage_instructions: '500 ग्राम प्रति 200 लीटर पानी (फली भराई से पहले)',
+        rate_inr: 450
+      }
+    ]
+  };
+
+  const rx = lastActivePrescriptionData || defaultRx;
+
+  const noTag = document.getElementById('rxCardNoTag');
+  const nameEl = document.getElementById('rxFarmerName');
+  const mobEl = document.getElementById('rxFarmerMobile');
+  const vilEl = document.getElementById('rxFarmerVillage');
+  const diagEl = document.getElementById('rxDiagnosisTitle');
+  const notesEl = document.getElementById('rxDoctorNotesText');
+  const stampEl = document.getElementById('rxStampCode');
+  const acabcEl = document.getElementById('rxAcabcReg');
+  const totalAmtEl = document.getElementById('rxBillingTotalAmt');
+  const tbody = document.getElementById('rxItemsTbody');
+
+  if (noTag) noTag.innerText = rx.prescription_no;
+  if (nameEl) nameEl.innerText = rx.farmer_name;
+  if (mobEl) mobEl.innerHTML = `<i class="fa-solid fa-phone"></i> +91 ${rx.mobile_number}`;
+  if (vilEl) vilEl.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${rx.village} | ${rx.acreage} एकड़`;
+  if (diagEl) diagEl.innerText = rx.primary_diagnosis_hi;
+  if (notesEl) notesEl.innerText = rx.doctor_notes_hi;
+  if (stampEl) stampEl.innerText = rx.digital_signature_stamp;
+  if (acabcEl) acabcEl.innerText = rx.graduate_reg_no;
+
+  let totalAmt = 0;
+  if (tbody) {
+    tbody.innerHTML = (rx.rx_items_json || []).map(item => {
+      const lineTotal = (item.rate_inr || 0) * (item.quantity || 1);
+      totalAmt += lineTotal;
+      return `
+        <tr>
+          <td><strong>${item.product_name}</strong><br><small style="color:#64748b;">${item.product_code}</small></td>
+          <td><strong>${item.quantity}</strong></td>
+          <td><small>${item.dosage_instructions}</small></td>
+          <td><strong class="text-green">₹${lineTotal.toLocaleString('en-IN')}</strong></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  if (totalAmtEl) {
+    totalAmtEl.innerText = `₹ ${totalAmt.toLocaleString('en-IN')}.00`;
+  }
+}
+
+// 19.7 Convert Active Diagnosis to Written Agri-Rx and Prefilled Cart (1-Click Auto-Converter)
+async function convertActiveDiagnosisToRxAndCart() {
+  const diagnosisName = currentDiagnosisResponse?.primaryDiagnosis?.diseaseNameLocalized || 'सोयाबीन पीला मोजेक वायरस (YMV) एवं तीव्र जिंक-आयरन कमी';
+  const cropCode = selectedCropCode || 'SOYBEAN';
+  const acreage = 3.5;
+
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/rx-to-cart`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        diagnosisId: 'diag-demo-01',
+        diseaseName: diagnosisName,
+        cropName: cropCode,
+        acreage: acreage,
+        farmerName: 'रमेश पटेल (Ramesh Patel)',
+        mobileNumber: '9876543210',
+        village: 'मुल्लापुरा, बड़नगर, उज्जैन'
+      })
+    });
+    const data = await res.json();
+    if (data && data.prescription) {
+      lastActivePrescriptionData = data.prescription;
+      alert(`🌿 अधिकृत कृषि स्नातक डॉक्टर पर्चा तैयार!\n\nपर्चा नं: ${data.prescription.prescription_no}\nरोग: ${diagnosisName}\n\nआपको अधिकृत क्लिनिक एवं बिलिंग स्क्रीन पर ले जाया जा रहा है...`);
+      switchNav('viewClinic', null);
+      switchClinicSubTab('rx');
+      lookupAgriGraduateRx();
+      return;
+    }
+  } catch (err) {
+    // Offline simulated conversion
+  }
+
+  lastActivePrescriptionData = {
+    prescription_no: `AGRI-RX-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+    farmer_name: 'रमेश पटेल (Ramesh Patel)',
+    mobile_number: '9876543210',
+    village: 'मुल्लापुरा, बड़नगर, उज्जैन',
+    crop_name: cropCode,
+    acreage: acreage,
+    primary_diagnosis_hi: diagnosisName,
+    doctor_notes_hi: 'दिन की तेज धूप में छिड़काव न करें। सुबह 07:00 से 10:00 बजे के बीच सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप रिपोर्ट दें।',
+    graduate_reg_no: 'MANAGE/ACABC/MP-UJ/2022/9481',
+    digital_signature_stamp: 'DIGI-STAMP-JNKVV-AGRI-GRAD-7749',
+    rx_items_json: [
+      {
+        product_code: 'KIT-SOY-YMV-01',
+        product_name: 'सोयाबीन पीला मोजेक डॉक्टर किट (3-इन-1 क्लीनिकल पैक)',
+        quantity: Math.ceil(acreage),
+        dosage_instructions: '1 किट प्रति एकड़ (150-200 लीटर पानी में घोलकर सुबह स्प्रे करें)',
+        rate_inr: 850
+      },
+      {
+        product_code: 'NUT-ZN-BORON-01',
+        product_name: 'चिलेटेड जिंक 12% + बोरॉन 20% कॉम्बो पैक',
+        quantity: 2,
+        dosage_instructions: '500 ग्राम प्रति 200 लीटर पानी (फली भराई से पहले)',
+        rate_inr: 450
+      }
+    ]
+  };
+
+  alert(`🌿 अधिकृत कृषि स्नातक डॉक्टर पर्चा तैयार!\n\nपर्चा नं: ${lastActivePrescriptionData.prescription_no}\nरोग: ${diagnosisName}\n\nआपको अधिकृत क्लिनिक एवं बिलिंग स्क्रीन पर ले जाया जा रहा है...`);
+  switchNav('viewClinic', null);
+  switchClinicSubTab('rx');
+  lookupAgriGraduateRx();
+}
+
+// 19.8 Dispense and Bill Rx Order (Pay-After-Harvest Credit vs. UPI)
+async function dispenseAndBillRxOrder() {
+  const selectedModeInput = document.querySelector('input[name="clinicPaymentMode"]:checked');
+  const paymentMode = selectedModeInput ? selectedModeInput.value : 'PAY_AFTER_HARVEST_CREDIT';
+  const rx = lastActivePrescriptionData || {
+    prescription_no: 'AGRI-RX-2026-0814',
+    farmer_name: 'रमेश पटेल (Ramesh Patel)',
+    mobile_number: '9876543210',
+    village: 'मुल्लापुरा, बड़नगर, उज्जैन',
+    rx_items_json: [
+      { product_code: 'KIT-SOY-YMV-01', product_name: 'सोयाबीन पीला मोजेक डॉक्टर किट', quantity: 3, rate_inr: 850 },
+      { product_code: 'NUT-ZN-BORON-01', product_name: 'चिलेटेड जिंक 12% + बोरॉन 20%', quantity: 2, rate_inr: 450 }
+    ]
+  };
+
+  const orderPayload = {
+    prescriptionNo: rx.prescription_no,
+    farmerName: rx.farmer_name,
+    mobileNumber: rx.mobile_number,
+    village: rx.village,
+    items: (rx.rx_items_json || []).map(i => ({
+      productCode: i.product_code,
+      productName: i.product_name,
+      quantity: i.quantity,
+      rate: i.rate_inr
+    })),
+    paymentMode: paymentMode,
+    harvestCreditDueDate: '2026-11-20 (सोयाबीन विक्रय उपरांत)'
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderPayload)
+    });
+    const data = await res.json();
+    alert(`📜 GST चालान एवं दवाइयां डिस्पैच!\n\nऑर्डर नं: ${data.order?.order_no || 'ORD-2026-DISP'}\nचालान रसीद: ${data.order?.invoice_docket || 'INV-MP-UJJ-2026'}\nभुगतान: ${paymentMode === 'PAY_AFTER_HARVEST_CREDIT' ? 'फसल कटाई बाद भुगतान (किसान बही-खाता अपडेट)' : 'तत्काल UPI / COD'}\n\nडिजिटल SMS रसीद + WhatsApp पर्चा किसान को प्रेषित किया गया।`);
+    switchClinicSubTab('khata');
+    loadFarmerKhataLedger(rx.mobile_number);
+  } catch (err) {
+    alert(`📜 GST चालान एवं दवाइयां डिस्पैच!\n\nभुगतान: ${paymentMode === 'PAY_AFTER_HARVEST_CREDIT' ? 'फसल कटाई बाद भुगतान (किसान बही-खाता अपडेट)' : 'तत्काल UPI / COD'}\n\nडिजिटल SMS रसीद + WhatsApp पर्चा किसान को प्रेषित किया गया।`);
+    switchClinicSubTab('khata');
+    loadFarmerKhataLedger('9876543210');
+  }
+}
+
+// 19.9 Farmer Bahi-Khata Credit Ledger Loader
+async function loadFarmerKhataLedger(mobileNumber = '9876543210') {
+  let khata = null;
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/khata/${mobileNumber}`);
+    khata = await res.json();
+    activeFarmerKhataData = khata;
+  } catch (err) {
+    khata = {
+      farmerName: 'रमेश पटेल (Ramesh Patel)',
+      mobileNumber: mobileNumber,
+      totalCreditLimit: 25000,
+      totalOutstandingCredit: 2200,
+      totalSettledCredit: 1000,
+      orders: [
+        {
+          order_no: 'ORD-KHATA-2026-1049',
+          prescription_no: 'AGRI-RX-2026-0814',
+          net_payable_inr: 3200,
+          credit_settled_amount_inr: 1000,
+          payment_mode: 'PAY_AFTER_HARVEST_CREDIT',
+          harvest_credit_due_date: '2026-11-20 (सोयाबीन मंडी विक्रय उपरांत)',
+          invoice_docket: 'INV-MP-UJJ-2026-88321',
+          order_status: 'CONFIRMED_DISPATCH',
+          created_at: '2026-10-18T10:30:00Z',
+          items_json: [
+            { name: 'सोयाबीन पीला मोजेक डॉक्टर किट (x3)', amount: 2550 },
+            { name: 'चिलेटेड जिंक 12% + बोरॉन 20% (x2)', amount: 900 }
+          ]
+        }
+      ]
+    };
+    activeFarmerKhataData = khata;
+  }
+
+  const nameEl = document.getElementById('khataFarmerName');
+  const limitEl = document.getElementById('khataTotalCreditLimit');
+  const dueEl = document.getElementById('khataOutstandingDue');
+  const settledEl = document.getElementById('khataSettledAmount');
+  const ordersListEl = document.getElementById('khataOrdersList');
+
+  if (nameEl) nameEl.innerText = `${khata.farmerName} (खाता #${khata.mobileNumber})`;
+  if (limitEl) limitEl.innerText = `₹ ${Number(khata.totalCreditLimit).toLocaleString('en-IN')}`;
+  if (dueEl) dueEl.innerText = `₹ ${Number(khata.totalOutstandingCredit).toLocaleString('en-IN')}`;
+  if (settledEl) settledEl.innerText = `₹ ${Number(khata.totalSettledCredit).toLocaleString('en-IN')}`;
+
+  if (ordersListEl) {
+    const orders = khata.orders || [];
+    if (orders.length === 0) {
+      ordersListEl.innerHTML = '<p style="color:#64748b; font-size:11px; text-align:center;">कोई पूर्व उधारी प्रविष्टि नहीं मिली।</p>';
+    } else {
+      ordersListEl.innerHTML = orders.map(ord => `
+        <div class="khata-entry-card">
+          <div class="khata-entry-info">
+            <h6>${ord.order_no} <span class="badge-credit-mode">${ord.payment_mode === 'PAY_AFTER_HARVEST_CREDIT' ? 'फसल उधारी' : 'कैश/UPI'}</span></h6>
+            <p>पर्चा: <code>${ord.prescription_no || 'DIRECT-SALE'}</code> • चालान: ${ord.invoice_docket}</p>
+            <p style="color:#047857;">देय तिथि: ${ord.harvest_credit_due_date || 'मंडी विक्रय उपरांत'}</p>
+          </div>
+          <div class="khata-entry-amt">
+            <strong>₹${Number(ord.net_payable_inr).toLocaleString('en-IN')}</strong>
+            <small style="color:#64748b; font-size:9.5px;">जमा: ₹${Number(ord.credit_settled_amount_inr || 0).toLocaleString('en-IN')}</small>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+// 19.10 Record Credit Repayment / Settlement Modal
+function openKhataSettlementModal() {
+  const amt = prompt('मंडी विक्रय उपरांत आंशिक भुगतान राशि दर्ज करें (₹):', '1000');
+  if (!amt || isNaN(amt) || Number(amt) <= 0) return;
+
+  const num = Number(amt);
+  if (activeFarmerKhataData) {
+    activeFarmerKhataData.totalSettledCredit += num;
+    activeFarmerKhataData.totalOutstandingCredit = Math.max(0, activeFarmerKhataData.totalOutstandingCredit - num);
+  }
+
+  alert(`✅ ₹${num.toLocaleString('en-IN')} का भुगतान बही-खाता में दर्ज किया गया!\n\nरसीद संख्या: REC-MP-UJJ-${Math.floor(10000 + Math.random() * 90000)}\nनया बकाया: ₹${activeFarmerKhataData ? activeFarmerKhataData.totalOutstandingCredit.toLocaleString('en-IN') : '1,200'}\n\nडिजिटल SMS किसान के मोबाइल 9876543210 पर प्रेषित।`);
+  loadFarmerKhataLedger('9876543210');
+}
+
+// 19.11 Consultation Fee Display Updater
+function updateConsultationFeeDisplay() {
+  const typeSelect = document.getElementById('consultTypeSelect');
+  const feeLabel = document.getElementById('consultFeeLabel');
+  if (!typeSelect || !feeLabel) return;
+
+  const val = typeSelect.value;
+  if (val === 'TELE_VIDEO_CALL') {
+    feeLabel.innerText = '₹ 0 (निःशुल्क ACABC योजना)';
+  } else if (val === 'IN_PERSON_FIELD_AUDIT') {
+    feeLabel.innerText = '₹ 499 (खेत विजिट एवं सॉइल ऑडिट)';
+  } else {
+    feeLabel.innerText = '₹ 1,499 (सम्पूर्ण मौसमी फसल सुरक्षा)';
+  }
+}
+
+// 19.12 Submit Graduate Consultation Booking
+async function submitGraduateConsultationBooking() {
+  const typeSelect = document.getElementById('consultTypeSelect');
+  const cropInput = document.getElementById('consultCropName');
+  const acreageInput = document.getElementById('consultAcreage');
+  const slotInput = document.getElementById('consultSlotInput');
+  const notesInput = document.getElementById('consultNotesInput');
+
+  const payload = {
+    farmerName: 'रमेश पटेल (Ramesh Patel)',
+    mobileNumber: '9876543210',
+    cropName: cropInput ? cropInput.value : 'SOYBEAN',
+    acreage: acreageInput ? Number(acreageInput.value) : 3.5,
+    consultationType: typeSelect ? typeSelect.value : 'TELE_VIDEO_CALL',
+    scheduledSlot: slotInput ? slotInput.value : '2026-10-19 शाम 05:30 बजे',
+    agronomistNotes: notesInput ? notesInput.value : 'फसल सुरक्षा लाइव मार्गदर्शन'
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/v1/graduate/consultations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    alert(`📅 परामर्श अपॉइंटमेंट कन्फर्म!\n\nबुकिंग संदर्भ: ${data.booking?.booking_ref || 'CONS-VID-2026'}\nसमय: ${payload.scheduledSlot}\nडॉक्टर: विकास चतुर्वेदी, B.Sc. (Agri), JNKVV\n\nWhatsApp वीडियो कॉल लिंक किसान के फोन पर भेज दिया गया है।`);
+    loadRecentConsultationBookings();
+  } catch (err) {
+    alert(`📅 परामर्श अपॉइंटमेंट कन्फर्म!\n\nसमय: ${payload.scheduledSlot}\nडॉक्टर: विकास चतुर्वेदी, B.Sc. (Agri), JNKVV\n\nWhatsApp वीडियो कॉल लिंक किसान के फोन पर भेज दिया गया है।`);
+    loadRecentConsultationBookings();
+  }
+}
+
+// 19.13 Load Recent Consultations List
+function loadRecentConsultationBookings() {
+  const listEl = document.getElementById('recentConsultBookingsList');
+  if (!listEl) return;
+
+  const bookings = [
+    {
+      ref: 'CONS-VID-2026-4412',
+      type: 'व्हाट्सएप HD वीडियो परामर्श',
+      slot: '2026-10-19 शाम 05:30 बजे',
+      crop: 'सोयाबीन (3.5 एकड़)',
+      status: 'पुष्ट (Confirmed)'
+    }
+  ];
+
+  listEl.innerHTML = bookings.map(b => `
+    <div class="consult-booking-card">
+      <div>
+        <strong>${b.type}</strong>
+        <div style="font-size:10.5px; color:#64748b;">संदर्भ: <code>${b.ref}</code> • ${b.crop}</div>
+        <div style="font-size:10.5px; color:#047857;"><i class="fa-solid fa-clock"></i> ${b.slot}</div>
+      </div>
+      <span class="badge-status-valid">${b.status}</span>
+    </div>
+  `).join('');
+}
+
+// 19.14 Statutory Credentials Information Modal
+function showGraduateStatutoryCredentialsModal() {
+  alert(
+    `🏛️ अधिकृत कृषि स्नातक वैधानिक प्रत्यय-पत्र (Statutory Accreditation Vault)\n\n` +
+    `👤 स्नातक: विकास चतुर्वेदी (Vikas Chaturvedi)\n` +
+    `🎓 योग्यता: B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Technology\n` +
+    `🏛️ विश्वविद्यालय: जवाहरलाल नेहरू कृषि विश्वविद्यालय (JNKVV), जबलपुर (2021)\n\n` +
+    `📜 विधिक लाइसेंस एवं पंजीकरण (Statutory Licenses):\n` +
+    `1. बीज अधिनियम 1966 धारा 7: MP/UJJ/SEED-LIC/1966/ACT-8420\n` +
+    `2. उर्वरक नियंत्रण आदेश (FCO) 1985: MP/UJJ/FCO-1985/DEALER-4910\n` +
+    `3. कीटनाशी अधिनियम 1968 CIB&RC: MP/UJJ/INSECT-1968/CIBRC-6021\n` +
+    `4. DGCA अनुमोदित कृषि ड्रोन पायलट RPC: DGCA/RPC/ROTOR-AGRI/2024/0932\n` +
+    `5. ACABC / MANAGE / कृषि मंत्रालय पंजीयन: MANAGE/ACABC/MP-UJ/2022/9481\n` +
+    `6. डिजिटल अधिकृत मुहर कोड: DIGI-STAMP-JNKVV-AGRI-GRAD-7749\n\n` +
+    `⚖️ भारत सरकार के नियमों के अनुसार कृषि स्नातक को किसानों के लिए कस्टम उर्वरक मिश्रण, प्रमाणित बीज विक्रय तथा पर्चा जारी करने का पूर्ण कानूनी अधिकार प्राप्त है।`
+  );
+}
+
+
 
 

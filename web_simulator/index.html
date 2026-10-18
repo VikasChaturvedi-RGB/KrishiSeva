@@ -312,10 +312,10 @@
                   <h6 id="homeTileRx">सक्रिय पर्चा</h6>
                   <span class="tile-sub text-green">जिंक सल्फेट 21%</span>
                 </div>
-                <div class="quick-tile" onclick="switchNav('viewClinic', document.getElementById('navClinic'))">
-                  <div class="tile-icon clinic-icon"><i class="fa-solid fa-shop"></i></div>
-                  <h6 id="homeTileClinic">कृषि क्लिनिक</h6>
-                  <span class="tile-sub">दुकान पर स्टॉक उपलब्ध</span>
+                <div class="quick-tile" onclick="switchNav('viewClinic', null)">
+                  <div class="tile-icon clinic-icon"><i class="fa-solid fa-user-graduate"></i></div>
+                  <h6 id="homeTileClinic">अधिकृत कृषि स्नातक</h6>
+                  <span class="tile-sub text-green">प्रमाणित बीज, समाधान व बही-खाता</span>
                 </div>
                 <div class="quick-tile" onclick="switchNav('viewEscalation', null)">
                   <div class="tile-icon kvk-icon"><i class="fa-solid fa-headset"></i></div>
@@ -748,13 +748,32 @@
                 </div>
               </div>
 
+              <!-- Innovative Licensed Agri-Graduate Doctor Curative Kit Order Banner -->
+              <div class="graduate-kit-cta-box" id="graduateKitCtaBox">
+                <div class="cta-top-row">
+                  <div class="graduate-badge-gold">
+                    <i class="fa-solid fa-award"></i> B.Sc. (Agri) अधिकृत क्लीनिकल समाधान
+                  </div>
+                  <span class="acabc-tag"><i class="fa-solid fa-shield-halved"></i> JNKVV / ACABC प्रमाणित</span>
+                </div>
+                <div class="cta-body">
+                  <div class="cta-text">
+                    <h5>🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध</h5>
+                    <p>चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)</p>
+                  </div>
+                  <button class="btn btn-gold btn-block" onclick="convertActiveDiagnosisToRxAndCart()">
+                    <i class="fa-solid fa-cart-shopping"></i> डॉक्टर किट ऑर्डर करें (Rx-to-Cart)
+                  </button>
+                </div>
+              </div>
+
               <!-- Bottom CTA Buttons -->
               <div class="rx-bottom-actions">
                 <button class="btn btn-outline btn-block" onclick="retakePhotoFromInnerScreen()">
                   <i class="fa-solid fa-camera-rotate"></i> <span id="rxBottomRetakeText">अन्य पौधे की जांच करें (Retake)</span>
                 </button>
-                <button class="btn btn-primary btn-block" onclick="switchNav('viewClinic', document.querySelectorAll('.nav-item')[4])">
-                  <i class="fa-solid fa-shop"></i> <span id="rxOrderBtnText">नजदीकी कृषि सेवा केंद्र से मंगवाएं</span>
+                <button class="btn btn-primary btn-block" onclick="switchNav('viewClinic', null)">
+                  <i class="fa-solid fa-graduation-cap"></i> <span id="rxOrderBtnText">अधिकृत कृषि स्नातक क्लिनिक खोलें</span>
                 </button>
               </div>
             </div>
@@ -814,66 +833,322 @@
           </section>
 
           <!-- ================================================================ -->
-          <!-- Screen 8: Agri-Clinic Retailer & POS Kiosk Mode -->
+          <!-- Screen 8: Licensed Agriculture Graduate Statutory Clinic & Commerce Hub -->
           <!-- ================================================================ -->
           <section id="viewClinic" class="screen-view">
             <div class="clinic-container">
+              
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
                   <i class="fa-solid fa-house"></i> <span>होम</span>
                 </button>
+                <span class="sub-header-title">अधिकृत कृषि स्नातक क्लिनिक</span>
+                <button class="btn-help-pill" onclick="showGraduateStatutoryCredentialsModal()" title="वैधानिक लाइसेंस व प्रमाण-पत्र">
+                  <i class="fa-solid fa-id-card"></i>
+                </button>
               </div>
 
-              <div class="clinic-top">
-                <div class="clinic-badge">
-                  <i class="fa-solid fa-shop"></i>
-                  <span>कृषि सेवा केंद्र (Agri-Clinic POS)</span>
+              <!-- Statutory Accreditation & License Vault Banner -->
+              <div class="graduate-statutory-banner" id="graduateStatutoryBanner">
+                <div class="grad-banner-header">
+                  <div class="grad-avatar">
+                    <i class="fa-solid fa-user-graduate"></i>
+                  </div>
+                  <div class="grad-meta">
+                    <div class="grad-name-row">
+                      <h4 id="gradNameText">विकास चतुर्वेदी (Vikas Chaturvedi)</h4>
+                      <span class="verified-seal"><i class="fa-solid fa-circle-check"></i> अधिकृत B.Sc. (Agri)</span>
+                    </div>
+                    <p class="grad-degree" id="gradDegreeText">B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Tech</p>
+                    <p class="grad-uni" id="gradUniText">जवाहरलाल नेहरू कृषि विश्वविद्यालय (JNKVV), जबलपुर</p>
+                  </div>
                 </div>
-                <h3 id="clinicTitleText">किसान पर्चा सत्यापन एवं बिलिंग</h3>
+
+                <!-- Statutory License Badges Ribbon -->
+                <div class="statutory-ribbon">
+                  <div class="statutory-pill" title="बीज अधिनियम 1966 के तहत अधिकृत विक्रय लाइसेंस">
+                    <i class="fa-solid fa-seedling text-green"></i> <span>Seeds Act 1966: <strong>MP/UJJ/8420</strong></span>
+                  </div>
+                  <div class="statutory-pill" title="उर्वरक नियंत्रण आदेश 1985 के तहत अधिकृत पोषक तत्व डीलर">
+                    <i class="fa-solid fa-flask-vial text-blue"></i> <span>FCO 1985: <strong>MP/UJJ/4910</strong></span>
+                  </div>
+                  <div class="statutory-pill" title="कीटनाशी अधिनियम 1968 लाइसेंस">
+                    <i class="fa-solid fa-shield-virus text-amber"></i> <span>Insecticides Act: <strong>CIBRC-6021</strong></span>
+                  </div>
+                  <div class="statutory-pill" title="DGCA अनुमोदित कृषि ड्रोन पायलट RPC">
+                    <i class="fa-solid fa-helicopter text-purple"></i> <span>DGCA Drone RPC: <strong>ROTOR-0932</strong></span>
+                  </div>
+                  <div class="statutory-pill" title="MANAGE / कृषि मंत्रालय ACABC पंजीकृत">
+                    <i class="fa-solid fa-building-columns text-slate"></i> <span>ACABC Reg: <strong>MANAGE-9481</strong></span>
+                  </div>
+                  <div class="statutory-pill" title="डिजिटल हस्ताक्षर मुहर">
+                    <i class="fa-solid fa-stamp text-red"></i> <span>Stamp: <strong>JNKVV-7749</strong></span>
+                  </div>
+                </div>
               </div>
 
-              <div class="search-farmer-group">
-                <input type="text" id="clinicSearch" placeholder="किसान मोबाइल या पर्चा ID खोजें..." value="9876543210">
-                <button class="btn-search-clinic" onclick="lookupClinicFarmer()"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <!-- Clinic Feature Navigation Tabs -->
+              <div class="clinic-sub-tabs">
+                <button class="clinic-tab-btn active" id="btnClinicTabProducts" onclick="switchClinicSubTab('products')">
+                  <i class="fa-solid fa-boxes-stacked"></i> <span>प्रमाणित बीज व भंडार</span>
+                </button>
+                <button class="clinic-tab-btn" id="btnClinicTabRx" onclick="switchClinicSubTab('rx')">
+                  <i class="fa-solid fa-prescription"></i> <span>Agri-Rx बिलिंग</span>
+                </button>
+                <button class="clinic-tab-btn" id="btnClinicTabKhata" onclick="switchClinicSubTab('khata')">
+                  <i class="fa-solid fa-book-bookmark"></i> <span>बही-खाता (Pay Later)</span>
+                </button>
+                <button class="clinic-tab-btn" id="btnClinicTabConsult" onclick="switchClinicSubTab('consult')">
+                  <i class="fa-solid fa-video"></i> <span>परामर्श व ड्रोन ऑडिट</span>
+                </button>
               </div>
 
-              <div class="clinic-farmer-card">
-                <div class="cf-header">
+              <!-- ============================================== -->
+              <!-- SUB-TAB 1: Certified Seeds & Custom Nutrition Store -->
+              <!-- ============================================== -->
+              <div id="clinicTabContentProducts" class="clinic-tab-pane">
+                
+                <!-- Category Filter Pills -->
+                <div class="product-category-bar">
+                  <button class="prod-cat-chip active" onclick="filterClinicProducts('ALL', this)">सभी उत्पाद (All)</button>
+                  <button class="prod-cat-chip" onclick="filterClinicProducts('CERTIFIED_SEED', this)">🌾 प्रमाणित बीज</button>
+                  <button class="prod-cat-chip" onclick="filterClinicProducts('CUSTOM_MICRONUTRIENT', this)">🧪 कस्टम सूक्ष्म पोषक</button>
+                  <button class="prod-cat-chip" onclick="filterClinicProducts('DISEASE_SOLUTION_KIT', this)">🩺 डॉक्टर क्योर किट</button>
+                  <button class="prod-cat-chip" onclick="filterClinicProducts('BIO_FERTILIZER', this)">🦠 बायो-कल्चर (ZSB)</button>
+                  <button class="prod-cat-chip" onclick="filterClinicProducts('BIO_PESTICIDE', this)">🛡️ बायो-फंगीसाइड</button>
+                </div>
+
+                <!-- Products Grid / List -->
+                <div class="clinic-product-list" id="clinicProductList">
+                  <div class="loading-state-box">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> अधिकृत उत्पाद भंडार लोड हो रहा है...
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============================================== -->
+              <!-- SUB-TAB 2: Official Digital Prescription & Billing -->
+              <!-- ============================================== -->
+              <div id="clinicTabContentRx" class="clinic-tab-pane hidden">
+                
+                <div class="search-farmer-group">
+                  <input type="text" id="clinicSearchInput" placeholder="किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें..." value="9876543210">
+                  <button class="btn-search-clinic" onclick="lookupAgriGraduateRx()"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+
+                <!-- Digital Agri-Rx Stamped Prescription Display -->
+                <div class="digital-agri-rx-card" id="digitalAgriRxCard">
+                  <div class="rx-card-top">
+                    <div class="rx-clinic-emblem">
+                      <i class="fa-solid fa-stamp"></i>
+                      <span>अधिकृत डिजिटल पर्चा (Agri-Rx)</span>
+                    </div>
+                    <span class="rx-no-tag" id="rxCardNoTag">AGRI-RX-2026-0814</span>
+                  </div>
+
+                  <div class="rx-farmer-details" id="rxFarmerDetailsBox">
+                    <div class="rx-farmer-meta">
+                      <strong id="rxFarmerName">रमेश पटेल (Ramesh Patel)</strong>
+                      <span id="rxFarmerMobile"><i class="fa-solid fa-phone"></i> +91 9876543210</span>
+                      <p id="rxFarmerVillage"><i class="fa-solid fa-location-dot"></i> मुल्लापुरा, बड़नगर, उज्जैन | 3.5 एकड़</p>
+                    </div>
+                    <div class="rx-diag-badge" id="rxDiagBadge">
+                      <i class="fa-solid fa-triangle-exclamation"></i>
+                      <span id="rxDiagnosisTitle">सोयाबीन पीला मोजेक वायरस (YMV)</span>
+                    </div>
+                  </div>
+
+                  <!-- Prescribed Products Table -->
+                  <div class="rx-items-table-wrapper">
+                    <table class="rx-table" id="rxItemsTable">
+                      <thead>
+                        <tr>
+                          <th>प्रमाणित उत्पाद / किट</th>
+                          <th>मात्रा</th>
+                          <th>अनुमोदित प्रयोग विधि</th>
+                          <th>राशि</th>
+                        </tr>
+                      </thead>
+                      <tbody id="rxItemsTbody">
+                        <!-- Populated dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Doctor Scientific Notes -->
+                  <div class="rx-doctor-note-box">
+                    <div class="dr-note-title">
+                      <i class="fa-solid fa-user-doctor"></i> अधिकृत कृषि स्नातक परामर्श निर्देश:
+                    </div>
+                    <p id="rxDoctorNotesText">दिन के समय तेज धूप में छिड़काव न करें। सुबह 07:00 से 10:00 बजे के बीच सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप रिपोर्ट दें।</p>
+                  </div>
+
+                  <!-- Statutory Sign & Stamp -->
+                  <div class="rx-signature-row">
+                    <div class="rx-stamp-box">
+                      <i class="fa-solid fa-certificate text-green"></i>
+                      <div>
+                        <small>डिजिटल अधिकृत मुहर:</small>
+                        <code id="rxStampCode">DIGI-STAMP-JNKVV-AGRI-GRAD-7749</code>
+                      </div>
+                    </div>
+                    <div class="rx-acabc-box">
+                      <small>MANAGE / ACABC Reg:</small>
+                      <strong id="rxAcabcReg">MANAGE/ACABC/MP-UJ/2022/9481</strong>
+                    </div>
+                  </div>
+
+                  <!-- Order Billing & Payment Mode Selection -->
+                  <div class="rx-billing-action-box">
+                    <div class="billing-total-row">
+                      <span>कुल बिल राशि (Net Amount):</span>
+                      <strong class="total-amt-text" id="rxBillingTotalAmt">₹ 3,200.00</strong>
+                    </div>
+
+                    <div class="payment-mode-selector">
+                      <label class="pay-radio-label">
+                        <input type="radio" name="clinicPaymentMode" value="PAY_AFTER_HARVEST_CREDIT" checked>
+                        <div class="pay-option-card">
+                          <i class="fa-solid fa-wheat-awn text-green"></i>
+                          <div>
+                            <strong>फसल कटाई बाद भुगतान (Pay-After-Harvest)</strong>
+                            <small>बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय</small>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="pay-radio-label">
+                        <input type="radio" name="clinicPaymentMode" value="UPI_INSTANT">
+                        <div class="pay-option-card">
+                          <i class="fa-solid fa-qrcode text-blue"></i>
+                          <div>
+                            <strong>तत्काल UPI / कैश ऑन डिलीवरी (COD)</strong>
+                            <small>5% तुरंत नकद छूट (Instant Discount)</small>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+
+                    <button class="btn btn-primary btn-block btn-lg" onclick="dispenseAndBillRxOrder()">
+                      <i class="fa-solid fa-file-invoice-dollar"></i> GST चालान जारी करें एवं डिस्पैच करें
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ============================================== -->
+              <!-- SUB-TAB 3: Farmer Bahi-Khata Credit Ledger -->
+              <!-- ============================================== -->
+              <div id="clinicTabContentKhata" class="clinic-tab-pane hidden">
+                <div class="khata-header-card">
+                  <div class="khata-top">
+                    <div>
+                      <span class="khata-badge"><i class="fa-solid fa-book"></i> डिजिटल किसान बही-खाता</span>
+                      <h4 id="khataFarmerName">रमेश पटेल (खाता #KHT-9876543210)</h4>
+                    </div>
+                    <button class="btn btn-xs btn-outline" onclick="loadFarmerKhataLedger()"><i class="fa-solid fa-arrows-rotate"></i> रीफ्रेश</button>
+                  </div>
+
+                  <div class="khata-metrics-grid">
+                    <div class="khata-metric-box">
+                      <span class="lbl">कुल स्वीकृत क्रेडिट</span>
+                      <strong class="text-blue" id="khataTotalCreditLimit">₹ 25,000</strong>
+                      <small>ACABC स्नातक गारंटी</small>
+                    </div>
+                    <div class="khata-metric-box highlight-due">
+                      <span class="lbl">वर्तमान देय राशि (Outstanding)</span>
+                      <strong class="text-red" id="khataOutstandingDue">₹ 2,200</strong>
+                      <small id="khataDueDate">देय: 20 Nov 2026</small>
+                    </div>
+                    <div class="khata-metric-box">
+                      <span class="lbl">जमा की गई राशि (Settled)</span>
+                      <strong class="text-green" id="khataSettledAmount">₹ 1,000</strong>
+                      <small>मंडी चालान द्वारा</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Ledger Entries List -->
+                <div class="khata-ledger-box">
+                  <div class="section-title-row">
+                    <h5>हालिया आदेश एवं क्रेडिट प्रविष्टियां</h5>
+                    <button class="btn btn-xs btn-primary" onclick="openKhataSettlementModal()"><i class="fa-solid fa-plus"></i> भुगतान दर्ज करें</button>
+                  </div>
+                  <div class="khata-orders-list" id="khataOrdersList">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- ============================================== -->
+              <!-- SUB-TAB 4: Tele-Agronomy & Drone Field Audit Booking -->
+              <!-- ============================================== -->
+              <div id="clinicTabContentConsult" class="clinic-tab-pane hidden">
+                
+                <div class="consult-intro-card">
+                  <div class="consult-icon-circle">
+                    <i class="fa-solid fa-headset"></i>
+                  </div>
                   <div>
-                    <strong>रामेश्वर पाटीदार (Rameshwar Patidar)</strong>
-                    <p>ग्राम: धरमपुरी, धार (म.प्र.) | 3.5 एकड़</p>
+                    <h4>विशेषज्ञ कृषि स्नातक से सीधा परामर्श</h4>
+                    <p>व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।</p>
                   </div>
-                  <span class="badge-status-valid"><i class="fa-solid fa-check-double"></i> वैध पर्चा</span>
                 </div>
 
-                <div class="clinic-rx-items">
-                  <div class="rx-item-row">
-                    <div>
-                      <h6>जिंक सल्फेट 21% (ZnSO4)</h6>
-                      <p>मात्रा: <strong>1.75 किग्रा</strong> (3.5 एकड़)</p>
+                <div class="consult-booking-form">
+                  <div class="form-group">
+                    <label>परामर्श का प्रकार (Consultation Type):</label>
+                    <select id="consultTypeSelect" class="form-select" onchange="updateConsultationFeeDisplay()">
+                      <option value="TELE_VIDEO_CALL">📱 व्हाट्सएप HD लाइव वीडियो कॉल (15 मिनट - निःशुल्क ACABC)</option>
+                      <option value="IN_PERSON_FIELD_AUDIT">🚜 खेत पर व्यक्तिगत फसल ऑडिट एवं मृदा जांच (₹499)</option>
+                      <option value="SEASONAL_CROP_CARE_CONTRACT">📋 सम्पूर्ण मौसमी फसल सुरक्षा अनुबंध (बुवाई से कटाई - ₹1,499)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-row-2">
+                    <div class="form-group">
+                      <label>फसल का नाम (Crop):</label>
+                      <input type="text" id="consultCropName" class="form-control" value="सोयाबीन (Soybean)">
                     </div>
-                    <span class="item-price">₹ 140.00</span>
-                  </div>
-                  <div class="rx-item-row">
-                    <div>
-                      <h6>जिंक सोल्युबिलाइजिंग बायो-बैक्टीरिया (ZSB)</h6>
-                      <p>मात्रा: <strong>3.5 किग्रा</strong> (मृदा उपचार)</p>
+                    <div class="form-group">
+                      <label>रकबा (Acreage):</label>
+                      <input type="number" id="consultAcreage" class="form-control" value="3.5" step="0.5">
                     </div>
-                    <span class="item-price">₹ 280.00</span>
                   </div>
-                </div>
 
-                <div class="clinic-total-row">
-                  <span>कुल देय राशि (Total Amount):</span>
-                  <strong class="text-green">₹ 420.00</strong>
-                </div>
+                  <div class="form-group">
+                    <label>तारीख एवं समय स्लॉट (Date & Time):</label>
+                    <input type="text" id="consultSlotInput" class="form-control" value="2026-10-19 शाम 05:30 बजे (Live HD Video)">
+                  </div>
 
-                <div class="clinic-btn-group">
-                  <button class="btn btn-primary btn-block" onclick="alert('डिजिटल GST बिल व SMS रसीद किसान के मोबाइल पर भेजी गई!')">
-                    <i class="fa-solid fa-receipt"></i> बिल प्रिंट / SMS रसीद भेजें
+                  <div class="form-group">
+                    <label>समस्या या लक्षण (Problem Description):</label>
+                    <textarea id="consultNotesInput" class="form-control" rows="2" placeholder="पत्तियों पर पीले धब्बे, फलियों में दाने न भरना..."></textarea>
+                  </div>
+
+                  <div class="consult-fee-summary">
+                    <span>परामर्श शुल्क (Doctor Fee):</span>
+                    <strong class="text-green" id="consultFeeLabel">₹ 0 (निःशुल्क ACABC योजना)</strong>
+                  </div>
+
+                  <button class="btn btn-primary btn-block btn-lg" onclick="submitGraduateConsultationBooking()">
+                    <i class="fa-solid fa-calendar-check"></i> अपॉइंटमेंट / ऑडिट स्लॉट बुक करें
                   </button>
                 </div>
+
+                <!-- Recent Bookings -->
+                <div class="recent-consult-bookings" id="recentConsultBookingsContainer">
+                  <div class="section-title-row">
+                    <h5>आपकी हालिया परामर्श बुकिंग्स</h5>
+                  </div>
+                  <div id="recentConsultBookingsList">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+
               </div>
+
             </div>
           </section>
 
@@ -1373,7 +1648,7 @@
               </div>
               <div class="db-stat-box">
                 <span class="lbl">Tables</span>
-                <strong id="dbTablesCountLabel">18 Tables</strong>
+                <strong id="dbTablesCountLabel">23 Tables</strong>
               </div>
             </div>
 
@@ -1382,6 +1657,11 @@
               <label><i class="fa-solid fa-table"></i> Select Table:</label>
               <div class="db-pill-list" id="dbTablePills">
                 <button class="pill-btn active" onclick="inspectTable('users', this)">users</button>
+                <button class="pill-btn highlight-pill" onclick="inspectTable('agri_graduate_licenses', this)"><i class="fa-solid fa-user-graduate text-green"></i> agri_graduate_licenses</button>
+                <button class="pill-btn highlight-pill" onclick="inspectTable('certified_input_products', this)"><i class="fa-solid fa-seedling text-green"></i> certified_input_products</button>
+                <button class="pill-btn highlight-pill" onclick="inspectTable('agronomist_prescriptions', this)"><i class="fa-solid fa-prescription text-green"></i> agronomist_prescriptions</button>
+                <button class="pill-btn highlight-pill" onclick="inspectTable('farmer_orders_and_khata', this)"><i class="fa-solid fa-book-bookmark text-green"></i> farmer_orders_and_khata</button>
+                <button class="pill-btn highlight-pill" onclick="inspectTable('agri_consultation_bookings', this)"><i class="fa-solid fa-headset text-green"></i> agri_consultation_bookings</button>
                 <button class="pill-btn highlight-pill" onclick="inspectTable('state_agro_challenges', this)"><i class="fa-solid fa-map-location-dot text-green"></i> state_agro_challenges</button>
                 <button class="pill-btn highlight-pill" onclick="inspectTable('chc_machinery_bookings', this)"><i class="fa-solid fa-helicopter text-green"></i> chc_machinery_bookings</button>
                 <button class="pill-btn highlight-pill" onclick="inspectTable('mandi_prices', this)"><i class="fa-solid fa-indian-rupee-sign text-green"></i> mandi_prices</button>

@@ -159,7 +159,12 @@ export class AppDatabase {
       'scheme_applications',
       'community_outbreaks',
       'state_agro_challenges',
-      'chc_machinery_bookings'
+      'chc_machinery_bookings',
+      'agri_graduate_licenses',
+      'certified_input_products',
+      'agronomist_prescriptions',
+      'farmer_orders_and_khata',
+      'agri_consultation_bookings'
     ];
 
     const tableCounts: Record<string, number> = {};

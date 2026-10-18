@@ -391,3 +391,120 @@ CREATE TABLE IF NOT EXISTS chc_machinery_bookings (
 CREATE INDEX IF NOT EXISTS idx_chc_booking_state ON chc_machinery_bookings(state_code);
 CREATE INDEX IF NOT EXISTS idx_chc_booking_mobile ON chc_machinery_bookings(mobile_number);
 
+-- 19. Agriculture Graduate Statutory Licenses & Accreditation Vault
+CREATE TABLE IF NOT EXISTS agri_graduate_licenses (
+    id TEXT PRIMARY KEY,
+    graduate_name TEXT NOT NULL,
+    qualification TEXT NOT NULL, -- e.g. 'B.Sc. (Hons) Agriculture'
+    university TEXT NOT NULL,
+    passing_year INTEGER NOT NULL,
+    acabc_reg_no TEXT NOT NULL, -- Ministry of Agriculture / MANAGE / NABARD
+    seed_license_no TEXT NOT NULL, -- Seeds Act 1966 statutory dealer license
+    fertilizer_license_no TEXT NOT NULL, -- FCO 1985 license
+    insecticide_license_no TEXT NOT NULL, -- Insecticides Act 1968 license
+    drone_pilot_license_no TEXT NOT NULL, -- DGCA Agri-Drone RPC
+    clinic_name_hi TEXT NOT NULL,
+    clinic_name_en TEXT NOT NULL,
+    state TEXT NOT NULL,
+    district TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    digital_stamp_code TEXT NOT NULL,
+    consultation_fee_inr REAL NOT NULL DEFAULT 250,
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_grad_mobile ON agri_graduate_licenses(mobile_number);
+
+-- 20. Certified Input Products (Seeds, Custom Nutrients, Bio-Control & Solution Bundles)
+CREATE TABLE IF NOT EXISTS certified_input_products (
+    id TEXT PRIMARY KEY,
+    product_code TEXT UNIQUE NOT NULL,
+    category TEXT NOT NULL CHECK(category IN ('CERTIFIED_SEED', 'CUSTOM_MICRONUTRIENT', 'BIO_FERTILIZER', 'BIO_PESTICIDE', 'DISEASE_SOLUTION_KIT')),
+    crop_code TEXT NOT NULL,
+    product_name_hi TEXT NOT NULL,
+    product_name_en TEXT NOT NULL,
+    brand_or_source TEXT NOT NULL,
+    composition_or_variety TEXT NOT NULL,
+    lot_number TEXT NOT NULL,
+    germination_pct REAL,
+    purity_pct REAL,
+    unit_spec TEXT NOT NULL,
+    mrp_inr REAL NOT NULL,
+    farmer_price_inr REAL NOT NULL,
+    stock_quantity INTEGER NOT NULL DEFAULT 100,
+    prescribed_dosage_per_acre TEXT NOT NULL,
+    scientific_solution_note_hi TEXT NOT NULL,
+    cibrc_or_fco_reg TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_prod_category ON certified_input_products(category);
+CREATE INDEX IF NOT EXISTS idx_prod_crop ON certified_input_products(crop_code);
+
+-- 21. Agronomist Digital Prescriptions (Agri-Rx / किसान कृषि पर्चा)
+CREATE TABLE IF NOT EXISTS agronomist_prescriptions (
+    id TEXT PRIMARY KEY,
+    prescription_no TEXT UNIQUE NOT NULL,
+    farmer_id TEXT,
+    farmer_name TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    village TEXT NOT NULL,
+    crop_name TEXT NOT NULL,
+    acreage REAL NOT NULL,
+    diagnosis_id TEXT,
+    primary_diagnosis_hi TEXT NOT NULL,
+    rx_items_json TEXT NOT NULL, -- JSON Array of prescribed products & dosages
+    doctor_notes_hi TEXT NOT NULL,
+    graduate_reg_no TEXT NOT NULL,
+    digital_signature_stamp TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PRESCRIBED' CHECK(status IN ('PRESCRIBED', 'DISPENSED', 'PARTIAL_DISPENSED')),
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_rx_no ON agronomist_prescriptions(prescription_no);
+CREATE INDEX IF NOT EXISTS idx_rx_mobile ON agronomist_prescriptions(mobile_number);
+
+-- 22. Farmer Orders & Pay-After-Harvest Credit Khata Ledger
+CREATE TABLE IF NOT EXISTS farmer_orders_and_khata (
+    id TEXT PRIMARY KEY,
+    order_no TEXT UNIQUE NOT NULL,
+    prescription_no TEXT,
+    farmer_name TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    village TEXT NOT NULL,
+    items_json TEXT NOT NULL,
+    total_amount_inr REAL NOT NULL,
+    discount_inr REAL NOT NULL DEFAULT 0,
+    net_payable_inr REAL NOT NULL,
+    payment_mode TEXT NOT NULL CHECK(payment_mode IN ('UPI_INSTANT', 'CASH_ON_DELIVERY', 'PAY_AFTER_HARVEST_CREDIT')),
+    harvest_credit_due_date TEXT,
+    credit_settled_amount_inr REAL NOT NULL DEFAULT 0,
+    invoice_docket TEXT NOT NULL,
+    order_status TEXT NOT NULL DEFAULT 'CONFIRMED_DISPATCH' CHECK(order_status IN ('CONFIRMED_DISPATCH', 'DELIVERED', 'SETTLED', 'CANCELLED')),
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_order_no ON farmer_orders_and_khata(order_no);
+CREATE INDEX IF NOT EXISTS idx_order_mobile ON farmer_orders_and_khata(mobile_number);
+
+-- 23. Tele-Agronomy & Seasonal Crop Care Consultation Bookings
+CREATE TABLE IF NOT EXISTS agri_consultation_bookings (
+    id TEXT PRIMARY KEY,
+    booking_ref TEXT UNIQUE NOT NULL,
+    farmer_name TEXT NOT NULL,
+    mobile_number TEXT NOT NULL,
+    crop_name TEXT NOT NULL,
+    acreage REAL NOT NULL,
+    consultation_type TEXT NOT NULL CHECK(consultation_type IN ('TELE_VIDEO_CALL', 'IN_PERSON_FIELD_AUDIT', 'SEASONAL_CROP_CARE_CONTRACT')),
+    scheduled_slot TEXT NOT NULL,
+    fee_inr REAL NOT NULL,
+    payment_status TEXT NOT NULL DEFAULT 'PAID',
+    agronomist_notes TEXT,
+    status TEXT NOT NULL DEFAULT 'CONFIRMED',
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_consult_ref ON agri_consultation_bookings(booking_ref);
+CREATE INDEX IF NOT EXISTS idx_consult_mobile ON agri_consultation_bookings(mobile_number);
+
+

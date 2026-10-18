@@ -1278,3 +1278,360 @@ export class ChcMachineryBookingRepository {
   }
 }
 
+// -------------------------------------------------------------
+// 9. Agriculture Graduate Statutory Licenses & Product Commerce Repositories
+// -------------------------------------------------------------
+export interface AgriGraduateLicenseRecord {
+  id: string;
+  graduate_name: string;
+  qualification: string;
+  university: string;
+  passing_year: number;
+  acabc_reg_no: string;
+  seed_license_no: string;
+  fertilizer_license_no: string;
+  insecticide_license_no: string;
+  drone_pilot_license_no: string;
+  clinic_name_hi: string;
+  clinic_name_en: string;
+  state: string;
+  district: string;
+  mobile_number: string;
+  digital_stamp_code: string;
+  consultation_fee_inr: number;
+  created_at?: string;
+}
+
+export class AgriGraduateLicenseRepository {
+  static getPrimary(): AgriGraduateLicenseRecord | null {
+    const db = getDb();
+    const row: any = db.prepare('SELECT * FROM agri_graduate_licenses LIMIT 1').get();
+    return row || null;
+  }
+
+  static upsert(record: AgriGraduateLicenseRecord): AgriGraduateLicenseRecord {
+    const db = getDb();
+    const now = record.created_at || new Date().toISOString();
+    db.prepare(`
+      INSERT OR REPLACE INTO agri_graduate_licenses (
+        id, graduate_name, qualification, university, passing_year, acabc_reg_no,
+        seed_license_no, fertilizer_license_no, insecticide_license_no, drone_pilot_license_no,
+        clinic_name_hi, clinic_name_en, state, district, mobile_number, digital_stamp_code,
+        consultation_fee_inr, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      record.id,
+      record.graduate_name,
+      record.qualification,
+      record.university,
+      record.passing_year,
+      record.acabc_reg_no,
+      record.seed_license_no,
+      record.fertilizer_license_no,
+      record.insecticide_license_no,
+      record.drone_pilot_license_no,
+      record.clinic_name_hi,
+      record.clinic_name_en,
+      record.state,
+      record.district,
+      record.mobile_number,
+      record.digital_stamp_code,
+      record.consultation_fee_inr,
+      now
+    );
+    return record;
+  }
+}
+
+export interface CertifiedInputProductRecord {
+  id: string;
+  product_code: string;
+  category: 'CERTIFIED_SEED' | 'CUSTOM_MICRONUTRIENT' | 'BIO_FERTILIZER' | 'BIO_PESTICIDE' | 'DISEASE_SOLUTION_KIT';
+  crop_code: string;
+  product_name_hi: string;
+  product_name_en: string;
+  brand_or_source: string;
+  composition_or_variety: string;
+  lot_number: string;
+  germination_pct?: number | null;
+  purity_pct?: number | null;
+  unit_spec: string;
+  mrp_inr: number;
+  farmer_price_inr: number;
+  stock_quantity: number;
+  prescribed_dosage_per_acre: string;
+  scientific_solution_note_hi: string;
+  cibrc_or_fco_reg: string;
+  created_at?: string;
+}
+
+export class CertifiedInputProductRepository {
+  static listAll(category?: string, cropCode?: string): CertifiedInputProductRecord[] {
+    const db = getDb();
+    let query = 'SELECT * FROM certified_input_products WHERE 1=1';
+    const params: any[] = [];
+    if (category && category !== 'ALL') {
+      query += ' AND category = ?';
+      params.push(category);
+    }
+    if (cropCode && cropCode !== 'ALL') {
+      query += ' AND (UPPER(crop_code) = UPPER(?) OR crop_code = "ALL")';
+      params.push(cropCode);
+    }
+    query += ' ORDER BY category ASC, product_name_hi ASC';
+    return db.prepare(query).all(...params) as unknown as CertifiedInputProductRecord[];
+  }
+
+  static findByCode(code: string): CertifiedInputProductRecord | null {
+    const db = getDb();
+    const row: any = db.prepare('SELECT * FROM certified_input_products WHERE product_code = ?').get(code);
+    return row || null;
+  }
+
+  static upsert(p: CertifiedInputProductRecord): void {
+    const db = getDb();
+    const now = p.created_at || new Date().toISOString();
+    db.prepare(`
+      INSERT OR REPLACE INTO certified_input_products (
+        id, product_code, category, crop_code, product_name_hi, product_name_en,
+        brand_or_source, composition_or_variety, lot_number, germination_pct, purity_pct,
+        unit_spec, mrp_inr, farmer_price_inr, stock_quantity, prescribed_dosage_per_acre,
+        scientific_solution_note_hi, cibrc_or_fco_reg, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      p.id,
+      p.product_code,
+      p.category,
+      p.crop_code,
+      p.product_name_hi,
+      p.product_name_en,
+      p.brand_or_source,
+      p.composition_or_variety,
+      p.lot_number,
+      p.germination_pct ?? null,
+      p.purity_pct ?? null,
+      p.unit_spec,
+      p.mrp_inr,
+      p.farmer_price_inr,
+      p.stock_quantity,
+      p.prescribed_dosage_per_acre,
+      p.scientific_solution_note_hi,
+      p.cibrc_or_fco_reg,
+      now
+    );
+  }
+}
+
+export interface AgronomistPrescriptionRecord {
+  id?: string;
+  prescription_no: string;
+  farmer_id?: string | null;
+  farmer_name: string;
+  mobile_number: string;
+  village: string;
+  crop_name: string;
+  acreage: number;
+  diagnosis_id?: string | null;
+  primary_diagnosis_hi: string;
+  rx_items_json: any[];
+  doctor_notes_hi: string;
+  graduate_reg_no: string;
+  digital_signature_stamp: string;
+  status?: 'PRESCRIBED' | 'DISPENSED' | 'PARTIAL_DISPENSED';
+  created_at?: string;
+}
+
+export class AgronomistPrescriptionRepository {
+  static create(rx: AgronomistPrescriptionRecord): AgronomistPrescriptionRecord {
+    const db = getDb();
+    const id = rx.id || crypto.randomUUID();
+    const now = rx.created_at || new Date().toISOString();
+    const status = rx.status || 'PRESCRIBED';
+
+    db.prepare(`
+      INSERT OR REPLACE INTO agronomist_prescriptions (
+        id, prescription_no, farmer_id, farmer_name, mobile_number, village,
+        crop_name, acreage, diagnosis_id, primary_diagnosis_hi, rx_items_json,
+        doctor_notes_hi, graduate_reg_no, digital_signature_stamp, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      rx.prescription_no,
+      rx.farmer_id || null,
+      rx.farmer_name,
+      rx.mobile_number,
+      rx.village,
+      rx.crop_name,
+      rx.acreage,
+      rx.diagnosis_id || null,
+      rx.primary_diagnosis_hi,
+      JSON.stringify(rx.rx_items_json),
+      rx.doctor_notes_hi,
+      rx.graduate_reg_no,
+      rx.digital_signature_stamp,
+      status,
+      now
+    );
+
+    return {
+      ...rx,
+      id,
+      status,
+      created_at: now
+    };
+  }
+
+  static findByPrescriptionNo(prescriptionNo: string): AgronomistPrescriptionRecord | null {
+    const db = getDb();
+    const row: any = db.prepare('SELECT * FROM agronomist_prescriptions WHERE prescription_no = ?').get(prescriptionNo);
+    if (!row) return null;
+    return {
+      ...row,
+      rx_items_json: JSON.parse(row.rx_items_json || '[]')
+    };
+  }
+
+  static listRecent(limit: number = 20): AgronomistPrescriptionRecord[] {
+    const db = getDb();
+    const rows = db.prepare('SELECT * FROM agronomist_prescriptions ORDER BY created_at DESC LIMIT ?').all(limit) as any[];
+    return rows.map((r) => ({
+      ...r,
+      rx_items_json: JSON.parse(r.rx_items_json || '[]')
+    }));
+  }
+}
+
+export interface FarmerOrderKhataRecord {
+  id?: string;
+  order_no: string;
+  prescription_no?: string | null;
+  farmer_name: string;
+  mobile_number: string;
+  village: string;
+  items_json: any[];
+  total_amount_inr: number;
+  discount_inr: number;
+  net_payable_inr: number;
+  payment_mode: 'UPI_INSTANT' | 'CASH_ON_DELIVERY' | 'PAY_AFTER_HARVEST_CREDIT';
+  harvest_credit_due_date?: string | null;
+  credit_settled_amount_inr: number;
+  invoice_docket: string;
+  order_status: 'CONFIRMED_DISPATCH' | 'DELIVERED' | 'SETTLED' | 'CANCELLED';
+  created_at?: string;
+}
+
+export class FarmerOrderKhataRepository {
+  static create(order: FarmerOrderKhataRecord): FarmerOrderKhataRecord {
+    const db = getDb();
+    const id = order.id || crypto.randomUUID();
+    const now = order.created_at || new Date().toISOString();
+
+    db.prepare(`
+      INSERT OR REPLACE INTO farmer_orders_and_khata (
+        id, order_no, prescription_no, farmer_name, mobile_number, village,
+        items_json, total_amount_inr, discount_inr, net_payable_inr, payment_mode,
+        harvest_credit_due_date, credit_settled_amount_inr, invoice_docket, order_status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      order.order_no,
+      order.prescription_no || null,
+      order.farmer_name,
+      order.mobile_number,
+      order.village,
+      JSON.stringify(order.items_json),
+      order.total_amount_inr,
+      order.discount_inr,
+      order.net_payable_inr,
+      order.payment_mode,
+      order.harvest_credit_due_date || null,
+      order.credit_settled_amount_inr,
+      order.invoice_docket,
+      order.order_status,
+      now
+    );
+
+    return {
+      ...order,
+      id,
+      created_at: now
+    };
+  }
+
+  static listByMobileOrAll(mobile?: string): FarmerOrderKhataRecord[] {
+    const db = getDb();
+    let query = 'SELECT * FROM farmer_orders_and_khata';
+    const params: any[] = [];
+    if (mobile) {
+      query += ' WHERE mobile_number = ? OR mobile_number = ?';
+      params.push(mobile, mobile.replace(/^\+91/, ''));
+    }
+    query += ' ORDER BY created_at DESC LIMIT 30';
+    const rows = db.prepare(query).all(...params) as any[];
+    return rows.map((r) => ({
+      ...r,
+      items_json: JSON.parse(r.items_json || '[]')
+    }));
+  }
+}
+
+export interface AgriConsultationBookingRecord {
+  id?: string;
+  booking_ref: string;
+  farmer_name: string;
+  mobile_number: string;
+  crop_name: string;
+  acreage: number;
+  consultation_type: 'TELE_VIDEO_CALL' | 'IN_PERSON_FIELD_AUDIT' | 'SEASONAL_CROP_CARE_CONTRACT';
+  scheduled_slot: string;
+  fee_inr: number;
+  payment_status: string;
+  agronomist_notes?: string | null;
+  status: string;
+  created_at?: string;
+}
+
+export class AgriConsultationBookingRepository {
+  static create(b: AgriConsultationBookingRecord): AgriConsultationBookingRecord {
+    const db = getDb();
+    const id = b.id || crypto.randomUUID();
+    const now = b.created_at || new Date().toISOString();
+
+    db.prepare(`
+      INSERT OR REPLACE INTO agri_consultation_bookings (
+        id, booking_ref, farmer_name, mobile_number, crop_name, acreage,
+        consultation_type, scheduled_slot, fee_inr, payment_status,
+        agronomist_notes, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      id,
+      b.booking_ref,
+      b.farmer_name,
+      b.mobile_number,
+      b.crop_name,
+      b.acreage,
+      b.consultation_type,
+      b.scheduled_slot,
+      b.fee_inr,
+      b.payment_status,
+      b.agronomist_notes || null,
+      b.status,
+      now
+    );
+
+    return {
+      ...b,
+      id,
+      created_at: now
+    };
+  }
+
+  static listRecent(limit: number = 20): AgriConsultationBookingRecord[] {
+    const db = getDb();
+    return db
+      .prepare('SELECT * FROM agri_consultation_bookings ORDER BY created_at DESC LIMIT ?')
+      .all(limit) as unknown as AgriConsultationBookingRecord[];
+  }
+}
+
+

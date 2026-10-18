@@ -13,7 +13,12 @@ import {
   SchemeApplicationRepository,
   CommunityOutbreakRepository,
   StateAgroChallengeRepository,
-  ChcMachineryBookingRepository
+  ChcMachineryBookingRepository,
+  AgriGraduateLicenseRepository,
+  CertifiedInputProductRepository,
+  AgronomistPrescriptionRepository,
+  FarmerOrderKhataRepository,
+  AgriConsultationBookingRepository
 } from './repositories';
 import { AuthService } from '../services/auth-dpdp/authService';
 
@@ -882,6 +887,295 @@ export class DatabaseSeeder {
       carbon_or_water_reward_hi: '90% पानी बचत (मात्र 10 लीटर/एकड़) + ₹2,200 कीटनाशक खर्च बचाया',
       status: 'CONFIRMED_CHC_ALLOCATED'
     });
+
+    // 13. Seed Licensed Agri-Graduate Accreditation, Certified Seeds & Clinic Store Data
+    this.seedAgriGraduateCommerceData();
+  }
+
+  static seedAgriGraduateCommerceData() {
+    console.log('🎓 Seeding Licensed Agriculture Graduate Accreditation & Input Commerce Hub...');
+
+    // A. Statutory Licenses & Accreditations (B.Sc. Agriculture Graduate - Vikas Chaturvedi)
+    AgriGraduateLicenseRepository.upsert({
+      id: 'AGRI_GRAD_VIKAS_01',
+      graduate_name: 'Vikas Chaturvedi, B.Sc. (Hons) Agriculture',
+      qualification: 'B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Technology',
+      university: 'Jawaharlal Nehru Krishi Vishwa Vidyalaya (JNKVV), Jabalpur',
+      passing_year: 2021,
+      acabc_reg_no: 'MANAGE/ACABC/MP-UJ/2022/9481',
+      seed_license_no: 'MP/UJJ/SEED-LIC/1966/ACT-8420',
+      fertilizer_license_no: 'MP/UJJ/FCO-1985/DEALER-4910',
+      insecticide_license_no: 'MP/UJJ/INSECT-1968/CIBRC-6021',
+      drone_pilot_license_no: 'DGCA/RPC/ROTOR-AGRI/2024/0932',
+      clinic_name_hi: 'विकास कृषि क्लिनिक एवं अधिकृत बीज-समाधान केंद्र',
+      clinic_name_en: 'Vikas Agri-Clinic & Licensed Input Solutions Center',
+      state: 'Madhya Pradesh',
+      district: 'Ujjain',
+      mobile_number: '9800000000',
+      digital_stamp_code: 'DIGI-STAMP-JNKVV-AGRI-GRAD-7749',
+      consultation_fee_inr: 0
+    });
+
+    // B. Certified Input Catalog (Seeds, Custom Micronutrients, Bio-agents & Curative Kits)
+    const certifiedProducts = [
+      {
+        id: 'PROD_SEED_SOY_JS2034',
+        product_code: 'SEED-SOY-JS2034',
+        category: 'CERTIFIED_SEED' as const,
+        crop_code: 'SOYBEAN',
+        product_name_hi: 'प्रमाणित सोयाबीन बीज (JS 20-34) - ब्लू टैग',
+        product_name_en: 'Certified Soybean Seed (JS 20-34) - Blue Tag',
+        brand_or_source: 'JNKVV / MP State Seeds Dev Corp',
+        composition_or_variety: 'JS 20-34 (कम वर्षा व तना मक्खी प्रतिरोधी, 85 दिन परिपक्वता)',
+        lot_number: 'MP-UJ-2026-SOY-901',
+        germination_pct: 88.5,
+        purity_pct: 99.2,
+        unit_spec: '30 kg Bag',
+        mrp_inr: 3200,
+        farmer_price_inr: 2850,
+        stock_quantity: 120,
+        prescribed_dosage_per_acre: '25-30 किग्रा प्रति एकड़ (बीजोपचार उपरांत)',
+        scientific_solution_note_hi: 'बीज विकास निगम द्वारा प्रमाणित। 88% से अधिक अंकुरण गारंटी। तना मक्खी व चारकोल रॉट प्रतिरोधी।',
+        cibrc_or_fco_reg: 'Seeds Act 1966 Sec 7 / MP-SCA-8420'
+      },
+      {
+        id: 'PROD_SEED_WHT_HI1544',
+        product_code: 'SEED-WHT-HI1544',
+        category: 'CERTIFIED_SEED' as const,
+        crop_code: 'WHEAT',
+        product_name_hi: 'प्रमाणित गेहूं बीज (पूर्णा HI-1544) - आधार/प्रमाणित',
+        product_name_en: 'Certified Wheat Seed (HI-1544 Purna)',
+        brand_or_source: 'IARI Regional Station Indore / NSC',
+        composition_or_variety: 'HI-1544 Purna (मध्य भारत चपाती श्रेष्ठ, रस्ट प्रतिरोधी)',
+        lot_number: 'MP-UJ-2026-WHT-410',
+        germination_pct: 93.0,
+        purity_pct: 99.6,
+        unit_spec: '40 kg Bag',
+        mrp_inr: 1800,
+        farmer_price_inr: 1650,
+        stock_quantity: 250,
+        prescribed_dosage_per_acre: '40 किग्रा प्रति एकड़ (सिंचित मध्य मालवा)',
+        scientific_solution_note_hi: 'उत्कृष्ट चमक व प्रोटीन सामग्री। भूरा व पीला रतुआ प्रतिरोधी। औसत उपज 22-25 क्विंटल/एकड़।',
+        cibrc_or_fco_reg: 'Seeds Act 1966 Sec 7 / NSC-7712'
+      },
+      {
+        id: 'PROD_SEED_CHL_TEJA17',
+        product_code: 'SEED-CHL-TEJA17',
+        category: 'CERTIFIED_SEED' as const,
+        crop_code: 'CHILLI',
+        product_name_hi: 'हाइब्रिड तीखी मिर्च बीज (तेजा S-17)',
+        product_name_en: 'High Pungency Hybrid Chilli Seed (Teja S-17)',
+        brand_or_source: 'Andhra AP Seeds Corp / Certified Lot',
+        composition_or_variety: 'Teja S-17 F1 Hybrid (एक्सपोर्ट ग्रेड, लीफ कर्ल सहनशील)',
+        lot_number: 'AP-GNT-2026-CHL-108',
+        germination_pct: 91.0,
+        purity_pct: 99.8,
+        unit_spec: '100 gm Pack',
+        mrp_inr: 1100,
+        farmer_price_inr: 950,
+        stock_quantity: 80,
+        prescribed_dosage_per_acre: '80-100 ग्राम प्रति एकड़ (नर्सरी रोपाई)',
+        scientific_solution_note_hi: 'गहरा लाल रंग और 75,000 SHU तीखापन। चूसक कीटों एवं मरोड़िया रोग के प्रति उच्च सहनशीलता।',
+        cibrc_or_fco_reg: 'Seeds Act 1966 Sec 6 / LIC-4410'
+      },
+      {
+        id: 'PROD_NUT_ZN_BORON',
+        product_code: 'NUT-ZN-BORON-01',
+        category: 'CUSTOM_MICRONUTRIENT' as const,
+        crop_code: 'ALL',
+        product_name_hi: 'चिलेटेड जिंक 12% (Zn-EDTA) + बोरॉन 20% कॉम्बो पैक',
+        product_name_en: 'Chelated Zinc 12% (Zn-EDTA) + Boron 20% Chelate',
+        brand_or_source: 'Krishi Graduate Custom Formulation (FCO Grade)',
+        composition_or_variety: 'Zn-EDTA 12% (250g) + Disodium Octaborate Tetrahydrate 20% (250g)',
+        lot_number: 'MN-2026-ZB-402',
+        germination_pct: null,
+        purity_pct: 99.0,
+        unit_spec: '500 gm Combo',
+        mrp_inr: 550,
+        farmer_price_inr: 450,
+        stock_quantity: 300,
+        prescribed_dosage_per_acre: '1.0 ग्राम जिंक + 0.75 ग्राम बोरॉन प्रति लीटर पानी (200L/एकड़)',
+        scientific_solution_note_hi: 'काली मिट्टी में जिंक लॉक-अप को 100% बायपास करता है। फूलों का झड़ना रोकता है एवं फली भराई में 18% वृद्धि।',
+        cibrc_or_fco_reg: 'Fertilizer (Control) Order 1985 Schedule I(f) Reg: MP-FCO-4910'
+      },
+      {
+        id: 'PROD_BIO_ZSB_RHIZO',
+        product_code: 'BIO-ZSB-RHIZO-01',
+        category: 'BIO_FERTILIZER' as const,
+        crop_code: 'SOYBEAN',
+        product_name_hi: 'जिंक सोल्यूबिलाइजिंग बायो-कल्चर (ZSB) + राइजोबियम कल्चर',
+        product_name_en: 'Zinc Solubilizing Bio-Culture + Rhizobium Consortium',
+        brand_or_source: 'ICAR-IISR Indore Technology Transfer / Agri-Clinic Lab',
+        composition_or_variety: 'Pseudomonas striata (ZSB) + Bradyrhizobium japonicum (1x10^9 CFU/ml)',
+        lot_number: 'BIO-2026-ZSB-882',
+        germination_pct: null,
+        purity_pct: 99.5,
+        unit_spec: '1000 ml Bottle',
+        mrp_inr: 450,
+        farmer_price_inr: 360,
+        stock_quantity: 150,
+        prescribed_dosage_per_acre: '500 मिली प्रति एकड़ (ड्रिप / स्प्रे) अथवा 10 मिली/किग्रा बीज उपचार',
+        scientific_solution_note_hi: 'मिट्टी में फिक्स जिंक को घुलनशील बनाकर जड़ों को उपलब्ध कराता है। रासायनिक जिंक पर निर्भरता 40% कम करता है।',
+        cibrc_or_fco_reg: 'FCO 1985 Biofertilizer Specs Cl. 28B'
+      },
+      {
+        id: 'PROD_BIO_TRICHO_WP',
+        product_code: 'BIO-TRICHO-WP-01',
+        category: 'BIO_PESTICIDE' as const,
+        crop_code: 'ALL',
+        product_name_hi: 'ट्राइकोडर्मा विरिडी 1% WP (बायो-फंगीसाइड)',
+        product_name_en: 'Trichoderma viride 1% WP Bio-Fungicide',
+        brand_or_source: 'IIHR Formula / CIB&RC Licensed',
+        composition_or_variety: 'Trichoderma viride strain 2x10^8 cfu/gm',
+        lot_number: 'TRI-2026-WP-312',
+        germination_pct: null,
+        purity_pct: 98.5,
+        unit_spec: '1 kg Foil Pack',
+        mrp_inr: 280,
+        farmer_price_inr: 220,
+        stock_quantity: 200,
+        prescribed_dosage_per_acre: '1-2 किग्रा/एकड़ गोबर खाद के साथ अथवा 5 ग्राम/ली पानी छिड़काव',
+        scientific_solution_note_hi: 'जड़ सड़न, उकठा (Wilt) और कॉलर रॉट के विरुद्ध 100% जैविक सुरक्षा। जड़ तंत्र को मजबूत करता है।',
+        cibrc_or_fco_reg: 'Insecticides Act 1968 / CIB-CIR-9921'
+      },
+      {
+        id: 'PROD_KIT_SOY_YMV',
+        product_code: 'KIT-SOY-YMV-01',
+        category: 'DISEASE_SOLUTION_KIT' as const,
+        crop_code: 'SOYBEAN',
+        product_name_hi: 'सोयाबीन पीला मोजेक वायरस (YMV) डॉक्टर क्योर किट',
+        product_name_en: 'Soybean Yellow Mosaic Virus Vector Control Doctor Kit',
+        brand_or_source: 'Dr. Vikas Agri-Clinic Tailored Curative Pack',
+        composition_or_variety: 'इमिडाक्लोप्रिड 17.8% SL (100ml) + बायो-शील्ड नीम 10000 PPM (250ml) + चिलेटेड जिंक व सूक्ष्म पोषक तत्व (250g)',
+        lot_number: 'KIT-2026-SYMV-012',
+        germination_pct: null,
+        purity_pct: 100,
+        unit_spec: '1 Complete Acre Kit',
+        mrp_inr: 1050,
+        farmer_price_inr: 850,
+        stock_quantity: 90,
+        prescribed_dosage_per_acre: '1 किट प्रति एकड़ (150-200 लीटर पानी में मिलाकर सुबह छिड़काव)',
+        scientific_solution_note_hi: 'व्हाइटफ्लाई (सफेद मक्खी) वाहक का तुरंत नियंत्रण + पत्तियों में क्लोरोफिल पुनर्जनन हेतु संपूर्ण 3-इन-1 क्लीनिकल किट।',
+        cibrc_or_fco_reg: 'Approved by Registered Agronomist under FCO & CIB&RC'
+      },
+      {
+        id: 'PROD_KIT_COTTON_PBW',
+        product_code: 'KIT-COT_PBW-01',
+        category: 'DISEASE_SOLUTION_KIT' as const,
+        crop_code: 'COTTON',
+        product_name_hi: 'कपास गुलाबी सुंडी व रसचूसक सुरक्षा डॉक्टर किट',
+        product_name_en: 'Cotton Pink Bollworm & Whitefly Doctor Pack',
+        brand_or_source: 'Dr. Vikas Agri-Clinic Tailored Curative Pack',
+        composition_or_variety: 'क्लोरांट्रानिलीप्रोल 18.5% SC (60ml) + 5 फेरोमोन डेल्टा ट्रैप (Pectino-Lure) + बोरॉन 20% (200g)',
+        lot_number: 'KIT-2026-CPBW-007',
+        germination_pct: null,
+        purity_pct: 100,
+        unit_spec: '1 Complete Acre Kit',
+        mrp_inr: 1350,
+        farmer_price_inr: 1150,
+        stock_quantity: 65,
+        prescribed_dosage_per_acre: '1 किट प्रति एकड़ (ट्रैप खेत में लगाएं + शाम को 60ml कीटनाशक व बोरॉन स्प्रे)',
+        scientific_solution_note_hi: 'गुलाबी सुंडी के अंडों व लार्वा का सफाया। बत्ती व फूल गिरने से रोककर टिंडे का आकार 15% बढ़ाता है।',
+        cibrc_or_fco_reg: 'Approved by Registered Agronomist under FCO & CIB&RC'
+      },
+      {
+        id: 'PROD_KIT_CHILLI_CURE',
+        product_code: 'KIT-CHL-DIEBACK-01',
+        category: 'DISEASE_SOLUTION_KIT' as const,
+        crop_code: 'CHILLI',
+        product_name_hi: 'मिर्च डाईबैक व पाउडरी मिल्ड्यू डॉक्टर किट',
+        product_name_en: 'Chilli Dieback & Powdery Mildew Doctor Pack',
+        brand_or_source: 'Dr. Vikas Agri-Clinic Tailored Curative Pack',
+        composition_or_variety: 'एजोक्सीस्ट्रोबिन 18.2% + डिफेनोकोनाजोल 11.4% SC (100ml) + चिलेटेड बोरॉन 20% (100g) + सिलिकॉन स्प्रेडर (50ml)',
+        lot_number: 'KIT-2026-CDIE-003',
+        germination_pct: null,
+        purity_pct: 100,
+        unit_spec: '1 Complete Acre Kit',
+        mrp_inr: 1250,
+        farmer_price_inr: 990,
+        stock_quantity: 75,
+        prescribed_dosage_per_acre: '1 किट प्रति एकड़ (200 लीटर पानी में घोल बनाकर पूरे पौधे पर स्प्रे करें)',
+        scientific_solution_note_hi: 'मिर्च की टहनियों का ऊपर से सूखना (डाईबैक) व फल सड़न तुरंत नियंत्रित। फूलों की संख्या बढ़ाता है।',
+        cibrc_or_fco_reg: 'Approved by Registered Agronomist under FCO & CIB&RC'
+      }
+    ];
+
+    for (const prod of certifiedProducts) {
+      CertifiedInputProductRepository.upsert(prod);
+    }
+
+    // C. Demo Official Agri-Prescription (Agri-Rx)
+    AgronomistPrescriptionRepository.create({
+      id: 'rx-seed-demo-01',
+      prescription_no: 'AGRI-RX-2026-0814',
+      farmer_id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+      farmer_name: 'Ramesh Patel (रमेश पटेल)',
+      mobile_number: '9876543210',
+      village: 'Mullapura, Badnagar, Ujjain',
+      crop_name: 'SOYBEAN',
+      acreage: 3.5,
+      diagnosis_id: 'diag-demo-01',
+      primary_diagnosis_hi: 'सोयाबीन पीला मोजेक वायरस (YMV) एवं तीव्र जिंक-आयरन कमी',
+      rx_items_json: [
+        {
+          product_code: 'KIT-SOY-YMV-01',
+          product_name: 'सोयाबीन पीला मोजेक डॉक्टर किट (3-इन-1 क्लीनिकल पैक)',
+          quantity: 3,
+          dosage_instructions: '1 किट प्रति एकड़ (150-200 लीटर पानी में घोलकर सुबह स्प्रे करें)',
+          rate_inr: 850
+        },
+        {
+          product_code: 'NUT-ZN-BORON-01',
+          product_name: 'चिलेटेड जिंक 12% + बोरॉन 20% कॉम्बो पैक',
+          quantity: 2,
+          dosage_instructions: '500 ग्राम प्रति 200 लीटर पानी (फली भराई से पहले)',
+          rate_inr: 450
+        }
+      ],
+      doctor_notes_hi: 'दिन की तेज धूप में छिड़काव कदापि न करें। सुबह 07:00 से 10:00 बजे के मध्य सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप दें।',
+      graduate_reg_no: 'MANAGE/ACABC/MP-UJ/2022/9481',
+      digital_signature_stamp: 'DIGI-STAMP-JNKVV-AGRI-GRAD-7749',
+      status: 'DISPENSED'
+    });
+
+    // D. Demo Farmer Order & Pay-After-Harvest Bahi-Khata Ledger
+    FarmerOrderKhataRepository.create({
+      id: 'order-khata-seed-01',
+      order_no: 'ORD-KHATA-2026-1049',
+      prescription_no: 'AGRI-RX-2026-0814',
+      farmer_name: 'Ramesh Patel (रमेश पटेल)',
+      mobile_number: '9876543210',
+      village: 'Mullapura, Badnagar, Ujjain',
+      items_json: [
+        { product_code: 'KIT-SOY-YMV-01', name: 'सोयाबीन पीला मोजेक डॉक्टर किट', qty: 3, rate: 850, amount: 2550 },
+        { product_code: 'NUT-ZN-BORON-01', name: 'चिलेटेड जिंक 12% + बोरॉन 20% कॉम्बो', qty: 2, rate: 450, amount: 900 }
+      ],
+      total_amount_inr: 3450,
+      discount_inr: 250,
+      net_payable_inr: 3200,
+      payment_mode: 'PAY_AFTER_HARVEST_CREDIT',
+      harvest_credit_due_date: '2026-11-20 (सोयाबीन मंडी विक्रय उपरांत)',
+      credit_settled_amount_inr: 1000,
+      invoice_docket: 'INV-MP-UJJ-2026-88321',
+      order_status: 'CONFIRMED_DISPATCH'
+    });
+
+    // E. Demo Tele-Agronomy / Field Audit Consultation Booking
+    AgriConsultationBookingRepository.create({
+      id: 'consult-seed-01',
+      booking_ref: 'CONS-VID-2026-4412',
+      farmer_name: 'Ramesh Patel (रमेश पटेल)',
+      mobile_number: '9876543210',
+      crop_name: 'SOYBEAN',
+      acreage: 3.5,
+      consultation_type: 'TELE_VIDEO_CALL',
+      scheduled_slot: '2026-10-19 शाम 05:30 बजे (WhatsApp HD Video)',
+      fee_inr: 0,
+      payment_status: 'FREE_KVK_ACABC_SPONSORED',
+      agronomist_notes: 'सोयाबीन फली भरने की अवस्था में इल्ली व फफूंद सुरक्षा पर 15 मिनट लाइव वीडियो मार्गदर्शन।',
+      status: 'CONFIRMED'
+    });
   }
 }
+
 

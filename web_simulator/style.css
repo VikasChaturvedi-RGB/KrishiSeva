@@ -3402,3 +3402,835 @@ body.farmer-portal-body {
   margin-bottom: 10px;
 }
 
+/* ==========================================================================
+   19. LICENSED AGRICULTURE GRADUATE STATUTORY COMMERCE & CLINICAL ADVISORY
+   ========================================================================== */
+/* Doctor Curative Kit Order Banner on Rx Screen */
+.graduate-kit-cta-box {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12);
+}
+
+.graduate-kit-cta-box .cta-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.graduate-badge-gold {
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.acabc-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #92400e;
+  background: #fde68a;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.graduate-kit-cta-box .cta-body h5 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #78350f;
+  margin-bottom: 4px;
+}
+
+.graduate-kit-cta-box .cta-body p {
+  font-size: 11px;
+  color: #92400e;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-gold:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-1px);
+}
+
+/* Statutory Accreditation & License Vault Banner in Clinic */
+.graduate-statutory-banner {
+  background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 16px rgba(6, 78, 59, 0.18);
+  margin-bottom: 12px;
+}
+
+.grad-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.grad-avatar {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #a7f3d0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.grad-meta {
+  flex: 1;
+}
+
+.grad-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.grad-name-row h4 {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+}
+
+.verified-seal {
+  background: #34d399;
+  color: #064e3b;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.grad-degree {
+  font-size: 11px;
+  color: #d1fae5;
+  margin: 2px 0 0 0;
+  font-weight: 600;
+}
+
+.grad-uni {
+  font-size: 10px;
+  color: #a7f3d0;
+  margin: 1px 0 0 0;
+}
+
+.statutory-ribbon {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.statutory-ribbon::-webkit-scrollbar {
+  display: none;
+}
+
+.statutory-pill {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 9.5px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #ffffff;
+}
+
+.statutory-pill strong {
+  color: #fef08a;
+  font-family: monospace;
+}
+
+/* Clinic Sub Navigation Tabs */
+.clinic-sub-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.clinic-tab-btn {
+  background: transparent;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 4px;
+  font-family: var(--font-main);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.clinic-tab-btn i {
+  font-size: 13px;
+}
+
+.clinic-tab-btn.active {
+  background: #ffffff;
+  color: #047857;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Category Filter Pills */
+.product-category-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  scrollbar-width: none;
+}
+
+.product-category-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.prod-cat-chip {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prod-cat-chip.active {
+  background: #047857;
+  color: #ffffff;
+  border-color: #047857;
+  box-shadow: 0 2px 6px rgba(4, 120, 87, 0.25);
+}
+
+/* Certified Products Catalog List */
+.clinic-product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agri-product-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.agri-product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.prod-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.prod-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.prod-badge.seed { background: #dcfce7; color: #15803d; }
+.prod-badge.nutrient { background: #e0f2fe; color: #0369a1; }
+.prod-badge.kit { background: #fef3c7; color: #b45309; }
+.prod-badge.bio { background: #f3e8ff; color: #7e22ce; }
+
+.prod-title-group h5 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 4px 0 2px 0;
+}
+
+.prod-variety {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+.prod-meta-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lot-pill {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.quality-pill {
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.prod-solution-note {
+  background: #f8fafc;
+  border-left: 3px solid #047857;
+  padding: 6px 8px;
+  font-size: 10.5px;
+  color: #334155;
+  line-height: 1.4;
+  border-radius: 0 6px 6px 0;
+}
+
+.prod-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 8px;
+}
+
+.prod-pricing {
+  display: flex;
+  flex-direction: column;
+}
+
+.prod-mrp {
+  font-size: 10px;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.prod-farmer-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: #047857;
+}
+
+.prod-unit {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+.btn-buy-prod {
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s ease;
+}
+
+.btn-buy-prod:hover {
+  background: #065f46;
+}
+
+/* Digital Agri-Rx Stamped Card */
+.digital-agri-rx-card {
+  background: #fdfbf7;
+  border: 1.5px solid #d4c5b9;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rx-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #047857;
+  padding-bottom: 8px;
+}
+
+.rx-clinic-emblem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #047857;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rx-no-tag {
+  background: #047857;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rx-farmer-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid #e7dfd5;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.rx-farmer-meta strong {
+  font-size: 13px;
+  display: block;
+  color: #0f172a;
+}
+
+.rx-farmer-meta span {
+  font-size: 11px;
+  color: #047857;
+  font-weight: 700;
+  display: block;
+  margin-top: 2px;
+}
+
+.rx-farmer-meta p {
+  font-size: 10.5px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.rx-diag-badge {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 140px;
+  text-align: right;
+}
+
+.rx-items-table-wrapper {
+  overflow-x: auto;
+}
+
+.rx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.rx-table th {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 6px 8px;
+  text-align: left;
+  font-size: 10px;
+  border-bottom: 1.5px solid #cbd5e1;
+}
+
+.rx-table td {
+  padding: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.rx-doctor-note-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.dr-note-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #1e40af;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rx-doctor-note-box p {
+  font-size: 10.5px;
+  color: #1e3a8a;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.rx-signature-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 8px;
+}
+
+.rx-stamp-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rx-stamp-box code {
+  font-size: 9px;
+  color: #047857;
+  background: #ecfdf5;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.rx-acabc-box {
+  text-align: right;
+}
+
+.rx-acabc-box small {
+  font-size: 9px;
+  color: #64748b;
+  display: block;
+}
+
+.rx-acabc-box strong {
+  font-size: 10px;
+  color: #0f172a;
+}
+
+/* Payment Mode Selector & Billing Action */
+.rx-billing-action-box {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.billing-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.total-amt-text {
+  font-size: 18px;
+  color: #047857;
+}
+
+.payment-mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pay-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.pay-option-card {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.pay-radio-label input:checked + .pay-option-card {
+  background: #ecfdf5;
+  border-color: #047857;
+}
+
+.pay-option-card strong {
+  font-size: 11.5px;
+  display: block;
+  color: #0f172a;
+}
+
+.pay-option-card small {
+  font-size: 10px;
+  color: #64748b;
+  display: block;
+}
+
+/* Farmer Bahi-Khata Credit Ledger */
+.khata-header-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.khata-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.khata-badge {
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #a7f3d0;
+}
+
+.khata-top h4 {
+  font-size: 13.5px;
+  font-weight: 800;
+  margin: 4px 0 0 0;
+}
+
+.khata-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.khata-metric-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.khata-metric-box .lbl {
+  font-size: 9.5px;
+  color: #94a3b8;
+}
+
+.khata-metric-box strong {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+.khata-metric-box small {
+  font-size: 8.5px;
+  color: #cbd5e1;
+}
+
+.khata-metric-box.highlight-due {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.khata-ledger-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.khata-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.khata-entry-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.khata-entry-info h6 {
+  font-size: 12px;
+  font-weight: 800;
+  margin: 0;
+  color: #0f172a;
+}
+
+.khata-entry-info p {
+  font-size: 10px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.khata-entry-amt {
+  text-align: right;
+}
+
+.khata-entry-amt strong {
+  font-size: 13px;
+  color: #047857;
+  display: block;
+}
+
+.badge-credit-mode {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 6px;
+}
+
+/* Tele-Agronomy Booking */
+.consult-intro-card {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.consult-icon-circle {
+  width: 42px;
+  height: 42px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.consult-intro-card h4 {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin: 0 0 2px 0;
+}
+
+.consult-intro-card p {
+  font-size: 10.5px;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.consult-booking-form {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.consult-fee-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.recent-consult-bookings {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.consult-booking-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
