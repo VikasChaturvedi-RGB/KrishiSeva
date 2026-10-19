@@ -673,6 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSampleJsonLog();
   startSlaTimer();
   applyLanguageStrings('hi');
+  loadDiagnosisHistory();
 });
 
 // ==========================================
@@ -780,6 +781,9 @@ function switchView(viewId, pushHistory = true) {
   if (viewId === 'viewHome') {
     const navHome = document.getElementById('navHome');
     if (navHome) navHome.classList.add('active');
+    loadDiagnosisHistory();
+  } else if (viewId === 'viewSearchHistory') {
+    renderSearchHistoryScreen();
   } else if (viewId === 'viewCamera' || viewId === 'viewProcessing' || viewId === 'viewQuestionnaire') {
     const navCamera = document.getElementById('navCamera');
     if (navCamera) navCamera.classList.add('active');
@@ -1907,6 +1911,22 @@ function renderDynamicRecommendation(apiResult) {
       location: 'ग्राम धरमपुरी, धार (म.प्र.) [GPS: 22.7196° N, 75.8577° E]'
     });
   }
+
+  // Persist into Diagnosis & Crop Search History
+  const leafPreview = document.getElementById('leafPreviewImg');
+  saveDiagnosisToHistory({
+    id: `diag-${Date.now()}`,
+    cropSpecies: currentCrop || 'SOYBEAN',
+    cropName: report.crop || currentCrop,
+    diseaseTitle: report.diseaseTitle || 'फसल जांच',
+    scientificName: report.scientificName || '',
+    confidence: report.confidence || '94.0%',
+    accuracyPct: parseFloat(report.confidence) || 94.0,
+    imageUrl: (leafPreview && leafPreview.src) ? leafPreview.src : 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
+    date: new Date().toISOString(),
+    symptoms: report.step1?.action ? (report.step1.action.slice(0, 110) + '...') : 'पत्ती लक्षण जांच पूर्ण',
+    report: report
+  });
 
   updateAcreage(currentAcreage);
 }
@@ -3819,7 +3839,6 @@ function loadRecentConsultationBookings() {
   `).join('');
 }
 
-// 19.14 Statutory Credentials Information Modal
 function showGraduateStatutoryCredentialsModal() {
   alert(
     `🏛️ अधिकृत कृषि स्नातक वैधानिक प्रत्यय-पत्र (Statutory Accreditation Vault)\n\n` +
@@ -3836,6 +3855,385 @@ function showGraduateStatutoryCredentialsModal() {
     `⚖️ भारत सरकार के नियमों के अनुसार कृषि स्नातक को किसानों के लिए कस्टम उर्वरक मिश्रण, प्रमाणित बीज विक्रय तथा पर्चा जारी करने का पूर्ण कानूनी अधिकार प्राप्त है।`
   );
 }
+
+// ============================================================================
+// 20. PAST CROP SEARCHES & DIAGNOSTIC HISTORY CONTROLLER
+// ============================================================================
+let allDiagnosisHistory = [];
+let currentHistoryCropFilter = 'ALL';
+let currentHistorySearchQuery = '';
+
+const DEFAULT_SEED_DIAGNOSES = [
+  {
+    id: 'diag-hist-soy-zn-01',
+    cropSpecies: 'SOYBEAN',
+    cropName: 'सोयाबीन (Soybean JS 20-34)',
+    diseaseTitle: 'जिंक (जस्ता) की कमी (Zinc Mineral Deficiency)',
+    scientificName: 'Zinc (Zn) Mineral Deficiency • Glycine max',
+    confidence: '94% AI Confidence',
+    accuracyPct: 94.0,
+    imageUrl: 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
+    date: '2026-10-18T09:30:00Z',
+    symptoms: 'पत्तियों की मध्य शिराओं के बीच पीलापन (Interveinal Chlorosis) और पत्तियों का मुड़ना।',
+    report: {
+      crop: 'सोयाबीन (Soybean JS 20-34)',
+      diseaseTitle: 'जिंक (जस्ता) की कमी (Zinc Deficiency)',
+      scientificName: 'Zinc (Zn) Mineral Deficiency • Glycine max',
+      confidence: '94% AI Confidence',
+      step1: {
+        title: 'चरण 1: पर्णीय पोषण सुधार (Foliar Nutrition)',
+        action: 'चिलेटेड जिंक (Zn-EDTA 12%) @ 1.0 ग्राम प्रति लीटर पानी + 0.5% यूरिया का पर्णीय छिड़काव करें।',
+        dose: '350 ग्राम / 350L पानी'
+      },
+      step2: {
+        title: 'चरण 2: जैविक कवकनाशी एवं मृदा जैव उपचार',
+        action: 'जिंक सोल्युबिलाइजिंग बायो-बैक्टीरिया (ZSB) 2.0 किग्रा/एकड़ गोबर खाद के साथ मृदा में दें।',
+        dose: '7.0 किग्रा ZSB बायो-कल्चर'
+      },
+      step3: {
+        title: 'चरण 3: रासायनिक कीटनाशक हस्तक्षेप',
+        action: 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक रासायनिक कीटनाशकों के छिड़काव से बचें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+      }
+    }
+  },
+  {
+    id: 'diag-hist-soy-ymv-02',
+    cropSpecies: 'SOYBEAN',
+    cropName: 'सोयाबीन (Soybean JS 20-34)',
+    diseaseTitle: 'सोयाबीन पीला मोजेक वायरस (YMV)',
+    scientificName: 'Mungbean yellow mosaic India virus (MYMIV)',
+    confidence: '91% AI Confidence',
+    accuracyPct: 91.0,
+    imageUrl: 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
+    date: '2026-10-17T11:15:00Z',
+    symptoms: 'पत्तियों पर पीले और हरे रंग के चितकबरे धब्बे, सफेद मक्खी (Whitefly) वाहक द्वारा तीव्र प्रसार।',
+    report: {
+      crop: 'सोयाबीन (Soybean JS 20-34)',
+      diseaseTitle: 'सोयाबीन पीला मोजेक वायरस (Yellow Mosaic Virus)',
+      scientificName: 'Mungbean yellow mosaic India virus (MYMIV)',
+      confidence: '91% AI Confidence',
+      step1: {
+        title: 'चरण 1: वाहक नियंत्रण एवं पर्णीय पोषण',
+        action: 'नीम तेल 10,000 PPM @ 2 मिली/लीटर + चिलेटेड सूक्ष्म पोषक तत्व स्प्रे करें।',
+        dose: '700 मिली नीम तेल / 350L पानी'
+      },
+      step2: {
+        title: 'चरण 2: जैविक नियंत्रण',
+        action: 'पीले चिपचिपे ट्रैप (Yellow Sticky Traps) 15-20 प्रति एकड़ खेत में लगाएं।',
+        dose: '50-60 ट्रैप (3.5 एकड़)'
+      },
+      step3: {
+        title: 'चरण 3: CIB&RC कीटनाशी हस्तक्षेप',
+        action: 'इमिडाक्लोप्रिड 17.8% SL @ 0.5 मिली/लीटर अथवा थायमेथॉक्सम 25% WG @ 0.3 ग्राम/लीटर।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC अनुमोदित'
+      }
+    }
+  },
+  {
+    id: 'diag-hist-banana-sig-03',
+    cropSpecies: 'BANANA',
+    cropName: 'केला (Banana Grand Naine / G9)',
+    diseaseTitle: 'केला: ब्लैक सिगाटोका पर्ण धब्बा रोग',
+    scientificName: 'Pseudocercospora fijiensis • Grand Naine (G9)',
+    confidence: '95.4% AI Confidence',
+    accuracyPct: 95.4,
+    imageUrl: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80',
+    date: '2026-10-16T16:40:00Z',
+    symptoms: 'केले की निचली पत्तियों पर भूरे-काले धब्बे और किनारों से पत्ती का सूखना।',
+    report: {
+      crop: 'केला (Banana Grand Naine / G9)',
+      diseaseTitle: 'केला: ब्लैक सिगाटोका पर्ण धब्बा रोग',
+      scientificName: 'Black Sigatoka (Pseudocercospora fijiensis) • Grand Naine (G9)',
+      confidence: '95.4% AI Confidence',
+      step1: {
+        title: 'पर्णीय फफूंदनाशी एवं खनिज तेल (Foliar Fungicide)',
+        action: 'प्रोपिकोनाजोल 25% EC @ 1 मिली/लीटर अथवा एजोक्सीस्ट्रोबिन + डाइफेनोकोनाजोल @ 1 मिली/लीटर + खनिज तेल (1%) का पर्णीय छिड़काव करें।',
+        dose: '700 मिली / 700L पानी'
+      },
+      step2: {
+        title: 'जैविक कवकनाशी एवं मृदा जैव उपचार (Soil Biology & Trichoderma)',
+        action: 'ट्राइकोडर्मा विरिडी (Trichoderma viride 1.5% WP) @ 2.5 किग्रा/एकड़ सड़ी हुई गोबर खाद के साथ मिलाकर पौधों की जड़ों के पास दें।',
+        dose: '8.5 किग्रा Trichoderma'
+      },
+      step3: {
+        title: 'CIB&RC पंजीकृत रासायनिक हस्तक्षेप (Registered Fungicides)',
+        action: 'एजोक्सीस्ट्रोबिन 18.2% + डाइफेनोकोनाजोल 11.4% SC @ 1 मिली/लीटर पानी (CIB&RC स्वीकृत)।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+      }
+    }
+  },
+  {
+    id: 'diag-hist-paddy-khaira-04',
+    cropSpecies: 'PADDY',
+    cropName: 'धान (Paddy PB 1121)',
+    diseaseTitle: 'धान: खैरा रोग व जिंक कमी (Khaira Disease)',
+    scientificName: 'Zinc Deficiency & Magnaporthe oryzae • PB 1121',
+    confidence: '93.8% AI Confidence',
+    accuracyPct: 93.8,
+    imageUrl: 'https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=600&auto=format&fit=crop&q=80',
+    date: '2026-10-14T14:10:00Z',
+    symptoms: 'निचली पत्तियों पर कत्थई/तांबई रंग के धब्बे और पौधों का बौनापन।',
+    report: {
+      crop: 'धान (Paddy PB 1121)',
+      diseaseTitle: 'धान: खैरा रोग व पर्ण झुलसा (Khaira Disease)',
+      scientificName: 'Zinc Deficiency & Magnaporthe oryzae • PB 1121',
+      confidence: '93.8% AI Confidence',
+      step1: {
+        title: 'चरण 1: जिंक सल्फेट 21% + यूरिया पर्णीय छिड़काव',
+        action: 'जिंक सल्फेट 5 किग्रा + 2.5 किग्रा बुझा हुआ चूना या 1% यूरिया प्रति 500L पानी छिड़कें।',
+        dose: '12 किग्रा / 1200L पानी'
+      },
+      step2: {
+        title: 'चरण 2: स्यूडोमोनास फ्लूरोसेंस जैव उपचार (Pseudomonas)',
+        action: 'स्यूडोमोनास फ्लूरोसेंस 1 किग्रा/एकड़ मृदा में 50 किग्रा FYM के साथ दें।',
+        dose: '2.5 किग्रा बायो-एजेंट'
+      },
+      step3: {
+        title: 'चरण 3: CIB&RC पंजीकृत रसायन (झुलसा निवारण)',
+        action: 'ट्राइसाइक्लाजोल 75% WP @ 0.6 ग्राम/लीटर पानी (CIB&RC पंजीकृत)।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+      }
+    }
+  }
+];
+
+// 20.1 Load Diagnosis & Crop Search History
+async function loadDiagnosisHistory() {
+  let serverItems = [];
+  try {
+    const res = await fetch(`${API_BASE}/v1/diagnosis/history`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.history) && data.history.length > 0) {
+        serverItems = data.history.map(row => {
+          const pd = row.primary_diagnosis || {};
+          const ctx = row.context_data || {};
+          return {
+            id: row.id,
+            cropSpecies: ctx.cropSpecies || pd.cropSpecies || 'SOYBEAN',
+            cropName: pd.cropSpecies ? `${pd.cropSpecies}` : (ctx.cropSpecies || 'सोयाबीन'),
+            diseaseTitle: pd.diseaseNameLocalized || pd.commonNameHi || pd.commonNameEn || 'फसल जांच',
+            scientificName: pd.scientificName || '',
+            confidence: `${Math.round((row.confidence_score || 0.94) * 100)}% AI Confidence`,
+            accuracyPct: Math.round((row.confidence_score || 0.94) * 100),
+            imageUrl: row.image_url || 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
+            date: row.submitted_at || new Date().toISOString(),
+            symptoms: pd.descriptionLocalized || 'पत्ती लक्षण विश्लेषण पूर्ण'
+          };
+        });
+      }
+    }
+  } catch (e) {
+    // Offline / Sandboxed mode fallback
+  }
+
+  // Load from LocalStorage
+  let localItems = [];
+  try {
+    const stored = localStorage.getItem('agriscan_search_history');
+    if (stored) localItems = JSON.parse(stored);
+  } catch (e) {}
+
+  // Merge items by id
+  const map = new Map();
+  // 1. Seed defaults
+  DEFAULT_SEED_DIAGNOSES.forEach(d => map.set(d.id, d));
+  // 2. Server items
+  serverItems.forEach(d => map.set(d.id, d));
+  // 3. Local user items (highest priority)
+  localItems.forEach(d => map.set(d.id, d));
+
+  allDiagnosisHistory = Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Render recent 4 items on Home Screen
+  renderRecentDiagnosesList();
+  // Render full search history screen if active
+  renderSearchHistoryScreen();
+}
+
+// 20.2 Save New Diagnosis to History
+function saveDiagnosisToHistory(item) {
+  if (!item || !item.id) return;
+  allDiagnosisHistory = [item, ...allDiagnosisHistory.filter(d => d.id !== item.id)];
+  try {
+    localStorage.setItem('agriscan_search_history', JSON.stringify(allDiagnosisHistory));
+  } catch (e) {}
+  renderRecentDiagnosesList();
+  renderSearchHistoryScreen();
+}
+
+// 20.3 Render Recent Diagnoses on Home Screen
+function renderRecentDiagnosesList() {
+  const container = document.getElementById('recentDiagnosesList');
+  if (!container) return;
+
+  const topItems = allDiagnosisHistory.slice(0, 4);
+  if (topItems.length === 0) {
+    container.innerHTML = `
+      <div class="empty-history-box" style="padding:12px;">
+        <p style="font-size:11px; color:#64748b; margin:0;">कोई पूर्व जांच इतिहास नहीं मिला। नए पौधे की जांच करें।</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = topItems.map(item => `
+    <div class="history-item-row" onclick="viewPastDiagnosis('${item.id}')" title="पर्चा व समाधान देखें">
+      <div class="history-thumb">
+        <img src="${item.imageUrl}" alt="${item.cropName}" onerror="this.src='https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=100&auto=format&fit=crop&q=80'">
+      </div>
+      <div class="history-details">
+        <h6>${item.cropName || item.cropSpecies}</h6>
+        <p>${item.diseaseTitle} • <strong class="text-green">${item.confidence || '94%'}</strong></p>
+        <span style="font-size:9.5px; color:#94a3b8;"><i class="fa-regular fa-clock"></i> ${formatHistoryDate(item.date)}</span>
+      </div>
+      <span class="badge-rx-step">पर्चा देखें</span>
+    </div>
+  `).join('');
+}
+
+// 20.4 Render Dedicated Search History Screen
+function renderSearchHistoryScreen() {
+  const container = document.getElementById('fullSearchHistoryList');
+  const countEl = document.getElementById('historyTotalCount');
+  const activeCropsEl = document.getElementById('historyActiveCropsCount');
+  const avgAccEl = document.getElementById('historyAvgAccuracy');
+  if (!container) return;
+
+  let filtered = allDiagnosisHistory;
+
+  // Filter by crop
+  if (currentHistoryCropFilter !== 'ALL') {
+    filtered = filtered.filter(d => (d.cropSpecies || '').toUpperCase() === currentHistoryCropFilter.toUpperCase());
+  }
+
+  // Filter by search query
+  if (currentHistorySearchQuery && currentHistorySearchQuery.trim() !== '') {
+    const q = currentHistorySearchQuery.trim().toLowerCase();
+    filtered = filtered.filter(d => 
+      (d.cropName || '').toLowerCase().includes(q) ||
+      (d.diseaseTitle || '').toLowerCase().includes(q) ||
+      (d.cropSpecies || '').toLowerCase().includes(q) ||
+      (d.scientificName || '').toLowerCase().includes(q)
+    );
+  }
+
+  // Update metrics
+  if (countEl) countEl.innerText = allDiagnosisHistory.length;
+  if (activeCropsEl) {
+    const uniqueCrops = new Set(allDiagnosisHistory.map(d => d.cropSpecies || 'SOYBEAN'));
+    activeCropsEl.innerText = uniqueCrops.size;
+  }
+  if (avgAccEl && allDiagnosisHistory.length > 0) {
+    const total = allDiagnosisHistory.reduce((acc, d) => acc + (d.accuracyPct || 94), 0);
+    avgAccEl.innerText = `${(total / allDiagnosisHistory.length).toFixed(1)}%`;
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-history-box">
+        <i class="fa-solid fa-seedling"></i>
+        <h6>कोई जांच रिकॉर्ड नहीं मिला</h6>
+        <p>आपके द्वारा खोजी गई फसल या रोग का कोई पिछला इतिहास नहीं है।</p>
+        <button class="btn btn-outline btn-sm" onclick="openCameraView('photo')">+ नई फसल स्कैन करें</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(item => `
+    <div class="diagnosis-history-card">
+      <div class="dhc-top">
+        <img src="${item.imageUrl}" alt="${item.cropName}" class="dhc-thumb" onerror="this.src='https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=120&auto=format&fit=crop&q=80'">
+        <div class="dhc-body">
+          <div class="dhc-badge-row">
+            <span class="dhc-crop-tag">${item.cropName || item.cropSpecies}</span>
+            <span class="dhc-time"><i class="fa-regular fa-calendar"></i> ${formatHistoryDate(item.date)}</span>
+          </div>
+          <h5 class="dhc-title">${item.diseaseTitle}</h5>
+          ${item.scientificName ? `<p class="dhc-scientific">${item.scientificName}</p>` : ''}
+        </div>
+      </div>
+
+      ${item.symptoms ? `<div class="dhc-symptoms"><strong>लक्षण:</strong> ${item.symptoms}</div>` : ''}
+
+      <div class="dhc-footer">
+        <span class="dhc-accuracy-tag">
+          <i class="fa-solid fa-circle-check"></i> ${item.confidence || '94% सटीकता'}
+        </span>
+        <button class="btn-view-rx-pill" onclick="viewPastDiagnosis('${item.id}')">
+          <i class="fa-solid fa-clipboard-prescription"></i> पर्चा व किट देखें
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// 20.5 Open Past Diagnosis Prescription View
+function viewPastDiagnosis(diagId) {
+  const item = allDiagnosisHistory.find(d => d.id === diagId);
+  if (!item) return;
+
+  currentCrop = item.cropSpecies || 'SOYBEAN';
+  selectedCropCode = item.cropSpecies || 'SOYBEAN';
+
+  if (item.report) {
+    renderDynamicRecommendation(item.report);
+  } else {
+    renderDynamicRecommendation({
+      crop: item.cropName,
+      diseaseTitle: item.diseaseTitle,
+      scientificName: item.scientificName,
+      confidence: item.confidence
+    });
+  }
+
+  switchNav('viewRecommendation', null);
+}
+
+// 20.6 Crop Filter for History
+function filterHistoryByCrop(cropCode, chipBtn) {
+  currentHistoryCropFilter = cropCode;
+  const container = document.getElementById('historyCropFilterChips');
+  if (container) {
+    container.querySelectorAll('.crop-chip').forEach(c => c.classList.remove('active'));
+  }
+  if (chipBtn) chipBtn.classList.add('active');
+  renderSearchHistoryScreen();
+}
+
+// 20.7 Search Query Filter for History
+function filterHistoryItems() {
+  const input = document.getElementById('historySearchInput');
+  currentHistorySearchQuery = input ? input.value : '';
+  renderSearchHistoryScreen();
+}
+
+// 20.8 Manual Refresh Handler
+function refreshDiagnosisHistory(showToast = false) {
+  loadDiagnosisHistory();
+  if (showToast) {
+    alert('🔄 फसल जांच इतिहास सफलतापूर्वक रीफ्रेश किया गया!');
+  }
+}
+
+// 20.9 Indian Localized Date Formatter
+function formatHistoryDate(dateStr) {
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr || 'हाल ही में';
+    const day = d.getDate();
+    const months = ['जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+    const month = months[d.getMonth()];
+    const hours = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    return `${day} ${month}, ${hours}:${mins}`;
+  } catch (e) {
+    return dateStr || 'हाल ही में';
+  }
+}
+
 
 
 

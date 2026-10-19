@@ -6,7 +6,7 @@ import { EscalationService } from '../services/escalation-sla/escalationService'
 import { PdfPrescriptionService } from '../services/pdf-prescription/pdfService';
 import { AppDatabase } from '../db/database';
 import { DatabaseSeeder } from '../db/seeder';
-import { InventoryRepository, AuditRepository, FarmerActivityLogRepository } from '../db/repositories';
+import { InventoryRepository, AuditRepository, FarmerActivityLogRepository, DiagnosisRepository } from '../db/repositories';
 import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
 import { LicensedAgriGraduateService } from '../services/agri-graduate/licensedAgriGraduateService';
 import fs from 'fs';
@@ -272,6 +272,22 @@ router.post('/diagnosis/diagnose/submit', (req: Request, res: Response) => {
   const lang = (req.headers['accept-language'] as string) || 'hi';
   const result = DiagnosisService.submitDiagnosis(user?.userId || '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d', req.body, lang);
   return res.json(result);
+});
+
+// 3.1 Past Crop Searches & Diagnosis History
+router.get(['/diagnosis/history', '/v1/diagnosis/history'], (req: Request, res: Response) => {
+  const user = extractUser(req);
+  const userId = (req.query.userId as string) || user?.userId || '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
+  try {
+    const list = DiagnosisRepository.listByUserId(userId);
+    return res.json({
+      totalCount: list.length,
+      userId,
+      history: list
+    });
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'HISTORY_FETCH_ERROR', message: err.message });
+  }
 });
 
 router.get('/diagnosis/diagnose/:diagnosisId', (req: Request, res: Response) => {

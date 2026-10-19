@@ -4233,4 +4233,255 @@ body.farmer-portal-body {
   align-items: center;
 }
 
+/* ==========================================================================
+   20. PAST CROP SEARCHES & DIAGNOSTIC HISTORY SUITE
+   ========================================================================== */
+.recent-diagnoses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-history-container {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-search-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-search-input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.history-search-input-box i {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.history-search-input-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--font-main);
+  font-size: 11.5px;
+  color: #0f172a;
+}
+
+.history-filter-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.history-filter-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.history-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.h-metric-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.h-metric-pill .lbl {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+.h-metric-pill strong {
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.full-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diagnosis-history-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.diagnosis-history-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dhc-top {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.dhc-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+}
+
+.dhc-body {
+  flex: 1;
+}
+
+.dhc-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.dhc-crop-tag {
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.dhc-time {
+  font-size: 9.5px;
+  color: #94a3b8;
+}
+
+.dhc-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.dhc-scientific {
+  font-size: 10px;
+  color: #64748b;
+  margin: 0;
+  font-style: italic;
+}
+
+.dhc-symptoms {
+  background: #f8fafc;
+  border-left: 2.5px solid #047857;
+  padding: 6px 8px;
+  border-radius: 0 6px 6px 0;
+  font-size: 10.5px;
+  color: #334155;
+  line-height: 1.35;
+}
+
+.dhc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 8px;
+}
+
+.dhc-accuracy-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #047857;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-view-rx-pill {
+  background: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.2s ease;
+}
+
+.btn-view-rx-pill:hover {
+  background: #065f46;
+}
+
+.empty-history-box {
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty-history-box i {
+  font-size: 32px;
+  color: #94a3b8;
+}
+
+.empty-history-box h6 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #475569;
+  margin: 0;
+}
+
+.empty-history-box p {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.history-bottom-actions {
+  margin-top: 4px;
+}
+
+
 

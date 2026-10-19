@@ -328,17 +328,16 @@
               <div class="recent-diagnoses-box">
                 <div class="section-title-row">
                   <h5 id="homeRecentTitle">हालिया फसल जांच इतिहास</h5>
-                  <button class="btn-link" onclick="openCameraView('photo')">+ नई जांच</button>
+                  <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn-link text-green" onclick="switchNav('viewSearchHistory', null)" style="font-weight:700;">सभी देखें (View All)</button>
+                    <button class="btn-link" onclick="openCameraView('photo')">+ नई जांच</button>
+                  </div>
                 </div>
-                <div class="history-item-row" onclick="switchNav('viewRecommendation', document.querySelectorAll('.nav-item')[2])">
-                  <div class="history-thumb">
-                    <img src="https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=100&auto=format&fit=crop&q=80" alt="Soybean Leaf">
+                <div id="recentDiagnosesList" class="recent-diagnoses-list">
+                  <!-- Populated dynamically via loadDiagnosisHistory() -->
+                  <div class="loading-state-box">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i> हालिया जांच इतिहास लोड हो रहा है...
                   </div>
-                  <div class="history-details">
-                    <h6>सोयाबीन (Soybean JS 20-34)</h6>
-                    <p>जिंक की कमी • 94% सटीकता • 2.0 एकड़</p>
-                  </div>
-                  <span class="badge-rx-step">चरण 1-3 पर्चा</span>
                 </div>
               </div>
 
@@ -1514,6 +1513,70 @@
                 <div id="chcBookingsListContainer">
                   <!-- Populated dynamically -->
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================================================================ -->
+          <!-- Screen 14: Past Crop Searches & Diagnostic History -->
+          <!-- ================================================================ -->
+          <section id="viewSearchHistory" class="screen-view">
+            <div class="search-history-container">
+              <div class="view-sub-header">
+                <button class="btn-back-pill" onclick="navigateToHome()">
+                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                </button>
+                <span class="sub-header-title">फसल जांच एवं पर्चा इतिहास</span>
+                <button class="btn-help-pill" onclick="refreshDiagnosisHistory(true)" title="रीफ्रेश करें">
+                  <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+              </div>
+
+              <!-- Top Search and Filter Bar -->
+              <div class="history-search-card">
+                <div class="history-search-input-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" id="historySearchInput" placeholder="फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)..." oninput="filterHistoryItems()">
+                </div>
+
+                <!-- Crop Filter Chips -->
+                <div class="history-filter-chips" id="historyCropFilterChips">
+                  <button class="crop-chip active" onclick="filterHistoryByCrop('ALL', this)">सभी (All)</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('SOYBEAN', this)">सोयाबीन</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('BANANA', this)">केला</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('PADDY', this)">धान</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('COTTON', this)">कपास</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('CHILLI', this)">मिर्च</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('TOMATO', this)">टमाटर</button>
+                </div>
+              </div>
+
+              <!-- History Metrics Summary -->
+              <div class="history-metrics-row">
+                <div class="h-metric-pill">
+                  <span class="lbl">कुल जांचें (Scans)</span>
+                  <strong id="historyTotalCount">0</strong>
+                </div>
+                <div class="h-metric-pill">
+                  <span class="lbl">सक्रिय फसलें (Crops)</span>
+                  <strong class="text-green" id="historyActiveCropsCount">0</strong>
+                </div>
+                <div class="h-metric-pill">
+                  <span class="lbl">औसत सटीकता (Avg Acc)</span>
+                  <strong class="text-blue" id="historyAvgAccuracy">94.2%</strong>
+                </div>
+              </div>
+
+              <!-- Full Diagnostic History List -->
+              <div id="fullSearchHistoryList" class="full-history-list">
+                <!-- Dynamically rendered via loadDiagnosisHistory() -->
+              </div>
+
+              <!-- Action Bar at Bottom -->
+              <div class="history-bottom-actions">
+                <button class="btn btn-primary btn-block" onclick="openCameraView('photo')">
+                  <i class="fa-solid fa-camera"></i> नई फसल की जांच करें (+ New Scan)
+                </button>
               </div>
             </div>
           </section>
