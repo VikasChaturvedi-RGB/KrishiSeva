@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "public",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "web_app",
   "cleanUrls": true,
   "rewrites": [
     {
