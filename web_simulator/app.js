@@ -32,439 +32,2371 @@ let isSimulatedOffline = false;
 let offlineQueue = [];
 
 // ==========================================
-// Regional Languages Dictionary (9 Indian Languages)
+// Regional Languages Dictionary (10 Indian Languages: hi, en, pa, mr, te, ta, gu, bn, kn, ml)
 // ==========================================
 const localizations = {
-  hi: {
-    langName: 'हिन्दी',
-    appName: 'कृषि स्वास्थ्य सहायक',
-    home: 'होम',
-    cropDoctor: 'फसल जांच',
-    rxChart: 'पोषण पर्चा',
-    soilFarm: 'मृदा कार्ड',
-    clinic: 'क्लिनिक',
-    welcomeFarmer: 'शुभ दिन,',
-    farmerName: 'रामेश्वर पाटीदार',
-    locationAcreage: 'ग्राम धरमपुरी, धार (म.प्र.) • 3.5 एकड़',
-    activeCrop: 'सोयाबीन (JS 20-34)',
-    weatherTitle: 'स्थानीय मौसम व कीट-रोग चेतावनी',
-    weatherAlert: 'उच्च आर्द्रता: फफूंद व पोषक विकार का जोखिम',
-    heroCardTitle: 'फसल रोग एवं पोषण जांच',
-    heroCardDesc: 'पौधे की पत्ती का फोटो खींचें या वीडियो अपलोड करें — सटीक 3-चरणीय पोषण उपचार पाएं।',
-    btnHeroScan: 'फोटो खींचें',
-    btnHeroVideo: 'वीडियो अपलोड',
-    quickSoil: 'मृदा कार्ड',
-    quickSoilSub: 'जिंक की कमी (0.45 ppm)',
-    quickRx: 'सक्रिय पर्चा',
-    quickRxSub: 'जिंक सल्फेट 21%',
-    quickShop: 'कृषि क्लिनिक',
-    quickShopSub: 'दुकान पर स्टॉक उपलब्ध',
-    quickCall: 'KVK हेल्पलाइन',
-    quickCallSub: 'कृषि वैज्ञानिक से बात',
-    recentTitle: 'हालिया फसल जांच इतिहास',
-    tabPhoto: 'फोटो',
-    tabVideo: 'वीडियो',
-    tabUpload: 'अपलोड',
-    tabSamples: 'नमूने',
-    retakeBtn: 'दोबारा फोटो/वीडियो लें (Retake)',
-    proceedBtn: 'फसल की शारीरिक जांच शुरू करें',
-    analyzingTitle: 'पादप शारीरिक एवं स्पेक्ट्रल विश्लेषण प्रगति पर...',
-    zincDef: 'सोयाबीन: जिंक (जस्ता) की कमी',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'जिंक सल्फेट 500 ग्राम + 250 ग्राम बुझा हुआ चूना (या 1 किग्रा यूरिया) प्रति 200 लीटर पानी प्रति एकड़ छिड़कें।',
-    step2Bio: '1 किग्रा ZSB प्रति एकड़ 50 किग्रा सड़ी हुई गोबर की खाद (FYM) के साथ मिलाकर मृदा में दें।',
-    step3Chem: 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।',
-    voiceBtn: 'सलाह सुनें (Voice)',
-    pdfBtn: 'पर्चा डाउनलोड (PDF)',
-    orderBtn: 'नजदीकी कृषि सेवा केंद्र से ऑर्डर करें'
+  "hi": {
+    "langName": "हिन्दी",
+    "appName": "कृषि स्वास्थ्य सहायक",
+    "home": "होम",
+    "cropDoctor": "फसल जांच",
+    "rxChart": "पोषण पर्चा",
+    "soilFarm": "मृदा कार्ड",
+    "clinic": "क्लिनिक",
+    "mandi": "मंडी भाव",
+    "calendar": "खाद/मौसम",
+    "schemes": "योजना/बीमा",
+    "mitra": "ई-मित्र AI",
+    "history": "जांच इतिहास",
+    "welcomeFarmer": "शुभ दिन,",
+    "farmerName": "रामेश्वर पाटीदार",
+    "locationAcreage": "ग्राम धरमपुरी, धार (म.प्र.) • 3.5 एकड़",
+    "activeCrop": "सोयाबीन (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "छिड़काव हेतु उत्तम समय ( सुबह 6:30-9:30 ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "फसल रोग एवं पोषण जांच",
+    "heroCardDesc": "पौधे की पत्ती का लाइव फोटो लें या 360° वीडियो बनाएं — सटीक 3-चरणीय पोषण उपचार पाएं।",
+    "btnHeroScan": "फोटो खींचें",
+    "btnHeroVideo": "वीडियो बनाएं",
+    "btnHeroGallery": "गैलरी",
+    "homeMitraTitle": "बोलकर पूछें: किसान ई-मित्र AI",
+    "homeMitraSub": "मंडी भाव, खाद मात्रा, स्प्रे समय या सरकारी योजना पूछें",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "मंडी भाव (e-NAM)",
+    "tileMandiSub": "सोयाबीन ₹5,120/क्विं (+MSP)",
+    "tileCalTitle": "खाद गणक व मौसम",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "सरकारी योजना व बीमा",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "मृदा कार्ड",
+    "quickSoilSub": "जिंक की कमी (0.45 ppm)",
+    "quickRx": "सक्रिय पर्चा",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "अधिकृत कृषि स्नातक",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK वैज्ञानिक",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "हालिया फसल जांच इतिहास",
+    "viewAll": "सभी देखें (View All)",
+    "newScan": "+ नई जांच",
+    "camTitle": "फसल पत्ती की जांच",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "दोबारा फोटो/वीडियो लें (Retake)",
+    "proceedBtn": "फसल की शारीरिक जांच शुरू करें",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "सोयाबीन: जिंक (जस्ता) की कमी",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "सलाह सुनें (Voice)",
+    "pdfBtn": "पर्चा डाउनलोड (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "चरण 1: सूक्ष्म पोषक तत्व पर्णीय छिड़काव (Foliar Mineral)",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "जिंक सल्फेट 500 ग्राम + 250 ग्राम बुझा हुआ चूना (या 1 किग्रा यूरिया) प्रति 200 लीटर पानी प्रति एकड़ छिड़कें।",
+    "step2Badge": "चरण 2: जैविक एवं मृदा सुधार (Soil Biology)",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "1 किग्रा ZSB प्रति एकड़ 50 किग्रा सड़ी हुई गोबर की खाद (FYM) के साथ मिलाकर मृदा में दें।",
+    "step3Badge": "चरण 3: रासायनिक कीटनाशक हस्तक्षेप (Chemical)",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "लाइव मंडी भाव (e-NAM)",
+    "mandiCropAll": "सभी फसलें (All)",
+    "mandiQtyLabel": "बेचने हेतु उपज मात्रा (Lot Size):",
+    "mandiBestNetPrefix": "सर्वोत्तम शुद्ध प्राप्ति:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "स्प्रे मौसम, खाद गणक व कैलेंडर",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "सरकारी योजना, KCC व फसल बीमा",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "किसान ई-मित्र AI एवं रोग रडार",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "फसल जांच एवं पर्चा इतिहास",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "किसान मोबाइल लॉगिन",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  en: {
-    langName: 'English',
-    appName: 'AgriScan AI (Krishi Sahayak)',
-    home: 'Home',
-    cropDoctor: 'Crop Doctor',
-    rxChart: 'Nutrition Rx',
-    soilFarm: 'Soil Card',
-    clinic: 'Agri Clinic',
-    welcomeFarmer: 'Good day,',
-    farmerName: 'Rameshwar Patidar',
-    locationAcreage: 'Village Dharampuri, Dhar (MP) • 3.5 Acres',
-    activeCrop: 'Soybean (JS 20-34)',
-    weatherTitle: 'Hyperlocal Weather & Crop Advisory',
-    weatherAlert: 'High Humidity: Risk of leaf chlorosis & zinc deficiency',
-    heroCardTitle: 'Crop Disease & Nutrition Scan',
-    heroCardDesc: 'Capture plant leaf photo or upload video — get a 3-step nutrition-first prescription.',
-    btnHeroScan: 'Take Photo',
-    btnHeroVideo: 'Upload Video',
-    quickSoil: 'Soil Card',
-    quickSoilSub: 'Zinc Deficit (0.45 ppm)',
-    quickRx: 'Active Rx',
-    quickRxSub: 'Zinc Sulphate 21%',
-    quickShop: 'Agri Clinic',
-    quickShopSub: 'In stock at dealer',
-    quickCall: 'KVK Hotline',
-    quickCallSub: 'Talk to Agronomist',
-    recentTitle: 'Recent Crop Diagnoses History',
-    tabPhoto: 'Photo',
-    tabVideo: 'Video',
-    tabUpload: 'Upload',
-    tabSamples: 'Samples',
-    retakeBtn: 'Retake Photo / Video',
-    proceedBtn: 'Analyze Plant Physiological Features',
-    analyzingTitle: 'Plant Physiological & Spectral Analysis in Progress...',
-    zincDef: 'Soybean: Zinc Deficiency',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'Foliar spray Zinc Sulphate 21% @ 500g + 250g Slaked Lime in 200L water per acre.',
-    step2Bio: 'Soil application of Zinc Solubilizing Bacteria (ZSB) @ 1kg/acre with 50kg FYM.',
-    step3Chem: 'Pure nutritional disorder confirmed. Zero chemical pesticide required.',
-    voiceBtn: 'Listen Voice Advisory',
-    pdfBtn: 'Download Rx (PDF)',
-    orderBtn: 'Order from Nearest Agri-Clinic'
+  "en": {
+    "langName": "English",
+    "appName": "AgriScan AI (Krishi Sahayak)",
+    "home": "Home",
+    "cropDoctor": "Crop Doctor",
+    "rxChart": "Nutrition Rx",
+    "soilFarm": "Soil Card",
+    "clinic": "Agri Clinic",
+    "mandi": "Mandi Bhav",
+    "calendar": "Fertilizer & Weather",
+    "schemes": "Schemes & Insurance",
+    "mitra": "e-Mitra AI",
+    "history": "Scan History",
+    "welcomeFarmer": "Good day,",
+    "farmerName": "Rameshwar Patidar",
+    "locationAcreage": "Village Dharampuri, Dhar (MP) • 3.5 Acres",
+    "activeCrop": "Soybean (JS 20-34)",
+    "weatherTitle": "Hyperlocal Weather & Crop Advisory",
+    "weatherAlert": "Ideal Spray Window (6:30-9:30 AM) →",
+    "weatherDesc": "Humidity: 76% | Wind: 9.5 km/h • Spray Score: 92/100",
+    "heroCardTitle": "Crop Disease & Nutrition Scan",
+    "heroCardDesc": "Take plant leaf photo or 360° video — receive precision 3-step nutrition remedy.",
+    "btnHeroScan": "Take Photo",
+    "btnHeroVideo": "Record Video",
+    "btnHeroGallery": "Gallery",
+    "homeMitraTitle": "Ask by Voice: Kisan e-Mitra AI",
+    "homeMitraSub": "Ask Mandi prices, fertilizer dose, spray time or government schemes",
+    "homeStateMatrixTitle": "State-Wise Agricultural Challenges & Tech Hub (8 States)",
+    "homeStateMatrixSub": "MP, Punjab, Maharashtra, UP, South & East challenges resolved via AI + Drone/CHC",
+    "tileMandiTitle": "Mandi Bhav (e-NAM)",
+    "tileMandiSub": "Soybean ₹5,120/Qtl (+MSP)",
+    "tileCalTitle": "Fertilizer Calc & Weather",
+    "tileCalSub": "NPK Bags & Spray Window",
+    "tileSchemesTitle": "Govt Schemes & PMFBY",
+    "tileSchemesSub": "PM-KISAN • 72h Fast Claim",
+    "tileMitraTitle": "Kisan e-Mitra Radar",
+    "tileMitraSub": "Ujjain: 38 Farms Alert",
+    "quickSoil": "Soil Card",
+    "quickSoilSub": "Zinc Deficit (0.45 ppm)",
+    "quickRx": "Active Rx",
+    "quickRxSub": "Zinc Sulphate 21%",
+    "quickShop": "Licensed Agri Graduate",
+    "quickShopSub": "Certified Seeds, Kits & Ledger",
+    "quickCall": "KVK Agronomist",
+    "quickCallSub": "2-Hour SLA Specialist",
+    "recentTitle": "Recent Crop Diagnoses History",
+    "viewAll": "View All",
+    "newScan": "+ New Scan",
+    "camTitle": "Plant Leaf Health Scanner",
+    "tabPhoto": "Photo",
+    "tabVideo": "Video",
+    "tabUpload": "Gallery",
+    "tabSamples": "Samples",
+    "retakeBtn": "Retake Photo/Video",
+    "proceedBtn": "Start Plant Physiological Analysis",
+    "reticleOptimal": "Distance & Focus are Optimal",
+    "lightLabel": "Lighting:",
+    "blurLabel": "Sharpness:",
+    "captureCaption": "Capture leaf photo or record video for diagnosis & nutrition advice",
+    "mediaReadyBadge": "📸 Photo Captured Successfully (1920x1080)",
+    "liveAnalysis": "Live Analysis",
+    "analyzingTitle": "Plant Physiological & Spectral Analysis in Progress...",
+    "stage1Title": "1. Data Ingestion & Farm Profile Sync",
+    "stage1Desc": "Multispectral image ingestion, GPS coordinates and Soil Card (Zn: 0.45 ppm) linked.",
+    "stage2Title": "2. Optical & Spectral Signal Decomposition",
+    "stage2Desc": "RGB channel separation, Chlorophyll index extraction and leaf specular normalization.",
+    "stage3Title": "3. Plant Physiological & Nutrition Feature Scan",
+    "stage3Desc": "Interveinal chlorosis detection, leaf necrosis, and pest puncture pattern scan.",
+    "stage4Title": "4. AI Prediction & CIB&RC State Compliance",
+    "stage4Desc": "Nutrition-first protocol verification & state chemical ban enforcement applied.",
+    "telemetryLog": "Telemetry Stream Log",
+    "qConfidence": "Preliminary Accuracy:",
+    "qHeading": "2 Follow-up Questions for Precision",
+    "qSub": "Examine field conditions and select matching options:",
+    "q1Text": "Question 1: On which part of the plant is chlorosis/yellowing mostly concentrated?",
+    "q1Opt1": "On top new leaves / young canopy (Top/Young)",
+    "q1Opt2": "On bottom older leaves / lower canopy (Bottom/Old)",
+    "q2Text": "Question 2: Is there any fungal powder, rust pustules or webbing on the underside?",
+    "q2Opt1": "No, leaf surface is clean (pure color loss / chlorosis)",
+    "q2Opt2": "Yes, reddish-brown pustules or powder visible",
+    "qSubmitBtn": "Submit Answers & Generate Prescription",
+    "rxHighConf": "High Accuracy Confirmed",
+    "cibrcVerified": "CIB&RC Verified",
+    "zincDef": "Soybean: Zinc Deficiency",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "Listen Voice Advisory",
+    "pdfBtn": "Download Rx (PDF)",
+    "farmAreaLabel": "Farm Area (Acreage):",
+    "stateRegLabel": "State Regulations:",
+    "step1Badge": "Step 1: Foliar Mineral Correction (Mineral Foliar)",
+    "step1Title": "Zinc Sulphate (ZnSO4 21% Heptahydrate) + Slaked Lime",
+    "step1Foliar": "Foliar spray Zinc Sulphate 21% @ 500g + 250g Slaked Lime (or 1 kg Urea) in 200L water per acre.",
+    "step2Badge": "Step 2: Biological & Soil Remediation (Soil Biology)",
+    "step2Title": "Zinc Solubilizing Bacteria (ZSB Bio-Fertilizer)",
+    "step2Bio": "Soil application of 1 kg ZSB per acre mixed with 50 kg well-decomposed FYM.",
+    "step3Badge": "Step 3: Chemical Intervention (CIB&RC Filtered)",
+    "step3Title": "No Chemical Pesticide Required (Zero Chemical)",
+    "step3Chem": "Pure physiological micronutrient disorder. Avoid unnecessary chemical pesticide sprays.",
+    "step3Compliance": "CIB&RC Certified Nutrition-First Protocol",
+    "gradKitBadge": "B.Sc. (Agri) Authorized Clinical Solution",
+    "gradKitTitle": "🌿 Curative Doctor Kit Available for this Condition",
+    "gradKitDesc": "Chelated nutrition + bio-protectant + approved molecules (1-click prescription delivery / Pay-After-Harvest credit)",
+    "gradKitOrderBtn": "Order Doctor Kit (Rx-to-Cart)",
+    "retakeOther": "Scan Another Plant (Retake)",
+    "orderBtn": "Open Licensed Agri-Graduate Clinic",
+    "escBadge": "Escalated to KVK Agronomist",
+    "escHeading": "Agronomist Consultation in Progress",
+    "escSub": "Confidence below threshold; case transferred to senior plant pathologist.",
+    "slaLabel": "SLA Guaranteed Response:",
+    "escChatBtn": "Chat with Scientist",
+    "escCallBtn": "Call Hotline Directly",
+    "clinicTitleText": "Licensed Agriculture Graduate Clinic",
+    "gradVerifiedSeal": "Authorized B.Sc. (Agri)",
+    "tabProducts": "Certified Seeds & Store",
+    "tabRx": "Agri-Rx Billing",
+    "tabKhata": "Bahi-Khata (Pay Later)",
+    "tabConsult": "Consult & Drone Audit",
+    "catAll": "All Products (All)",
+    "catSeed": "🌾 Certified Seed",
+    "catMicro": "🧪 Custom Micronutrient",
+    "catKit": "🩺 Doctor Curative Kit",
+    "catBioFert": "🦠 Bio-Fertilizer (ZSB)",
+    "catBioPest": "🛡️ Bio-Pesticide",
+    "rxEmblem": "Official Digital Prescription (Agri-Rx)",
+    "rxSearchPlaceholder": "Search farmer mobile (e.g. 9876543210) or Rx ID...",
+    "thProdName": "Certified Product / Kit",
+    "thProdQty": "Quantity",
+    "thProdUsage": "Approved Dosage & Directions",
+    "thProdPrice": "Amount",
+    "drNotesTitle": "Licensed Agronomist Clinical Instructions:",
+    "rxBillingTotalLabel": "Net Invoice Amount:",
+    "payModeHarvestTitle": "Pay-After-Harvest Credit",
+    "payModeHarvestSub": "₹0 payment during sowing • Due after APMC Mandi sale",
+    "payModeUpiTitle": "Instant UPI / Cash on Delivery (COD)",
+    "payModeUpiSub": "5% Instant Cash Discount",
+    "btnDispenseText": "Issue GST Invoice & Dispatch Order",
+    "khataBadge": "Digital Farmer Credit Ledger",
+    "khataLimitLabel": "Approved Credit Limit",
+    "khataDueLabel": "Current Outstanding Due",
+    "khataSettledLabel": "Total Settled Amount",
+    "khataRecentTitle": "Recent Orders & Credit Entries",
+    "khataRecordPayText": "Record Payment",
+    "consultCardTitle": "Direct Consultation with Agri Graduate",
+    "consultCardSub": "Book WhatsApp HD video consultation, in-person field audit or Kisan drone spray surveillance.",
+    "consultTypeLabel": "Consultation Type:",
+    "consultCropLabel": "Crop Name:",
+    "consultAcreLabel": "Acreage:",
+    "consultSlotLabel": "Preferred Date & Time:",
+    "consultDescLabel": "Problem Description & Symptoms:",
+    "consultFeeSummaryLabel": "Consultation Fee:",
+    "btnBookConsultText": "Book Appointment / Audit Slot",
+    "recentBookingsTitle": "Your Recent Consultation Bookings",
+    "soilPassportTitle": "Soil Health Passport & Farm Profile",
+    "soilLabelZn": "Zinc (Zn)",
+    "soilStatusZn": "Critical Deficit (<0.60)",
+    "soilLabelPh": "Soil pH",
+    "soilStatusPh": "Optimal (Neutral)",
+    "soilLabelN": "Nitrogen (N)",
+    "soilStatusN": "Medium",
+    "soilLabelK": "Potash (K)",
+    "soilStatusK": "High / Adequate",
+    "farmParcelHeading": "Linked Farm Parcel Details",
+    "mandiScreenTitle": "Live Mandi Bhav (e-NAM)",
+    "mandiCropAll": "All Crops",
+    "mandiQtyLabel": "Harvest Lot Size to Sell:",
+    "mandiBestNetPrefix": "Best Net Payout:",
+    "mandiMspCompare": "Govt MSP Comparison",
+    "mandiAboveMsp": "Above",
+    "mandiBelowMsp": "Below",
+    "mandiNonMsp": "Non-MSP Crop",
+    "mandiTransportHamali": "Transport & Hamali",
+    "mandiNetPayout": "Net In-Hand Realization",
+    "mandiSellNow": "SELL NOW",
+    "mandiHoldStore": "HOLD / STORE",
+    "mandiArrival": "Arrival",
+    "mandiDistance": "Away",
+    "mandiPerQtl": "Qtl",
+    "mandiToday": "Today",
+    "calScreenTitle": "Spray Weather, Fertilizer Calc & Calendar",
+    "sprayStatusOptimal": "Optimal Spray Window",
+    "simWeatherBtnText": "Rain Test",
+    "npkSectionTitle": "Balanced Fertilizer (NPK + Zinc) Calculator",
+    "soilLinkedBadge": "Soil Card Linked",
+    "npkAcreLabel": "Acreage:",
+    "cropCalTitle": "Sowing to Harvest Scientific Crop Calendar",
+    "schemesScreenTitle": "Govt Schemes, KCC & PMFBY Insurance",
+    "kccStatLbl": "KCC 4% Credit Eligibility",
+    "pmfbyStatLbl": "PMFBY Crop Insurance Cover",
+    "pmKisanStatLbl": "PM-KISAN + Subsidies",
+    "pmfbyBadge72h": "PMFBY 72-Hour Direct Claim",
+    "pmfbyBadgeAi": "AI Report Attached",
+    "pmfbyClaimDesc": "Submit crop loss insurance claim within 72 hours of excess rain, hailstorm or disease outbreak with AI diagnosis.",
+    "btnSubmitClaimText": "Submit Instant 72-Hour Claim",
+    "submittedAppsTitle": "Your Filed Claims & Receipts (SQLite)",
+    "mitraScreenTitle": "Kisan e-Mitra AI & Outbreak Radar",
+    "mitraBotHeading": "Kisan e-Mitra (Bhashini Voice AI)",
+    "mitraBotSub": "Ask any farming question in your own voice in Hindi or English",
+    "mitraPrompt1": "Soybean Mandi Bhav?",
+    "mitraPrompt2": "Safe to spray today?",
+    "mitraPrompt3": "3 Acre Fertilizer Dose?",
+    "mitraPrompt4": "Govt Schemes & PMFBY?",
+    "mitraQueryPlaceholder": "Type here or press mic to speak...",
+    "mitraAnsTag": "Kisan e-Mitra Response:",
+    "outbreakRadarHeading": "15km Community Outbreak Radar (KVK Verified)",
+    "btnReportOutbreak": "+ Report New Outbreak",
+    "stateMatrixScreenTitle": "State-Wise Agro Challenges & Tech Interventions",
+    "chcBookingsHeading": "Your Booked Machinery / Drone Services (CHC SQLite)",
+    "historyScreenTitle": "Crop Diagnoses & Rx History",
+    "historySearchPlaceholder": "Search by crop or disease name (e.g., Soybean, Banana, Paddy)...",
+    "historyCropAll": "All Crops",
+    "historyTotalScansLbl": "Total Scans",
+    "historyActiveCropsLbl": "Active Crops",
+    "historyAvgAccLbl": "Average Accuracy",
+    "historyNewScanBtnText": "+ New Crop Scan",
+    "loginTitle": "Farmer Mobile Login",
+    "loginSubtitle": "Enter 10-digit mobile number without password",
+    "namePlaceholder": "Farmer Full Name",
+    "otpLabel": "6-Digit OTP Code",
+    "dpdpTitle": "DPDP Act 2023 Explicit Consent",
+    "consent1": "Crop disease diagnosis & nutrition guidance",
+    "consent2": "Hyperlocal weather and location integration",
+    "consent3": "Soil health card data linkage",
+    "authBtnGetOtp": "Get OTP",
+    "authBtnVerify": "Verify & Login",
+    "authBannerTitle": "Login Required",
+    "authBannerDesc": "Please log in first to access Crop Doctor, Nutrition Rx, Soil Card and Agri-Clinic.",
+    "logout": "Logout",
+    "offlineBanner": "Offline Mode - Scans will queue locally",
+    "pwaCardTitle": "AgriScan AI - Krishi Sahayak",
+    "pwaCardSub": "Works completely offline in farm without internet",
+    "pwaCardBtn": "Install",
+    "langModalTitle": "Select Language / अपनी भाषा चुनें",
+    "viewRxBtn": "View Rx & Kit"
   },
-  pa: {
-    langName: 'ਪੰਜਾਬੀ',
-    appName: 'ਕ੍ਰਿਸ਼ੀ ਸਵਾਸਥ ਸਹਾਇਕ',
-    home: 'ਮੁੱਖ ਪੰਨਾ',
-    cropDoctor: 'ਫ਼ਸਲ ਜਾਂਚ',
-    rxChart: 'ਖੁਰਾਕ ਪਰਚਾ',
-    soilFarm: 'ਮਿੱਟੀ ਕਾਰਡ',
-    clinic: 'ਕਲੀਨਿਕ',
-    welcomeFarmer: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,',
-    farmerName: 'ਰਾਮੇਸ਼ਵਰ ਪਾਟੀਦਾਰ',
-    locationAcreage: 'ਧਰਮਪੁਰੀ, ਧਾਰ (ਮ.ਪ੍ਰ.) • 3.5 ਏਕੜ',
-    activeCrop: 'ਸੋਇਆਬੀਨ (JS 20-34)',
-    weatherTitle: 'ਸਥਾਨਕ ਮੌਸਮ ਅਤੇ ਬਿਮਾਰੀ ਚੇਤਾਵਨੀ',
-    weatherAlert: 'ਉੱਚ ਨਮੀ: ਪੱਤਿਆਂ ਦੇ ਪੀਲੇਪਣ ਅਤੇ ਜ਼ਿੰਕ ਦੀ ਘਾਟ ਦਾ ਖਤਰਾ',
-    heroCardTitle: 'ਫ਼ਸਲ ਰੋਗ ਅਤੇ ਪੋਸ਼ਣ ਜਾਂਚ',
-    heroCardDesc: 'ਪੌਦੇ ਦੀ ਫੋਟੋ ਲਓ ਜਾਂ ਵੀਡੀਓ ਅੱਪਲੋਡ ਕਰੋ — ਸਹੀ 3-ਪੜਾਵੀ ਖੁਰਾਕ ਪਰਚਾ ਪ੍ਰਾਪਤ ਕਰੋ।',
-    btnHeroScan: 'ਫੋਟੋ ਲਓ',
-    btnHeroVideo: 'ਵੀਡੀਓ ਅੱਪਲੋਡ',
-    quickSoil: 'ਮਿੱਟੀ ਕਾਰਡ',
-    quickSoilSub: 'ਜ਼ਿੰਕ ਦੀ ਘਾਟ (0.45 ppm)',
-    quickRx: 'ਐਕਟਿਵ ਪਰਚਾ',
-    quickRxSub: 'ਜ਼ਿੰਕ ਸਲਫੇਟ 21%',
-    quickShop: 'ਖੇਤੀ ਕਲੀਨਿਕ',
-    quickShopSub: 'ਸਟਾਕ ਉਪਲਬਧ ਹੈ',
-    quickCall: 'KVK ਹੈਲਪਲਾਈਨ',
-    quickCallSub: 'ਵਿਗਿਆਨੀ ਨਾਲ ਗੱਲ ਕਰੋ',
-    recentTitle: 'ਹਾਲੀਆ ਫ਼ਸਲ ਜਾਂਚ ਇਤਿਹਾਸ',
-    tabPhoto: 'ਫੋਟੋ',
-    tabVideo: 'ਵੀਡੀਓ',
-    tabUpload: 'ਅੱਪਲੋਡ',
-    tabSamples: 'ਨਮੂਨੇ',
-    retakeBtn: 'ਦੁਬਾਰਾ ਫੋਟੋ/ਵੀਡੀਓ ਲਓ (Retake)',
-    proceedBtn: 'ਸਰੀਰਕ ਲੱਛਣਾਂ ਦੀ ਜਾਂਚ ਸ਼ੁਰੂ ਕਰੋ',
-    analyzingTitle: 'ਪੌਦਿਆਂ ਦੇ ਸਰੀਰਕ ਅਤੇ ਸਪੈਕਟ੍ਰਲ ਵਿਸ਼ਲੇਸ਼ਣ ਜਾਰੀ ਹੈ...',
-    zincDef: 'ਸੋਇਆਬੀਨ: ਜ਼ਿੰਕ ਦੀ ਘਾਟ',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'ਪ੍ਰਤੀ ਏਕੜ 200 ਲੀਟਰ ਪਾਣੀ ਵਿੱਚ 500 ਗ੍ਰਾਮ ਜ਼ਿੰਕ ਸਲਫੇਟ 21% + 250 ਗ੍ਰਾਮ ਚੂਨਾ ਛਿੜਕੋ।',
-    step2Bio: '1 ਕਿਲੋ ZSB ਬੈਕਟੀਰੀਆ 50 ਕਿਲੋ ਰੂੜੀ ਖਾਦ ਨਾਲ ਮਿੱਟੀ ਵਿੱਚ ਮਿਲਾਓ।',
-    step3Chem: 'ਕੋਈ ਰਸਾਇਣਕ ਕੀਟਨਾਸ਼ਕ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ (ਜ਼ੀਰੋ ਕੈਮੀਕਲ)।',
-    voiceBtn: 'ਸਲਾਹ ਸੁਣੋ (Voice)',
-    pdfBtn: 'ਪਰਚਾ ਡਾਊਨਲੋਡ (PDF)',
-    orderBtn: 'ਨੇੜਲੇ ਖੇਤੀ ਸੇਵਾ ਕੇਂਦਰ ਤੋਂ ਆਰਡਰ ਕਰੋ'
+  "pa": {
+    "langName": "ਪੰਜਾਬੀ",
+    "appName": "ਕ੍ਰਿਸ਼ੀ ਸਵਾਸਥ ਸਹਾਇਕ",
+    "home": "ਮੁੱਖ ਪੰਨਾ",
+    "cropDoctor": "ਫ਼ਸਲ ਜਾਂਚ",
+    "rxChart": "ਖੁਰਾਕ ਪਰਚਾ",
+    "soilFarm": "ਮਿੱਟੀ ਕਾਰਡ",
+    "clinic": "ਖੇਤੀ ਕਲੀਨਿਕ",
+    "mandi": "ਮੰਡੀ ਭਾਅ",
+    "calendar": "ਖਾਦ ਤੇ ਮੌਸਮ",
+    "schemes": "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ",
+    "mitra": "ਈ-ਮਿੱਤਰ AI",
+    "history": "ਜਾਂਚ ਇਤਿਹਾਸ",
+    "welcomeFarmer": "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ,",
+    "farmerName": "ਰਾਮੇਸ਼ਵਰ ਪਾਟੀਦਾਰ",
+    "locationAcreage": "ਧਰਮਪੁਰੀ, ਧਾਰ (ਮ.ਪ੍ਰ.) • 3.5 ਏਕੜ",
+    "activeCrop": "ਸੋਇਆਬੀਨ (JS 20-34)",
+    "weatherTitle": "ਸਥਾਨਕ ਮੌਸਮ ਅਤੇ ਬਿਮਾਰੀ ਚੇਤਾਵਨੀ",
+    "weatherAlert": "ਸਪਰੇਅ ਲਈ ਵਧੀਆ ਸਮਾਂ ( ਸਵੇਰੇ 6:30-9:30 ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "ਫ਼ਸਲ ਰੋਗ ਅਤੇ ਪੋਸ਼ਣ ਜਾਂਚ",
+    "heroCardDesc": "ਪੌਦੇ ਦੀ ਫੋਟੋ ਲਓ ਜਾਂ ਵੀਡੀਓ ਅੱਪਲੋਡ ਕਰੋ — ਸਹੀ 3-ਪੜਾਵੀ ਖੁਰਾਕ ਪਰਚਾ ਪ੍ਰਾਪਤ ਕਰੋ।",
+    "btnHeroScan": "ਫੋਟੋ ਲਓ",
+    "btnHeroVideo": "ਵੀਡੀਓ ਬਣਾਓ",
+    "btnHeroGallery": "ਗੈਲਰੀ",
+    "homeMitraTitle": "ਬੋਲ ਕੇ ਪੁੱਛੋ: ਕਿਸਾਨ ਈ-ਮਿੱਤਰ AI",
+    "homeMitraSub": "ਮੰਡੀ ਭਾਅ, ਖਾਦ ਮਾਤਰਾ, ਸਪਰੇਅ ਸਮਾਂ ਜਾਂ ਸਕੀਮਾਂ ਪੁੱਛੋ",
+    "homeStateMatrixTitle": "ਰਾਜ-ਵਾਰ ਖੇਤੀ ਚੁਣੌਤੀਆਂ ਅਤੇ ਤਕਨੀਕੀ ਹੱਲ (8 ਰਾਜ)",
+    "homeStateMatrixSub": "ਪੰਜਾਬ, ਐਮ.ਪੀ., ਮਹਾਰਾਸ਼ਟਰ ਦੀਆਂ ਸਮੱਸਿਆਵਾਂ ਦਾ AI + ਡਰੋਨ/CHC ਹੱਲ",
+    "tileMandiTitle": "ਮੰਡੀ ਭਾਅ (e-NAM)",
+    "tileMandiSub": "ਸੋਇਆਬੀਨ ₹5,120/ਕੁਇੰਟਲ (+MSP)",
+    "tileCalTitle": "ਖਾਦ ਕੈਲਕੁਲੇਟਰ ਤੇ ਮੌਸਮ",
+    "tileCalSub": "NPK ਬੋਰੀਆਂ ਤੇ ਸਪਰੇਅ ਸਮਾਂ",
+    "tileSchemesTitle": "ਸਰਕਾਰੀ ਸਕੀਮਾਂ ਤੇ ਬੀਮਾ",
+    "tileSchemesSub": "PM-KISAN • 72 ਘੰਟੇ ਬੀਮਾ ਦਾਅਵਾ",
+    "tileMitraTitle": "ਕਿਸਾਨ ਈ-ਮਿੱਤਰ ਰਡਾਰ",
+    "tileMitraSub": "ਉਜੈਨ: 38 ਖੇਤਾਂ ਵਿੱਚ ਚੇਤਾਵਨੀ",
+    "quickSoil": "ਮਿੱਟੀ ਕਾਰਡ",
+    "quickSoilSub": "ਜ਼ਿੰਕ ਦੀ ਘਾਟ (0.45 ppm)",
+    "quickRx": "ਐਕਟਿਵ ਪਰਚਾ",
+    "quickRxSub": "ਜ਼ਿੰਕ ਸਲਫੇਟ 21%",
+    "quickShop": "ਖੇਤੀ ਕਲੀਨਿਕ",
+    "quickShopSub": "ਸਰਟੀਫਾਈਡ ਬੀਜ ਤੇ ਵਹੀ-ਖਾਤਾ",
+    "quickCall": "KVK ਵਿਗਿਆਨੀ",
+    "quickCallSub": "2-ਘੰਟੇ SLA ਮਾਹਿਰ",
+    "recentTitle": "ਹਾਲੀਆ ਫ਼ਸਲ ਜਾਂਚ ਇਤਿਹਾਸ",
+    "viewAll": "ਸਾਰੇ ਵੇਖੋ (View All)",
+    "newScan": "+ ਨਵੀਂ ਜਾਂਚ",
+    "camTitle": "ਫ਼ਸਲ ਦੇ ਪੱਤੇ ਦੀ ਜਾਂਚ",
+    "tabPhoto": "ਫੋਟੋ",
+    "tabVideo": "ਵੀਡੀਓ",
+    "tabUpload": "ਗੈਲਰੀ",
+    "tabSamples": "ਨਮੂਨੇ",
+    "retakeBtn": "ਦੁਬਾਰਾ ਫੋਟੋ/ਵੀਡੀਓ ਲਓ (Retake)",
+    "proceedBtn": "ਸਰੀਰਕ ਲੱਛਣਾਂ ਦੀ ਜਾਂਚ ਸ਼ੁਰੂ ਕਰੋ",
+    "reticleOptimal": "ਦੂਰੀ ਅਤੇ ਫੋਕਸ ਸਹੀ ਹੈ",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 ਫੋਟੋ ਸਫਲਤਾਪੂਰਵਕ ਕੈਪਚਰ ਹੋਈ (1920x1080)",
+    "liveAnalysis": "ਲਾਈਵ ਵਿਸ਼ਲੇਸ਼ਣ",
+    "analyzingTitle": "ਪੌਦਿਆਂ ਦੇ ਸਰੀਰਕ ਅਤੇ ਸਪੈਕਟ੍ਰਲ ਵਿਸ਼ਲੇਸ਼ਣ ਜਾਰੀ ਹੈ...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "ਸਟੀਕ ਪੁਸ਼ਟੀ ਲਈ 2 ਸਵਾਲ",
+    "qSub": "ਖੇਤ ਦੀ ਹਾਲਤ ਵੇਖ ਕੇ ਸਹੀ ਚੋਣ ਕਰੋ:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "ਜਵਾਬ ਜਮ੍ਹਾਂ ਕਰੋ ਤੇ ਪਰਚਾ ਵੇਖੋ",
+    "rxHighConf": "ਉੱਚ ਸ਼ੁੱਧਤਾ ਪੁਸ਼ਟੀ",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "ਸੋਇਆਬੀਨ: ਜ਼ਿੰਕ ਦੀ ਘਾਟ",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "ਸਲਾਹ ਸੁਣੋ (Voice)",
+    "pdfBtn": "ਪਰਚਾ ਡਾਊਨਲੋਡ (PDF)",
+    "farmAreaLabel": "ਖੇਤ ਦਾ ਰਕਬਾ (ਏਕੜ):",
+    "stateRegLabel": "ਰਾਜ ਨਿਯਮ:",
+    "step1Badge": "ਪੜਾਅ 1: ਸੂਖਮ ਪੋਸ਼ਕ ਤੱਤ ਸਪਰੇਅ",
+    "step1Title": "ਜ਼ਿੰਕ ਸਲਫੇਟ 21% + ਬੁਝਿਆ ਚੂਨਾ",
+    "step1Foliar": "ਪ੍ਰਤੀ ਏਕੜ 200 ਲੀਟਰ ਪਾਣੀ ਵਿੱਚ 500 ਗ੍ਰਾਮ ਜ਼ਿੰਕ ਸਲਫੇਟ 21% + 250 ਗ੍ਰਾਮ ਚੂਨਾ ਛਿੜਕੋ।",
+    "step2Badge": "ਪੜਾਅ 2: ਜੈਵਿਕ ਸੁਧਾਰ",
+    "step2Title": "ਜ਼ਿੰਕ ਸੋਲਿਊਬਿਲਾਈਜ਼ਿੰਗ ਬੈਕਟੀਰੀਆ (ZSB)",
+    "step2Bio": "1 ਕਿਲੋ ZSB ਬੈਕਟੀਰੀਆ 50 ਕਿਲੋ ਰੂੜੀ ਖਾਦ ਨਾਲ ਮਿੱਟੀ ਵਿੱਚ ਮਿਲਾਓ।",
+    "step3Badge": "ਪੜਾਅ 3: ਰਸਾਇਣਕ ਕੀਟਨਾਸ਼ਕ ਲੋੜ ਨਹੀਂ",
+    "step3Title": "ਕੋਈ ਰਸਾਇਣਕ ਕੀਟਨਾਸ਼ਕ ਦੀ ਲੋੜ ਨਹੀਂ (ਜ਼ੀਰੋ ਕੈਮੀਕਲ)",
+    "step3Chem": "ਇਹ ਸ਼ੁੱਧ ਪੋਸ਼ਕ ਤੱਤਾਂ ਦਾ ਵਿਗਾੜ ਹੈ। ਬੇਲੋੜੀ ਰਸਾਇਣਕ ਸਪਰੇਅ ਤੋਂ ਬਚੋ।",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) ਅਧਿਕਾਰਤ ਕਲੀਨਿਕਲ ਹੱਲ",
+    "gradKitTitle": "🌿 ਇਸ ਰੋਗ ਲਈ ਤਿਆਰ ਡਾਕਟਰ ਕਿੱਟ ਉਪਲਬਧ",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "ਡਾਕਟਰ ਕਿੱਟ ਆਰਡਰ ਕਰੋ (Rx-to-Cart)",
+    "retakeOther": "ਹੋਰ ਪੌਦੇ ਦੀ ਜਾਂਚ ਕਰੋ",
+    "orderBtn": "ਖੇਤੀ ਗ੍ਰੈਜੂਏਟ ਕਲੀਨਿਕ ਖੋਲ੍ਹੋ",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "ਅਧਿਕਾਰਤ ਖੇਤੀ ਗ੍ਰੈਜੂਏਟ ਕਲੀਨਿਕ",
+    "gradVerifiedSeal": "ਅਧਿਕਾਰਤ B.Sc. (Agri)",
+    "tabProducts": "ਪ੍ਰਮਾਣਿਤ ਬੀਜ ਤੇ ਸਟੋਰ",
+    "tabRx": "Agri-Rx ਬਿਲਿੰਗ",
+    "tabKhata": "ਵਹੀ-ਖਾਤਾ (Pay Later)",
+    "tabConsult": "ਸਲਾਹ ਤੇ ਡਰੋਨ ਆਡਿਟ",
+    "catAll": "ਸਾਰੇ ਉਤਪਾਦ (All)",
+    "catSeed": "🌾 ਪ੍ਰਮਾਣਿਤ ਬੀਜ",
+    "catMicro": "🧪 ਸੂਖਮ ਪੋਸ਼ਕ ਤੱਤ",
+    "catKit": "🩺 ਡਾਕਟਰ ਕਿੱਟ",
+    "catBioFert": "🦠 ਬਾਇਓ ਖਾਦ (ZSB)",
+    "catBioPest": "🛡️ ਬਾਇਓ ਕੀਟਨਾਸ਼ਕ",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "ਲਾਈਵ ਮੰਡੀ ਭਾਅ (e-NAM)",
+    "mandiCropAll": "ਸਾਰੀਆਂ ਫ਼ਸਲਾਂ (All)",
+    "mandiQtyLabel": "ਵੇਚਣ ਲਈ ਮਾਤਰਾ (ਲਾਟ ਸਾਈਜ਼):",
+    "mandiBestNetPrefix": "ਸਭ ਤੋਂ ਵਧੀਆ ਕਮਾਈ:",
+    "mandiMspCompare": "ਸਰਕਾਰੀ MSP ਤੁਲਨਾ",
+    "mandiAboveMsp": "ਉੱਪਰ",
+    "mandiBelowMsp": "ਹੇਠਾਂ",
+    "mandiNonMsp": "ਗੈਰ-MSP ਫ਼ਸਲ",
+    "mandiTransportHamali": "ਭਾੜਾ + ਹਮਾਲੀ",
+    "mandiNetPayout": "ਸ਼ੁੱਧ ਬਚਤ ਰਾਸ਼ੀ",
+    "mandiSellNow": "ਤੁਰੰਤ ਵੇਚੋ (SELL)",
+    "mandiHoldStore": "ਰੋਕੋ / ਸਟੋਰ ਕਰੋ (HOLD)",
+    "mandiArrival": "ਆਮਦ",
+    "mandiDistance": "ਦੂਰ",
+    "mandiPerQtl": "ਕੁਇੰਟਲ",
+    "mandiToday": "ਅੱਜ",
+    "calScreenTitle": "ਸਪਰੇਅ ਮੌਸਮ, ਖਾਦ ਕੈਲਕੁਲੇਟਰ ਤੇ ਕੈਲੰਡਰ",
+    "sprayStatusOptimal": "ਸਪਰੇਅ ਲਈ ਉੱਤਮ ਸਮਾਂ",
+    "simWeatherBtnText": "ਮੀਂਹ ਟੈਸਟ",
+    "npkSectionTitle": "ਸੰਤੁਲਿਤ ਖਾਦ (NPK + ਜ਼ਿੰਕ) ਬੋਰੀ ਗਣਕ",
+    "soilLinkedBadge": "ਮਿੱਟੀ ਕਾਰਡ ਲਿੰਕ",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "ਬਿਜਾਈ ਤੋਂ ਕਟਾਈ ਵਿਗਿਆਨਕ ਕੈਲੰਡਰ",
+    "schemesScreenTitle": "ਸਰਕਾਰੀ ਸਕੀਮਾਂ, KCC ਤੇ ਫ਼ਸਲ ਬੀਮਾ",
+    "kccStatLbl": "KCC 4% ਕਰਜ਼ਾ ਯੋਗਤਾ",
+    "pmfbyStatLbl": "PMFBY ਫ਼ਸਲ ਬੀਮਾ ਕਵਰ",
+    "pmKisanStatLbl": "PM-KISAN + ਸਬਸਿਡੀ",
+    "pmfbyBadge72h": "PMFBY 72-ਘੰਟੇ ਸਿੱਧਾ ਦਾਅਵਾ",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "ਤੁਰੰਤ 72-ਘੰਟੇ ਬੀਮਾ ਦਾਅਵਾ ਦਰਜ ਕਰੋ",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "ਕਿਸਾਨ ਈ-ਮਿੱਤਰ AI ਅਤੇ ਰੋਗ ਰਡਾਰ",
+    "mitraBotHeading": "ਕਿਸਾਨ ਈ-ਮਿੱਤਰ (Bhashini Voice AI)",
+    "mitraBotSub": "ਆਪਣੀ ਆਵਾਜ਼ ਵਿੱਚ ਖੇਤੀ ਦਾ ਕੋਈ ਵੀ ਸਵਾਲ ਪੁੱਛੋ",
+    "mitraPrompt1": "ਸੋਇਆਬੀਨ ਮੰਡੀ ਭਾਅ?",
+    "mitraPrompt2": "ਅੱਜ ਸਪਰੇਅ ਕਰੀਏ ਜਾਂ ਨਹੀਂ?",
+    "mitraPrompt3": "3 ਏਕੜ ਖਾਦ ਮਾਤਰਾ?",
+    "mitraPrompt4": "ਸਰਕਾਰੀ ਸਕੀਮਾਂ ਤੇ ਬੀਮਾ?",
+    "mitraQueryPlaceholder": "ਇੱਥੇ ਲਿਖੋ ਜਾਂ ਮਾਈਕ ਦਬਾ ਕੇ ਬੋਲੋ...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "ਰਾਜ-ਵਾਰ ਖੇਤੀ ਸਮੱਸਿਆ ਤੇ ਤਕਨੀਕੀ ਹੱਲ",
+    "chcBookingsHeading": "ਤੁਹਾਡੀਆਂ ਬੁੱਕ ਕੀਤੀਆਂ ਮਸ਼ੀਨਰੀ / ਡਰੋਨ ਸੇਵਾਵਾਂ",
+    "historyScreenTitle": "ਫ਼ਸਲ ਜਾਂਚ ਤੇ ਪਰਚਾ ਇਤਿਹਾਸ",
+    "historySearchPlaceholder": "ਫ਼ਸਲ ਜਾਂ ਬਿਮਾਰੀ ਦਾ ਨਾਂ ਖੋਜੋ...",
+    "historyCropAll": "ਸਾਰੇ (All)",
+    "historyTotalScansLbl": "ਕੁੱਲ ਜਾਂਚਾਂ",
+    "historyActiveCropsLbl": "ਕਿਰਿਆਸ਼ੀਲ ਫ਼ਸਲਾਂ",
+    "historyAvgAccLbl": "ਔਸਤ ਸ਼ੁੱਧਤਾ",
+    "historyNewScanBtnText": "+ ਨਵੀਂ ਫ਼ਸਲ ਸਕੈਨ ਕਰੋ",
+    "loginTitle": "ਕਿਸਾਨ ਮੋਬਾਈਲ ਲੌਗਇਨ",
+    "loginSubtitle": "ਬਿਨਾਂ ਪਾਸਵਰਡ ਸਿਰਫ਼ 10 ਅੰਕਾਂ ਦਾ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ",
+    "namePlaceholder": "ਕਿਸਾਨ ਦਾ ਪੂਰਾ ਨਾਂ",
+    "otpLabel": "6-ਅੰਕਾਂ ਦਾ OTP ਕੋਡ",
+    "dpdpTitle": "DPDP ਐਕਟ 2023 ਸਪਸ਼ਟ ਸਹਿਮਤੀ",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP ਪ੍ਰਾਪਤ ਕਰੋ",
+    "authBtnVerify": "ਲੌਗਇਨ ਤਸਦੀਕ ਕਰੋ",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "ਲਾਗਆਉਟ",
+    "offlineBanner": "ਆਫ਼ਲਾਈਨ ਮੋਡ - ਸਕੈਨ ਲੋਕਲ ਸਟੋਰ ਹੋਣਗੇ",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ / Select Language",
+    "viewRxBtn": "ਪਰਚਾ ਤੇ ਕਿੱਟ ਵੇਖੋ"
   },
-  mr: {
-    langName: 'मराठी',
-    appName: 'कृषी स्वास्थ्य सहाय्यक',
-    home: 'होम',
-    cropDoctor: 'पीक तपासणी',
-    rxChart: 'पोषण सल्ला',
-    soilFarm: 'मृदा आरोग्य',
-    clinic: 'अॅग्री क्लिनिक',
-    welcomeFarmer: 'शुभ दिन,',
-    farmerName: 'रामेश्वर पाटीदार',
-    locationAcreage: 'गाव धरमपुरी, धार (म.प्र.) • ३.५ एकर',
-    activeCrop: 'सोयाबीन (JS 20-34)',
-    weatherTitle: 'स्थानिक हवामान व रोग अंदाज',
-    weatherAlert: 'जास्त आर्द्रता: पानावरील पिवळेपणा व झिंक कमतरतेचा धोका',
-    heroCardTitle: 'पीक रोग व पोषण तपासणी',
-    heroCardDesc: 'पानाचा फोटो काढा किंवा व्हिडिओ अपलोड करा — अचूक ३-टप्प्यांचा पोषण सल्ला मिळवा.',
-    btnHeroScan: 'फोटो काढा',
-    btnHeroVideo: 'व्हिडिओ अपलोड',
-    quickSoil: 'मृदा कार्ड',
-    quickSoilSub: 'झिंकची कमतरता (०.४५ ppm)',
-    quickRx: 'सक्रिय प्रिस्क्रिप्शन',
-    quickRxSub: 'झिंक सल्फेट २१%',
-    quickShop: 'कृषी क्लिनिक',
-    quickShopSub: 'स्टॉक उपलब्ध आहे',
-    quickCall: 'KVK हेल्पलाइन',
-    quickCallSub: 'शास्त्रज्ञांशी बोला',
-    recentTitle: 'नुकतीच झालेली पीक तपासणी',
-    tabPhoto: 'फोटो',
-    tabVideo: 'व्हिडिओ',
-    tabUpload: 'अपलोड',
-    tabSamples: 'नमुने',
-    retakeBtn: 'पुन्हा फोटो/व्हिडिओ घ्या (Retake)',
-    proceedBtn: 'शारीरिक लक्षणांची तपासणी सुरू करा',
-    analyzingTitle: 'वनस्पतींच्या शारीरिक व स्पेक्ट्रल विश्लेषणाचे काम सुरू आहे...',
-    zincDef: 'सोयाबीन: जस्त (झिंक) ची कमतरता',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'प्रति एकर २०० लिटर पाण्यात ५०० ग्रॅम झिंक सल्फेट २१% + २५० ग्रॅम चुना फवारा.',
-    step2Bio: '१ किलो झिंक सोल्युबिलायझिंग जिवाणू (ZSB) शेणखतासोबत जमिनीत द्या.',
-    step3Chem: 'रासायनिक कीटकनाशकाची आवश्यकता नाही (शून्य रासायनिक).',
-    voiceBtn: 'सल्ला ऐका (Voice)',
-    pdfBtn: 'प्रिस्क्रिप्शन डाऊनलोड (PDF)',
-    orderBtn: 'जवळच्या कृषी केंद्रातून ऑर्डर करा'
+  "mr": {
+    "langName": "मराठी",
+    "appName": "कृषी स्वास्थ्य सहाय्यक",
+    "home": "होम",
+    "cropDoctor": "पीक तपासणी",
+    "rxChart": "पोषण सल्ला",
+    "soilFarm": "मृदा आरोग्य",
+    "clinic": "अॅग्री क्लिनिक",
+    "mandi": "मंडी भाव",
+    "calendar": "खते व हवामान",
+    "schemes": "योजना व विमा",
+    "mitra": "ई-मित्र AI",
+    "history": "तपासणी इतिहास",
+    "welcomeFarmer": "शुभ दिन,",
+    "farmerName": "रामेश्वर पाटीदार",
+    "locationAcreage": "गाव धरमपुरी, धार (म.प्र.) • ३.५ एकर",
+    "activeCrop": "सोयाबीन (JS 20-34)",
+    "weatherTitle": "स्थानिक हवामान व रोग अंदाज",
+    "weatherAlert": "फवारणीसाठी उत्तम वेळ ( सकाळी ६:३०-९:३० ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "पीक रोग व पोषण तपासणी",
+    "heroCardDesc": "पानाचा फोटो काढा किंवा व्हिडिओ अपलोड करा — अचूक ३-टप्प्यांचा पोषण सल्ला मिळवा.",
+    "btnHeroScan": "फोटो काढा",
+    "btnHeroVideo": "व्हिडिओ बनवा",
+    "btnHeroGallery": "गॅलरी",
+    "homeMitraTitle": "बोलून विचारा: किसान ई-मित्र AI",
+    "homeMitraSub": "मंडी भाव, खत प्रमाण, फवारणी वेळ किंवा सरकारी योजना विचारा",
+    "homeStateMatrixTitle": "राज्यनिहाय शेती आव्हाने व तांत्रिक उपाय (८ राज्ये)",
+    "homeStateMatrixSub": "महाराष्ट्र, म.प्र., पंजाब मधील समस्यांवर AI + ड्रोन/CHC द्वारे उपाय",
+    "tileMandiTitle": "मंडी भाव (e-NAM)",
+    "tileMandiSub": "सोयाबीन ₹५,१२०/क्विंटल (+MSP)",
+    "tileCalTitle": "खत गणक व हवामान",
+    "tileCalSub": "NPK गोणी व फवारणी वेळ",
+    "tileSchemesTitle": "सरकारी योजना व विमा",
+    "tileSchemesSub": "PM-KISAN • ७२ तास विमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: ३८ शेतांमध्ये अलर्ट",
+    "quickSoil": "मृदा कार्ड",
+    "quickSoilSub": "झिंकची कमतरता (०.४५ ppm)",
+    "quickRx": "सक्रिय प्रिस्क्रिप्शन",
+    "quickRxSub": "झिंक सल्फेट २१%",
+    "quickShop": "कृषी क्लिनिक",
+    "quickShopSub": "प्रमाणित बियाणे व बही-खाते",
+    "quickCall": "KVK शास्त्रज्ञ",
+    "quickCallSub": "२-तास SLA तज्ज्ञ",
+    "recentTitle": "नुकतीच झालेली पीक तपासणी",
+    "viewAll": "सर्व पहा (View All)",
+    "newScan": "+ नवीन तपासणी",
+    "camTitle": "पीक पानांची तपासणी",
+    "tabPhoto": "फोटो",
+    "tabVideo": "व्हिडिओ",
+    "tabUpload": "गॅलरी",
+    "tabSamples": "नमुने",
+    "retakeBtn": "पुन्हा फोटो/व्हिडिओ घ्या (Retake)",
+    "proceedBtn": "शारीरिक लक्षणांची तपासणी सुरू करा",
+    "reticleOptimal": "अंतर व फोकस योग्य आहे",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो यशस्वीरीत्या कॅप्चर झाला (1920x1080)",
+    "liveAnalysis": "थेट विश्लेषण",
+    "analyzingTitle": "वनस्पतींच्या शारीरिक व स्पेक्ट्रल विश्लेषणाचे काम सुरू आहे...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "अचूक पुष्टीसाठी २ प्रश्न",
+    "qSub": "शेतातील परिस्थिती पाहून योग्य पर्याय निवडा:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "उत्तर सबमिट करा व प्रिस्क्रिप्शन पहा",
+    "rxHighConf": "उच्च अचूकता पुष्टी",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "सोयाबीन: जस्त (झिंक) ची कमतरता",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "सल्ला ऐका (Voice)",
+    "pdfBtn": "प्रिस्क्रिप्शन डाऊनलोड (PDF)",
+    "farmAreaLabel": "शेताचे क्षेत्रफळ (एकर):",
+    "stateRegLabel": "राज्य नियम:",
+    "step1Badge": "टप्पा १: सूक्ष्म अन्नद्रव्य फवारणी",
+    "step1Title": "झिंक सल्फेट २१% + चुना",
+    "step1Foliar": "प्रति एकर २०० लिटर पाण्यात ५०० ग्रॅम झिंक सल्फेट २१% + २५० ग्रॅम चुना फवारा.",
+    "step2Badge": "टप्पा २: जैविक व जमीन सुधारणा",
+    "step2Title": "झिंक सोल्युबिलायझिंग जिवाणू (ZSB)",
+    "step2Bio": "१ किलो ZSB जिवाणू शेणखतासोबत जमिनीत द्या.",
+    "step3Badge": "टप्पा ३: रासायनिक कीटकनाशकाची गरज नाही",
+    "step3Title": "रासायनिक कीटकनाशकाची आवश्यकता नाही (शून्य रासायनिक)",
+    "step3Chem": "हा शुद्ध सूक्ष्म अन्नद्रव्यांचा विकार आहे. अनावश्यक रासायनिक फवारणी टाळा.",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लिनिकल उपाय",
+    "gradKitTitle": "🌿 या रोगासाठी डॉक्टर क्युअर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करा (Rx-to-Cart)",
+    "retakeOther": "दुसऱ्या रोपाची तपासणी करा",
+    "orderBtn": "अधिकृत कृषी पदवीधर क्लिनिक उघडा",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषी पदवीधर क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बियाणे व भांडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाते (Pay Later)",
+    "tabConsult": "सल्ला व ड्रोन ऑडिट",
+    "catAll": "सर्व उत्पादने (All)",
+    "catSeed": "🌾 प्रमाणित बियाणे",
+    "catMicro": "🧪 सूक्ष्म अन्नद्रव्ये",
+    "catKit": "🩺 डॉक्टर क्युअर किट",
+    "catBioFert": "🦠 बायो खत (ZSB)",
+    "catBioPest": "🛡️ बायो बुरशीनाशक",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "थेट बाजार भाव (e-NAM)",
+    "mandiCropAll": "सर्व पिके (All)",
+    "mandiQtyLabel": "विक्रीसाठी पीक प्रमाण (Lot Size):",
+    "mandiBestNetPrefix": "सर्वोत्तम निव्वळ उत्पन्न:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "वर",
+    "mandiBelowMsp": "खाली",
+    "mandiNonMsp": "गैर-MSP पीक",
+    "mandiTransportHamali": "वाहतूक + हमाली",
+    "mandiNetPayout": "हातात मिळणारी निव्वळ रक्कम",
+    "mandiSellNow": "त्वरित विका (SELL)",
+    "mandiHoldStore": "साठवा / विक्री थांबवा (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विंटल",
+    "mandiToday": "आज",
+    "calScreenTitle": "फवारणी हवामान, खत गणक व दिनदर्शिका",
+    "sprayStatusOptimal": "फवारणीसाठी उत्तम वेळ",
+    "simWeatherBtnText": "पाऊस चाचणी",
+    "npkSectionTitle": "संतुलित खत (NPK + झिंक) गोणी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "पेरणी ते कापणी वैज्ञानिक दिनदर्शिका",
+    "schemesScreenTitle": "सरकारी योजना, KCC व पीक विमा",
+    "kccStatLbl": "KCC ४% कर्ज पात्रता",
+    "pmfbyStatLbl": "PMFBY पीक विमा संरक्षण",
+    "pmKisanStatLbl": "PM-KISAN + सबसिडी",
+    "pmfbyBadge72h": "PMFBY ७२ तास थेट विमा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "त्वरित ७२ तास विमा दावा नोंदवा",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "किसान ई-मित्र AI व रोग रडार",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "आपल्या आवाजात शेतीचा कोणताही प्रश्न विचारा",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज फवारणी करावी का?",
+    "mitraPrompt3": "३ एकर खत प्रमाण?",
+    "mitraPrompt4": "सरकारी योजना व विमा?",
+    "mitraQueryPlaceholder": "येथे लिहा किंवा माइक दाबून बोला...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्यनिहाय कृषी समस्या व तांत्रिक उपाय",
+    "chcBookingsHeading": "आपल्या बुक केलेल्या यंत्रसामग्री / ड्रोन सेवा",
+    "historyScreenTitle": "पीक तपासणी व सल्ला इतिहास",
+    "historySearchPlaceholder": "पीक किंवा रोगाचे नाव शोधा...",
+    "historyCropAll": "सर्व (All)",
+    "historyTotalScansLbl": "एकूण तपासण्या",
+    "historyActiveCropsLbl": "सक्रिय पिके",
+    "historyAvgAccLbl": "सरासरी अचूकता",
+    "historyNewScanBtnText": "+ नवीन पीक स्कॅन करा",
+    "loginTitle": "शेतकरी मोबाइल लॉगिन",
+    "loginSubtitle": "पासवर्ड शिवाय फक्त १० अंकी मोबाइल नंबर टाका",
+    "namePlaceholder": "शेतकऱ्याचे पूर्ण नाव",
+    "otpLabel": "६ अंकी OTP कोड",
+    "dpdpTitle": "DPDP कायदा २०२३ स्पष्ट संमती",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP मिळवा",
+    "authBtnVerify": "लॉगिन सत्यापित करा",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफलाइन मोड - स्कॅन स्थानिक पातळीवर सेव्ह होतील",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "आपली भाषा निवडा / Select Language",
+    "viewRxBtn": "प्रिस्क्रिप्शन व किट पहा"
   },
-  te: {
-    langName: 'తెలుగు',
-    appName: 'కృషి స్వాస్థ్య సహాయక్',
-    home: 'హోమ్',
-    cropDoctor: 'పంట పరీక్ష',
-    rxChart: 'పోషణ చార్ట్',
-    soilFarm: 'నేల కార్డు',
-    clinic: 'అగ్రి క్లినిక్',
-    welcomeFarmer: 'శుభోదయం,',
-    farmerName: 'రామేశ్వర్ పాటిదార్',
-    locationAcreage: 'ధరంపురి, ధార్ (మ.ప్ర.) • 3.5 ఎకరాలు',
-    activeCrop: 'సోయాబీన్ (JS 20-34)',
-    weatherTitle: 'వాతావరణం & వ్యాధి హెచ్చరిక',
-    weatherAlert: 'అధిక తేమ: ఆకుల పసుపు రంగు మరియు జింక్ లోపం ముప్పు',
-    heroCardTitle: 'పంట వ్యాధి & పోషక పరీక్ష',
-    heroCardDesc: 'ఆకు ఫోటో తీయండి లేదా వీడియో అప్‌లోడ్ చేయండి — 3-దశల పోషక చికిత్స పొందండి.',
-    btnHeroScan: 'ఫోటో తీయండి',
-    btnHeroVideo: 'వీడియో అప్‌లోడ్',
-    quickSoil: 'నేల కార్డు',
-    quickSoilSub: 'జింక్ లోపం (0.45 ppm)',
-    quickRx: 'పోషణ చార్ట్',
-    quickRxSub: 'జింక్ సల్ఫేట్ 21%',
-    quickShop: 'రైతు క్లినిక్',
-    quickShopSub: 'స్టాక్ అందుబాటులో ఉంది',
-    quickCall: 'KVK హెల్ప్‌లైన్',
-    quickCallSub: 'శాస్త్రవేత్తతో మాట్లాడండి',
-    recentTitle: 'ఇటీవలి పంట నిర్ధారణ చరిత్ర',
-    tabPhoto: 'ఫోటో',
-    tabVideo: 'వీడియో',
-    tabUpload: 'అప్‌లోడ్',
-    tabSamples: 'నమూనాలు',
-    retakeBtn: 'మళ్లీ ఫోటో/వీడియో తీయండి (Retake)',
-    proceedBtn: 'శారీరక లక్షణాల విశ్లేషణ ప్రారంభించండి',
-    analyzingTitle: 'మొక్కల శారీరక మరియు స్పెక్ట్రల్ విశ్లేషణ జరుగుతోంది...',
-    zincDef: 'సోయాబీన్: జింక్ లోపం',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'ఎకరానికి 200 లీటర్ల నీటిలో 500 గ్రాముల జింక్ సల్ఫేట్ 21% పిచికారీ చేయండి.',
-    step2Bio: '1 కిలో ZSB బ్యాక్టీరియాను సేంద్రీయ ఎరువుతో నేలలో కలపండి.',
-    step3Chem: 'రసాయన పురుగుమందు అవసరం లేదు.',
-    voiceBtn: 'సలహా వినండి (Voice)',
-    pdfBtn: 'ప్రిస్క్రిప్షన్ డౌన్‌లోడ్ (PDF)',
-    orderBtn: 'సమీప కేంద్రం నుండి ఆర్డర్ చేయండి'
+  "te": {
+    "langName": "తెలుగు",
+    "appName": "కృషి స్వాస్థ్య సహాయక్",
+    "home": "హోమ్",
+    "cropDoctor": "పంట పరీక్ష",
+    "rxChart": "పోషణ చార్ట్",
+    "soilFarm": "నేల కార్డు",
+    "clinic": "అగ్రి క్లినిక్",
+    "mandi": "మండీ ధరలు",
+    "calendar": "ఎరువులు & వాతావరణం",
+    "schemes": "పథకాలు & బీమా",
+    "mitra": "ఈ-మిత్ర AI",
+    "history": "చరిత్ర",
+    "welcomeFarmer": "శుభోదయం,",
+    "farmerName": "రామేశ్వర్ పాటిదార్",
+    "locationAcreage": "ధరంపురి, ధార్ (మ.ప్ర.) • 3.5 ఎకరాలు",
+    "activeCrop": "సోయాబీన్ (JS 20-34)",
+    "weatherTitle": "వాతావరణం & వ్యాధి హెచ్చరిక",
+    "weatherAlert": "స్ప్రే చేయడానికి ఉత్తమ సమయం (ఉదయం 6:30-9:30) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "పంట వ్యాధి & పోషక పరీక్ష",
+    "heroCardDesc": "ఆకు ఫోటో తీయండి లేదా వీడియో అప్‌లోడ్ చేయండి — 3-దశల పోషక చికిత్స పొందండి.",
+    "btnHeroScan": "ఫోటో తీయండి",
+    "btnHeroVideo": "వీడియో తీయండి",
+    "btnHeroGallery": "గ్యాలరీ",
+    "homeMitraTitle": "మాట్లాడి అడగండి: కిసాన్ ఈ-మిత్ర AI",
+    "homeMitraSub": "మండీ ధరలు, ఎరువుల మోతాదు, స్ప్రే సమయం అడగండి",
+    "homeStateMatrixTitle": "రాష్ట్రాల వారీగా వ్యవసాయ సవాళ్లు & సాంకేతిక పరిష్కారాలు",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "మండీ ధరలు (e-NAM)",
+    "tileMandiSub": "సోయాబీన్ ₹5,120/క్వింటాల్ (+MSP)",
+    "tileCalTitle": "ఎరువుల కాలిక్యులేటర్ & వాతావరణం",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "ప్రభుత్వ పథకాలు & బీమా",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "నేల కార్డు",
+    "quickSoilSub": "జింక్ లోపం (0.45 ppm)",
+    "quickRx": "పోషణ చార్ట్",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "అగ్రి క్లినిక్",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK శాస్త్రవేత్త",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "ఇటీవలి పంట నిర్ధారణ చరిత్ర",
+    "viewAll": "అన్నీ చూడండి (View All)",
+    "newScan": "+ కొత్త పరీక్ష",
+    "camTitle": "పంట ఆకు పరీక్ష",
+    "tabPhoto": "ఫోటో",
+    "tabVideo": "వీడియో",
+    "tabUpload": "గ్యాలరీ",
+    "tabSamples": "నమూనాలు",
+    "retakeBtn": "మళ్లీ తీయండి (Retake)",
+    "proceedBtn": "లక్షణాల విశ్లేషణ ప్రారంభించండి",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "సోయాబీన్: జింక్ లోపం",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "సలహా వినండి (Voice)",
+    "pdfBtn": "ప్రిస్క్రిప్షన్ డౌన్‌లోడ్ (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "దశ 1: పోషక పిచికారీ",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "ఎకరానికి 200 లీటర్ల నీటిలో 500 గ్రాముల జింక్ సల్ఫేట్ 21% పిచికారీ చేయండి.",
+    "step2Badge": "దశ 2: సేంద్రీయ నేల అభివృద్ధి",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "1 కిలో ZSB బ్యాక్టీరియాను సేంద్రీయ ఎరువుతో నేలలో కలపండి.",
+    "step3Badge": "దశ 3: రసాయన పురుగుమందు అవసరం లేదు",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "ఇది స్వచ్ఛమైన సూక్ష్మ పోషక లోపం. రసాయన పురుగుమందు వాడకండి.",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "ప్రత్యక్ష మార్కెట్ ధరలు (e-NAM)",
+    "mandiCropAll": "అన్ని పంటలు (All)",
+    "mandiQtyLabel": "అమ్మకానికి పంట పరిమాణం:",
+    "mandiBestNetPrefix": "ఉత్తమ నికర ఆదాయం:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "స్ప్రే వాతావరణం, ఎరువులు & క్యాలెండర్",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "ప్రభుత్వ పథకాలు & పంట బీమా",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "కిసాన్ ఈ-మిత్ర AI & రడార్",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "పంట పరీక్ష & ప్రిస్క్రిప్షన్ చరిత్ర",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "రైతు మొబైల్ లాగిన్",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  ta: {
-    langName: 'தமிழ்',
-    appName: 'வேளாண் சுகாதார உதவியாளர்',
-    home: 'முகப்பு',
-    cropDoctor: 'பயிர் பரிசோதனை',
-    rxChart: 'ஊட்டச்சத்து சீட்டு',
-    soilFarm: 'மண் அட்டை',
-    clinic: 'கிளினிக்',
-    welcomeFarmer: 'வணக்கம்,',
-    farmerName: 'ராமேஸ்வர் பாட்டிதார்',
-    locationAcreage: 'தர்மபுரி, தார் • 3.5 ஏக்கர்',
-    activeCrop: 'சோயாபீன் (JS 20-34)',
-    weatherTitle: 'வானிலை & நோய் எச்சரிக்கை',
-    weatherAlert: 'அதிக ஈரப்பதம்: துத்தநாகக் குறைபாடு ஏற்படும் அபாயம்',
-    heroCardTitle: 'பயிர் நோய் மற்றும் ஊட்டச்சத்து சோதனை',
-    heroCardDesc: 'இலையின் புகைப்படம் எடுக்கவும் அல்லது வீடியோ பதிவேற்றவும் — 3-படி ஊட்டச்சத்து ஆலோசனை பெறவும்.',
-    btnHeroScan: 'படம் எடுக்கவும்',
-    btnHeroVideo: 'வீடியோ பதிவேற்றம்',
-    quickSoil: 'மண் அட்டை',
-    quickSoilSub: 'ஜிங்க் குறைபாடு (0.45 ppm)',
-    quickRx: 'செயலில் உள்ள சீட்டு',
-    quickRxSub: 'ஜிங்க் சல்பேட் 21%',
-    quickShop: 'வேளாண் மையம்',
-    quickShopSub: 'ஸ்டாக் உள்ளது',
-    quickCall: 'KVK உதவி எண்',
-    quickCallSub: 'விஞ்ஞானியிடம் பேசவும்',
-    recentTitle: 'சமீபத்திய பயிர் ஆய்வு வரலாறு',
-    tabPhoto: 'புகைப்படம்',
-    tabVideo: 'வீடியோ',
-    tabUpload: 'பதிவேற்று',
-    tabSamples: 'மாதிரிகள்',
-    retakeBtn: 'மீண்டும் படம் எடுக்கவும் (Retake)',
-    proceedBtn: 'உடலியல் அம்சங்களை ஆய்வு செய்',
-    analyzingTitle: 'தாவர உடலியல் மற்றும் நிறமாலை பகுப்பாய்வு நடக்கிறது...',
-    zincDef: 'சோயாபீன்: துத்தநாக (ஜிங்க்) குறைபாடு',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'ஏக்கருக்கு 200 லிட்டர் நீரில் 500 கிராம் ஜிங்க் சல்பேட் 21% தெளிக்கவும்.',
-    step2Bio: '1 கிலோ ZSB பாக்டீரியாவை மண்புழு உரத்துடன் மண்ணில் இடவும்.',
-    step3Chem: 'இரசாயன பூச்சிக்கொல்லி தேவையில்லை.',
-    voiceBtn: 'ஆலோசனை கேட்கவும் (Voice)',
-    pdfBtn: 'சீட்டு பதிவிறக்கம் (PDF)',
-    orderBtn: 'அருகிலுள்ள மையத்தில் ஆர்டர் செய்க'
+  "ta": {
+    "langName": "தமிழ்",
+    "appName": "வேளாண் சுகாதார உதவியாளர்",
+    "home": "முகப்பு",
+    "cropDoctor": "பயிர் பரிசோதனை",
+    "rxChart": "ஊட்டச்சத்து சீட்டு",
+    "soilFarm": "மண் அட்டை",
+    "clinic": "வேளாண் மையம்",
+    "mandi": "மண்டி விலை",
+    "calendar": "உரம் & வானிலை",
+    "schemes": "திட்டங்கள் & காப்பீடு",
+    "mitra": "இ-மித்ரா AI",
+    "history": "ஆய்வு வரலாறு",
+    "welcomeFarmer": "வணக்கம்,",
+    "farmerName": "ராமேஸ்வர் பாட்டிதார்",
+    "locationAcreage": "தர்மபுரி, தார் • 3.5 ஏக்கர்",
+    "activeCrop": "சோயாபீன் (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "தெளிக்க உகந்த நேரம் (காலை 6:30-9:30) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "பயிர் நோய் மற்றும் ஊட்டச்சத்து சோதனை",
+    "heroCardDesc": "இலையின் புகைப்படம் எடுக்கவும் அல்லது வீடியோ பதிவேற்றவும் — 3-படி ஊட்டச்சத்து ஆலோசனை பெறவும்.",
+    "btnHeroScan": "படம் எடுக்கவும்",
+    "btnHeroVideo": "வீடியோ பதிவேற்றம்",
+    "btnHeroGallery": "கேலரி",
+    "homeMitraTitle": "பேசி கேட்கவும்: கிசான் இ-மித்ரா AI",
+    "homeMitraSub": "மண்டி விலை, உர அளவு, தெளிக்கும் நேரம் கேளுங்கள்",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "மண்டி விலை (e-NAM)",
+    "tileMandiSub": "சோயாபீன் ₹5,120/குவிண்டால் (+MSP)",
+    "tileCalTitle": "உர கால்குலேட்டர் & வானிலை",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "அரசு திட்டங்கள் & காப்பீடு",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "மண் அட்டை",
+    "quickSoilSub": "ஜிங்க் குறைபாடு (0.45 ppm)",
+    "quickRx": "செயலில் உள்ள சீட்டு",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "வேளாண் மையம்",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK விஞ்ஞானி",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "சமீபத்திய பயிர் ஆய்வு வரலாறு",
+    "viewAll": "அனைத்தும் பார்க்க (View All)",
+    "newScan": "+ புதிய ஆய்வு",
+    "camTitle": "பயிர் இலை பரிசோதனை",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "மீண்டும் படம் எடுக்கவும் (Retake)",
+    "proceedBtn": "உடலியல் அம்சங்களை ஆய்வு செய்",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "சோயாபீன்: துத்தநாக (ஜிங்க்) குறைபாடு",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "ஆலோசனை கேட்கவும் (Voice)",
+    "pdfBtn": "சீட்டு பதிவிறக்கம் (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "படி 1: இலைவழி நுண்ணூட்டச்சத்து தெளிப்பு",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "ஏக்கருக்கு 200 லிட்டர் நீரில் 500 கிராம் ஜிங்க் சல்பேட் 21% தெளிக்கவும்.",
+    "step2Badge": "படி 2: உயிரியல் மண் மேலாண்மை",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "1 கிலோ ZSB பாக்டீரியாவை மண்புழு உரத்துடன் மண்ணில் இடவும்.",
+    "step3Badge": "படி 3: இரசாயன பூச்சிக்கொல்லி தேவையில்லை",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "இரசாயன பூச்சிக்கொல்லி தேவையில்லை (பூஜ்ஜியம் கெமிக்கல்).",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "நேரலை சந்தை விலை (e-NAM)",
+    "mandiCropAll": "அனைத்து பயிர்கள் (All)",
+    "mandiQtyLabel": "விற்பனை அளவு:",
+    "mandiBestNetPrefix": "சிறந்த நிகர வருமானம்:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "தெளிப்பு வானிலை, உர கணக்கீடு & காலண்டர்",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "அரசு திட்டங்கள் & பயிர் காப்பீடு",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "கிசான் இ-மித்ரா AI & ரேடார்",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "பயிர் ஆய்வு & மருந்துச்சீட்டு வரலாறு",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "விவசாயி மொபைல் உள்நுழைவு",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  gu: {
-    langName: 'ગુજરાતી',
-    appName: 'કૃષિ સ્વાસ્થ્ય સહાયક',
-    home: 'હોમ',
-    cropDoctor: 'પાક તપાસ',
-    rxChart: 'પોષણ પ્રિસ્ક્રિપ્શન',
-    soilFarm: 'જમીન કાર્ડ',
-    clinic: 'એગ્રી ક્લિનિક',
-    welcomeFarmer: 'શુભ દિવસ,',
-    farmerName: 'રામેશ્વર પાટીદાર',
-    locationAcreage: 'ગામ ધરમપુરી, ધાર (મ.પ્ર.) • ૩.૫ એકર',
-    activeCrop: 'સોયાબીન (JS 20-34)',
-    weatherTitle: 'સ્થાનિક હવામાન અને રોગ ચેતવણી',
-    weatherAlert: 'વધુ ભેજ: પાંદડા પીળા પડવા અને ઝિંકની ઉણપનું જોખમ',
-    heroCardTitle: 'પાક રોગ અને પોષણ તપાસ',
-    heroCardDesc: 'પાંદડાનો ફોટો લો અથવા વિડિઓ અપલોડ કરો — સચોટ ૩-તબક્કાનું પોષણ માર્ગદર્શન મેળવો.',
-    btnHeroScan: 'ફોટો લો',
-    btnHeroVideo: 'વિડિઓ અપલોડ',
-    quickSoil: 'જમીન કાર્ડ',
-    quickSoilSub: 'ઝિંકની ઉણપ (૦.૪૫ ppm)',
-    quickRx: 'સક્રિય ચાર્ટ',
-    quickRxSub: 'ઝિંક સલ્ફેટ ૨૧%',
-    quickShop: 'કૃષિ કેન્દ્ર',
-    quickShopSub: 'સ્ટોક ઉપલબ્ધ છે',
-    quickCall: 'KVK હેલ્પલાઇન',
-    quickCallSub: 'વૈજ્ઞાનિક સાથે વાત કરો',
-    recentTitle: 'તાજેતરની પાક તપાસ ઇતિહાસ',
-    tabPhoto: 'ફોટો',
-    tabVideo: 'વિડિઓ',
-    tabUpload: 'અપલોડ',
-    tabSamples: 'સેમ્પલ',
-    retakeBtn: 'ફરીથી ફોટો/વિડિઓ લો (Retake)',
-    proceedBtn: 'શારીરિક લક્ષણોની તપાસ શરૂ કરો',
-    analyzingTitle: 'છોડના શારીરિક અને સ્પેક્ટ્રલ વિશ્લેષણ ચાલુ છે...',
-    zincDef: 'સોયાબીન: ઝિંકની ઉણપ',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'પ્રતિ એકર ૨૦૦ લિટર પાણીમાં ૫૦૦ ગ્રામ ઝિંક સલ્ફેટ ૨૧% છાંટો.',
-    step2Bio: '૧ કિલો ZSB બેક્ટેરિયા છાણીયા ખાતર સાથે જમીનમાં આપો.',
-    step3Chem: 'રાસાયણિક જંતુનાશકની જરૂર નથી.',
-    voiceBtn: 'સલાહ સાંભળો (Voice)',
-    pdfBtn: 'પ્રિસ્ક્રિપ્શન ડાઉનલોડ (PDF)',
-    orderBtn: 'નજીકના કેન્દ્રમાંથી ઓર્ડર કરો'
+  "gu": {
+    "langName": "ગુજરાતી",
+    "appName": "કૃષિ સ્વાસ્થ્ય સહાયક",
+    "home": "હોમ",
+    "cropDoctor": "પાક તપાસ",
+    "rxChart": "પોષણ પ્રિસ્ક્રિપ્શન",
+    "soilFarm": "જમીન કાર્ડ",
+    "clinic": "એગ્રી ક્લિનિક",
+    "mandi": "મંડી ભાવ",
+    "calendar": "ખાતર અને હવામાન",
+    "schemes": "યોજના અને વીમો",
+    "mitra": "ઈ-મિત્ર AI",
+    "history": "તપાસ ઇતિહાસ",
+    "welcomeFarmer": "શુભ દિવસ,",
+    "farmerName": "રામેશ્વર પાટીદાર",
+    "locationAcreage": "ગામ ધરમપુરી, ધાર (મ.પ્ર.) • ૩.૫ એકર",
+    "activeCrop": "સોયાબીન (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "છંટકાવ માટે ઉત્તમ સમય ( સવારે 6:30-9:30 ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "પાક રોગ અને પોષણ તપાસ",
+    "heroCardDesc": "પાંદડાનો ફોટો લો અથવા વિડિઓ અપલોડ કરો — સચોટ ૩-તબક્કાનું પોષણ માર્ગદર્શન મેળવો.",
+    "btnHeroScan": "ફોટો લો",
+    "btnHeroVideo": "વિડિઓ બનાવો",
+    "btnHeroGallery": "ગેલેરી",
+    "homeMitraTitle": "બોલીને પૂછો: કિસાન ઈ-મિત્ર AI",
+    "homeMitraSub": "મંડી ભાવ, ખાતર જથ્થો, છંટકાવ સમય અથવા યોજનાઓ પૂછો",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "મંડી ભાવ (e-NAM)",
+    "tileMandiSub": "સોયાબીન ₹૫,૧૨૦/ક્વિન્ટલ (+MSP)",
+    "tileCalTitle": "ખાતર કેલ્ક્યુલેટર અને હવામાન",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "સરકારી યોજના અને વીમો",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "જમીન કાર્ડ",
+    "quickSoilSub": "ઝિંકની ઉણપ (૦.૪૫ ppm)",
+    "quickRx": "સક્રિય ચાર્ટ",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "કૃષિ કેન્દ્ર",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK વૈજ્ઞાનિક",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "તાજેતરની પાક તપાસ ઇતિહાસ",
+    "viewAll": "બધું જુઓ (View All)",
+    "newScan": "+ નવી તપાસ",
+    "camTitle": "પાકના પાંદડાની તપાસ",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "ફરીથી ફોટો/વિડિઓ લો (Retake)",
+    "proceedBtn": "શારીરિક લક્ષણોની તપાસ શરૂ કરો",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "સોયાબીન: ઝિંકની ઉણપ",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "સલાહ સાંભળો (Voice)",
+    "pdfBtn": "પ્રિસ્ક્રિપ્શન ડાઉનલોડ (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "તબક્કો ૧: સૂક્ષ્મ પોષકતત્વ છંટકાવ",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "પ્રતિ એકર ૨૦૦ લિટર પાણીમાં ૫૦૦ ગ્રામ ઝિંક સલ્ફેટ ૨૧% છાંટો.",
+    "step2Badge": "તબક્કો ૨: જૈવિક સુધારો",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "૧ કિલો ZSB બેક્ટેરિયા છાણીયા ખાતર સાથે જમીનમાં આપો.",
+    "step3Badge": "તબક્કો ૩: રાસાયણિક જંતુનાશકની જરૂર નથી",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "રાસાયણિક જંતુનાશકની જરૂર નથી (ઝીરો કેમિકલ).",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "લાઈવ મંડી ભાવ (e-NAM)",
+    "mandiCropAll": "બધા પાક (All)",
+    "mandiQtyLabel": "વેચાણ માટે પાક જથ્થો:",
+    "mandiBestNetPrefix": "શ્રેષ્ઠ ચોખ્ખી આવક:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "છંટકાવ હવામાન, ખાતર ગણક અને કેલેન્ડર",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "સરકારી યોજનાઓ અને પાક વીમો",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "કિસાન ઈ-મિત્ર AI અને રડાર",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "પાક તપાસ અને પ્રિસ્ક્રિપ્શન ઇતિહાસ",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "ખેડૂત મોબાઇલ લૉગિન",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  bn: {
-    langName: 'বাংলা',
-    appName: 'কৃষি স্বাস্থ্য সহায়ক',
-    home: 'হোম',
-    cropDoctor: 'ফসল পরীক্ষা',
-    rxChart: 'পুষ্টি প্রেসক্রিপশন',
-    soilFarm: 'মাটি কার্ড',
-    clinic: 'এগ্রি ক্লিনিক',
-    welcomeFarmer: 'নমস্কার,',
-    farmerName: 'রামেশ্বর পাটিদার',
-    locationAcreage: 'গ্রাম ধরমপুরী, ধার (ম.প্র.) • ৩.৫ একর',
-    activeCrop: 'সয়াবিন (JS 20-34)',
-    weatherTitle: 'আবহাওয়া ও রোগ সতর্কতা',
-    weatherAlert: 'উচ্চ আর্দ্রতা: জিঙ্কের ঘাটতির উচ্চ ঝুঁকি',
-    heroCardTitle: 'ফসল রোগ ও পুষ্টি পরীক্ষা',
-    heroCardDesc: 'পাতার ছবি তুলুন বা ভিডিও আপলোড করুন — সঠিক ৩-ধাপের পুষ্টি প্রেসক্রিপশন পান।',
-    btnHeroScan: 'ছবি তুলুন',
-    btnHeroVideo: 'ভিডিও আপলোড',
-    quickSoil: 'মাটি কার্ড',
-    quickSoilSub: 'জিঙ্কের ঘাটতি (০.৪৫ ppm)',
-    quickRx: 'সক্রিয় প্রেসক্রিপশন',
-    quickRxSub: 'জিঙ্ক সালফেট ২১%',
-    quickShop: 'কৃষি কেন্দ্র',
-    quickShopSub: 'স্টক উপলব্ধ আছে',
-    quickCall: 'KVK হেল্পলাইন',
-    quickCallSub: 'বিজ্ঞানীর সাথে কথা বলুন',
-    recentTitle: 'সাম্প্রতিক ফসল পরীক্ষা ইতিহাস',
-    tabPhoto: 'ছবি',
-    tabVideo: 'ভিডিও',
-    tabUpload: 'আপলোড',
-    tabSamples: 'নমুনা',
-    retakeBtn: 'আবার ছবি/ভিডিও তুলুন (Retake)',
-    proceedBtn: 'শারীরবৃত্তীয় বৈশিষ্ট্য বিশ্লেষণ শুরু করুন',
-    analyzingTitle: 'উদ্ভিদের শারীরবৃত্তীয় ও বর্ণালী বিশ্লেষণ চলছে...',
-    zincDef: 'সয়াবিন: জিঙ্কের ঘাটতি',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'প্রতি একরে ২০০ লিটার জলে ৫০০ গ্রাম জিঙ্ক সালফেট ২১% স্প্রে করুন।',
-    step2Bio: '১ কেজি ZSB ব্যাকটেরিয়া জৈব সারের সাথে মাটিতে প্রয়োগ করুন।',
-    step3Chem: 'রাসায়নিক কীটনাশকের প্রয়োজন নেই।',
-    voiceBtn: 'পরামর্শ শুনুন (Voice)',
-    pdfBtn: 'প্রেসক্রিপশন ডাউনলোড (PDF)',
-    orderBtn: 'নিকটবর্তী কেন্দ্র থেকে অর্ডার করুন'
+  "bn": {
+    "langName": "বাংলা",
+    "appName": "কৃষি স্বাস্থ্য সহায়ক",
+    "home": "হোম",
+    "cropDoctor": "ফসল পরীক্ষা",
+    "rxChart": "পুষ্টি প্রেসক্রিপশন",
+    "soilFarm": "মাটি কার্ড",
+    "clinic": "এগ্রি ক্লিনিক",
+    "mandi": "মান্ডি দর",
+    "calendar": "সার ও আবহাওয়া",
+    "schemes": "সরকারি প্রকল্প ও বীমা",
+    "mitra": "ই-মিত্র AI",
+    "history": "পরীক্ষার ইতিহাস",
+    "welcomeFarmer": "নমস্কার,",
+    "farmerName": "রামেশ্বর পাটিদার",
+    "locationAcreage": "গ্রাম ধরমপুরী, ধার (ম.প্র.) • ৩.৫ একর",
+    "activeCrop": "সয়াবিন (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "স্প্রে করার উপযুক্ত সময় ( সকাল ৬:৩০-৯:৩০ ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "ফসল রোগ ও পুষ্টি পরীক্ষা",
+    "heroCardDesc": "পাতার ছবি তুলুন বা ভিডিও আপলোড করুন — সঠিক ৩-ধাপের পুষ্টি প্রেসক্রিপশন পান।",
+    "btnHeroScan": "ছবি তুলুন",
+    "btnHeroVideo": "ভিডিও বানান",
+    "btnHeroGallery": "গ্যালারি",
+    "homeMitraTitle": "কথা বলে জানুন: কিষাণ ই-মিত্র AI",
+    "homeMitraSub": "মান্ডি দর, সারের পরিমাণ, স্প্রে সময় বা প্রকল্প জানুন",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "মান্ডি দর (e-NAM)",
+    "tileMandiSub": "সয়াবিন ₹৫,১২০/কুইন্টাল (+MSP)",
+    "tileCalTitle": "সার ক্যালকুলেটর ও আবহাওয়া",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "সরকারি প্রকল্প ও বীমা",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "মাটি কার্ড",
+    "quickSoilSub": "জিঙ্কের ঘাটতি (০.৪৫ ppm)",
+    "quickRx": "সক্রিয় প্রেসক্রিপশন",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "কৃষি কেন্দ্র",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK বিজ্ঞানী",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "সাম্প্রতিক ফসল পরীক্ষা ইতিহাস",
+    "viewAll": "সব দেখুন (View All)",
+    "newScan": "+ নতুন পরীক্ষা",
+    "camTitle": "ফসলের পাতা পরীক্ষা",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "আবার ছবি/ভিডিও তুলুন (Retake)",
+    "proceedBtn": "শারীরবৃত্তীয় বৈশিষ্ট্য বিশ্লেষণ শুরু করুন",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "সয়াবিন: জিঙ্কের ঘাটতি",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "পরামর্শ শুনুন (Voice)",
+    "pdfBtn": "প্রেসক্রিপশন ডাউনলোড (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "ধাপ ১: অণুপুষ্টি স্প্রে",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "প্রতি একরে ২০০ লিটার জলে ৫০০ গ্রাম জিঙ্ক সালফেট ২১% স্প্রে করুন।",
+    "step2Badge": "ধাপ ২: জৈব মাটি উন্নয়ন",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "১ কেজি ZSB ব্যাকটেরিয়া জৈব সারের সাথে মাটিতে প্রয়োগ করুন।",
+    "step3Badge": "ধাপ ৩: রাসায়নিক কীটনাশক অপ্রয়োজনীয়",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "রাসায়নিক কীটনাশকের প্রয়োজন নেই (জিরো কেমিক্যাল)।",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "লাইভ মান্ডি দর (e-NAM)",
+    "mandiCropAll": "সব ফসল (All)",
+    "mandiQtyLabel": "বিক্রির জন্য ফসলের পরিমাণ:",
+    "mandiBestNetPrefix": "সর্বোত্তম নেট উপার্জন:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "স্প্রে আবহাওয়া, সার গণক ও ক্যালেন্ডার",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "সরকারি প্রকল্প ও ফসল বীমা",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "কিষাণ ই-মিত্র AI ও রাডার",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "ফসল পরীক্ষা ও প্রেসক্রিপশন ইতিহাস",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "কৃষক মোবাইল লগইন",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  kn: {
-    langName: 'ಕನ್ನಡ',
-    appName: 'ಕೃಷಿ ಸ್ವಾಸ್ಥ್ಯ ಸಹಾಯಕ',
-    home: 'ಮುಖಪುಟ',
-    cropDoctor: 'ಬೆಳೆ ಪರೀಕ್ಷೆ',
-    rxChart: 'ಪೋಷಕಾಂಶ ಚಾರ್ಟ್',
-    soilFarm: 'ಮಣ್ಣಿನ ಕಾರ್ಡ್',
-    clinic: 'ಅಗ್ರೋ ಕ್ಲಿನಿಕ್',
-    welcomeFarmer: 'ನಮಸ್ಕಾರ,',
-    farmerName: 'ರಾಮೇಶ್ವರ್ ಪಾಟೀದಾರ್',
-    locationAcreage: 'ಧರಂಪುರಿ, ಧಾರ್ (ಮ.ಪ್ರ.) • 3.5 ಎಕರೆ',
-    activeCrop: 'ಸೋಯಾಬೀನ್ (JS 20-34)',
-    weatherTitle: 'ಸ್ಥಳೀಯ ಹವಾಮಾನ & ರೋಗ ಎಚ್ಚರಿಕೆ',
-    weatherAlert: 'ಹೆಚ್ಚಿನ ಆರ್ದ್ರತೆ: ಸತು (ಜಿಂಕ್) ಕೊರತೆಯ ಅಪಾಯ',
-    heroCardTitle: 'ಬೆಳೆ ರೋಗ & ಪೋಷಕಾಂಶ ಪರೀಕ್ಷೆ',
-    heroCardDesc: 'ಎಲೆಯ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ — 3-ಹಂತದ ಪೋಷಕಾಂಶ ಚಿಕಿತ್ಸೆ ಪಡೆಯಿರಿ.',
-    btnHeroScan: 'ಫೋಟೋ ತೆಗೆಯಿರಿ',
-    btnHeroVideo: 'ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್',
-    quickSoil: 'ಮಣ್ಣಿನ ಕಾರ್ಡ್',
-    quickSoilSub: 'ಜಿಂಕ್ ಕೊರತೆ (0.45 ppm)',
-    quickRx: 'ಸಕ್ರಿಯ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್',
-    quickRxSub: 'ಜಿಂಕ್ ಸಲ್ಫೇಟ್ 21%',
-    quickShop: 'ಕೃಷಿ ಸೇವಾ ಕೇಂದ್ರ',
-    quickShopSub: 'ಸ್ಟಾಕ್ ಲಭ್ಯವಿದೆ',
-    quickCall: 'KVK ಸಹಾಯವಾಣಿ',
-    quickCallSub: 'ವಿಜ್ಞಾನಿಗಳೊಂದಿಗೆ ಮಾತನಾಡಿ',
-    recentTitle: 'ಇತ್ತೀಚಿನ ಬೆಳೆ ತಪಾಸಣೆ ಇತಿಹಾಸ',
-    tabPhoto: 'ಫೋಟೋ',
-    tabVideo: 'ವೀಡಿಯೊ',
-    tabUpload: 'ಅಪ್‌ಲೋಡ್',
-    tabSamples: 'ಮಾದರಿಗಳು',
-    retakeBtn: 'ಮತ್ತೆ ಫೋಟೋ/ವೀಡಿಯೊ ತೆಗೆಯಿರಿ (Retake)',
-    proceedBtn: 'ಶಾರೀರಿಕ ಲಕ್ಷಣಗಳ ವಿಶ್ಲೇಷಣೆ ಪ್ರಾರಂಭಿಸಿ',
-    analyzingTitle: 'ಸಸ್ಯದ ಶಾರೀರಿಕ ಮತ್ತು ಸ್ಪೆಕ್ಟ್ರಲ್ ವಿಶ್ಲೇಷಣೆ ನಡೆಯುತ್ತಿದೆ...',
-    zincDef: 'ಸೋಯಾಬೀನ್: ಸತುವಿನ (ಜಿಂಕ್) ಕೊರತೆ',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'ಪ್ರತಿ ಎಕರೆಗೆ 200 ಲೀಟರ್ ನೀರಿಗೆ 500 ಗ್ರಾಂ ಜಿಂಕ್ ಸಲ್ಫೇಟ್ 21% ಸಿಂಪಡಿಸಿ.',
-    step2Bio: '1 ಕೆಜಿ ZSB ಬ್ಯಾಕ್ಟೀರಿಯಾವನ್ನು ಸಾವಯವ ಗೊಬ್ಬರದೊಂದಿಗೆ ಮಣ್ಣಿಗೆ ಸೇರಿಸಿ.',
-    step3Chem: 'ರಾಸಾಯನಿಕ ಕೀಟನಾಶಕಗಳ ಅಗತ್ಯವಿಲ್ಲ.',
-    voiceBtn: 'ಸಲಹೆ ಆಲಿಸಿ (Voice)',
-    pdfBtn: 'ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಡೌನ್‌ಲೋಡ್ (PDF)',
-    orderBtn: 'ಹತ್ತಿರದ ಕೇಂದ್ರದಿಂದ ಆರ್ಡರ್ ಮಾಡಿ'
+  "kn": {
+    "langName": "ಕನ್ನಡ",
+    "appName": "ಕೃಷಿ ಸ್ವಾಸ್ಥ್ಯ ಸಹಾಯಕ",
+    "home": "ಮುಖಪುಟ",
+    "cropDoctor": "ಬೆಳೆ ಪರೀಕ್ಷೆ",
+    "rxChart": "ಪೋಷಕಾಂಶ ಚಾರ್ಟ್",
+    "soilFarm": "ಮಣ್ಣಿನ ಕಾರ್ಡ್",
+    "clinic": "ಅಗ್ರೋ ಕ್ಲಿನಿಕ್",
+    "mandi": "ಮಾರುಕಟ್ಟೆ ದರ",
+    "calendar": "ಗೊಬ್ಬರ ಮತ್ತು ಹವಾಮಾನ",
+    "schemes": "ಯೋಜನೆಗಳು ಮತ್ತು ವಿಮೆ",
+    "mitra": "ಇ-ಮಿತ್ರ AI",
+    "history": "ತಪಾಸಣೆ ಇತಿಹಾಸ",
+    "welcomeFarmer": "ನಮಸ್ಕಾರ,",
+    "farmerName": "ರಾಮೇಶ್ವರ್ ಪಾಟೀದಾರ್",
+    "locationAcreage": "ಧರಂಪುರಿ, ಧಾರ್ (ಮ.ಪ್ರ.) • 3.5 ಎಕರೆ",
+    "activeCrop": "ಸೋಯಾಬೀನ್ (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "ಸಿಂಪರಣೆಗೆ ಉತ್ತಮ ಸಮಯ ( ಬೆಳಿಗ್ಗೆ 6:30-9:30 ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "ಬೆಳೆ ರೋಗ & ಪೋಷಕಾಂಶ ಪರೀಕ್ಷೆ",
+    "heroCardDesc": "ಎಲೆಯ ಫೋಟೋ ಅಥವಾ ವೀಡಿಯೊ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ — 3-ಹಂತದ ಪೋಷಕಾಂಶ ಚಿಕಿತ್ಸೆ ಪಡೆಯಿರಿ.",
+    "btnHeroScan": "ಫೋಟೋ ತೆಗೆಯಿರಿ",
+    "btnHeroVideo": "ವೀಡಿಯೊ ಮಾಡಿ",
+    "btnHeroGallery": "ಗ್ಯಾಲರಿ",
+    "homeMitraTitle": "ಮಾತನಾಡಿ ಕೇಳಿ: ಕಿಸಾನ್ ಇ-ಮಿತ್ರ AI",
+    "homeMitraSub": "ಮಾರುಕಟ್ಟೆ ದರ, ಗೊಬ್ಬರದ ಪ್ರಮಾಣ, ಸಿಂಪರಣೆ ಸಮಯ ಕೇಳಿ",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "ಮಾರುಕಟ್ಟೆ ದರ (e-NAM)",
+    "tileMandiSub": "ಸೋಯಾಬೀನ್ ₹5,120/ಕ್ವಿಂಟಾಲ್ (+MSP)",
+    "tileCalTitle": "ಗೊಬ್ಬರ ಕ್ಯಾಲ್ಕುಲೇಟರ್ & ಹವಾಮಾನ",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು & ವಿಮೆ",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "ಮಣ್ಣಿನ ಕಾರ್ಡ್",
+    "quickSoilSub": "ಜಿಂಕ್ ಕೊರತೆ (0.45 ppm)",
+    "quickRx": "ಸಕ್ರಿಯ ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "ಕೃಷಿ ಸೇವಾ ಕೇಂದ್ರ",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK ವಿಜ್ಞಾನಿ",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "ಇತ್ತೀಚಿನ ಬೆಳೆ ತಪಾಸಣೆ ಇತಿಹಾಸ",
+    "viewAll": "ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ (View All)",
+    "newScan": "+ ಹೊಸ ತಪಾಸಣೆ",
+    "camTitle": "ಬೆಳೆ ಎಲೆ ತಪಾಸಣೆ",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "ಮತ್ತೆ ಫೋಟೋ/ವೀಡಿಯೊ ತೆಗೆಯಿರಿ (Retake)",
+    "proceedBtn": "ಶಾರೀರಿಕ ಲಕ್ಷಣಗಳ ವಿಶ್ಲೇಷಣೆ ಪ್ರಾರಂಭಿಸಿ",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "ಸೋಯಾಬೀನ್: ಸತುವಿನ (ಜಿಂಕ್) ಕೊರತೆ",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "ಸಲಹೆ ಆಲಿಸಿ (Voice)",
+    "pdfBtn": "ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಡೌನ್‌ಲೋಡ್ (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "ಹಂತ 1: ಸೂಕ್ಷ್ಮ ಪೋಷಕಾಂಶ ಸಿಂಪರಣೆ",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "ಪ್ರತಿ ಎಕರೆಗೆ 200 ಲೀಟರ್ ನೀರಿಗೆ 500 ಗ್ರಾಂ ಜಿಂಕ್ ಸಲ್ಫೇಟ್ 21% ಸಿಂಪಡಿಸಿ.",
+    "step2Badge": "ಹಂತ 2: ಜೈವಿಕ ಮಣ್ಣು ಅಭಿವೃದ್ಧಿ",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "1 ಕೆಜಿ ZSB ಬ್ಯಾಕ್ಟೀರಿಯಾವನ್ನು ಸಾವಯವ ಗೊಬ್ಬರದೊಂದಿಗೆ ಮಣ್ಣಿಗೆ ಸೇರಿಸಿ.",
+    "step3Badge": "ಹಂತ 3: ರಾಸಾಯನಿಕ ಕೀಟನಾಶಕ ಅಗತ್ಯವಿಲ್ಲ",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "ರಾಸಾಯನಿಕ ಕೀಟನಾಶಕಗಳ ಅಗತ್ಯವಿಲ್ಲ (ಶೂನ್ಯ ರಾಸಾಯನಿಕ).",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "ಲೈವ್ ಮಾರುಕಟ್ಟೆ ದರ (e-NAM)",
+    "mandiCropAll": "ಎಲ್ಲಾ ಬೆಳೆಗಳು (All)",
+    "mandiQtyLabel": "ಮಾರಾಟದ ಬೆಳೆ ಪ್ರಮಾಣ:",
+    "mandiBestNetPrefix": "ಅತ್ಯುತ್ತಮ ನಿವ್ವಳ ಆದಾಯ:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "ಸಿಂಪರಣೆ ಹವಾಮಾನ, ಗೊಬ್ಬರ ಗಣಕ & ಕ್ಯಾಲೆಂಡರ್",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು & ಬೆಳೆ ವಿಮೆ",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "ಕಿಸಾನ್ ಇ-ಮಿತ್ರ AI & ರೇಡಾರ್",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "ಬೆಳೆ ತಪಾಸಣೆ ಮತ್ತು ಪ್ರಿಸ್ಕ್ರಿಪ್ಷನ್ ಇತಿಹಾಸ",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "ರೈತರ ಮೊಬೈಲ್ ಲಾಗಿನ್",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   },
-  ml: {
-    langName: 'മലയാളം',
-    appName: 'കൃഷി സ്വാസ്ഥ്യ സഹായക്',
-    home: 'ഹോം',
-    cropDoctor: 'വിള പരിശോധന',
-    rxChart: 'പോഷക കുറിപ്പ്',
-    soilFarm: 'മണ്ണ് കാർഡ്',
-    clinic: 'അഗ്രി ക്ലിനിക്ക്',
-    welcomeFarmer: 'നമസ്കാരം,',
-    farmerName: 'രാമേശ്വർ പാട്ടീദാർ',
-    locationAcreage: 'ഗ്രാമം ധരംപുരി, ധാർ (എം.പി.) • 3.5 ഏക്കർ',
-    activeCrop: 'സോയാബീൻ (JS 20-34)',
-    weatherTitle: 'പ്രാദേശിക കാലാവസ്ഥയും രോഗ മുന്നറിയിപ്പും',
-    weatherAlert: 'ഉയർന്ന ഈർപ്പം: ഇലകൾ മഞ്ഞളിക്കാനും സിങ്ക് കുറവിനും സാധ്യത',
-    heroCardTitle: 'വിള രോഗ & പോഷക പരിശോധന',
-    heroCardDesc: 'ചെടിയുടെ ഇലയുടെ ഫോട്ടോ എടുക്കുക അല്ലെങ്കിൽ വീഡിയോ അപ്‌ലോഡ് ചെയ്യുക — 3-ഘട്ട പോഷക ചികിത്സ നേടുക.',
-    btnHeroScan: 'ഫോട്ടോ എടുക്കുക',
-    btnHeroVideo: 'വീഡിയോ അപ്‌ലോഡ്',
-    quickSoil: 'മണ്ണ് കാർഡ്',
-    quickSoilSub: 'സിങ്ക് കുറവ് (0.45 ppm)',
-    quickRx: 'സജീവ കുറിപ്പ്',
-    quickRxSub: 'സിങ്ക് സൾഫേറ്റ് 21%',
-    quickShop: 'അഗ്രി ക്ലിനിക്ക്',
-    quickShopSub: 'സ്റ്റോക്ക് ലഭ്യമാണ്',
-    quickCall: 'KVK ഹെൽപ്പ്‌ലൈൻ',
-    quickCallSub: 'ശാസ്ത്രജ്ഞനുമായി സംസാരിക്കുക',
-    recentTitle: 'സമീപകാല വിള രോഗനിർണയ ചരിത്രം',
-    tabPhoto: 'ഫോട്ടോ',
-    tabVideo: 'വീഡിയോ',
-    tabUpload: 'അപ്‌ലോഡ്',
-    tabSamples: 'സാമ്പിളുകൾ',
-    retakeBtn: 'വീണ്ടും ഫോട്ടോ/വീഡിയോ എടുക്കുക (Retake)',
-    proceedBtn: 'ശാരീരിക സവിശേഷതകളുടെ വിശകലനം ആരംഭിക്കുക',
-    analyzingTitle: 'സസ്യ ശാരീരിക & സ്പെക്ട്രൽ വിശകലനം പുരോഗമിക്കുന്നു...',
-    zincDef: 'സോയാബീൻ: സിങ്ക് കുറവ്',
-    zincScientific: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-    step1Foliar: 'ഏക്കറിന് 200 ലിറ്റർ വെള്ളത്തിൽ 500 ഗ്രാം സിങ്ക് സൾഫേറ്റ് 21% + 250 ഗ്രാം കുമ്മായം തളിക്കുക.',
-    step2Bio: '1 കിലോ ZSB ബാക്ടീരിയ ചാണകപ്പൊടിയുമായി ചേർത്ത് മണ്ണിൽ ചേർക്കുക.',
-    step3Chem: 'രാസ കീടനാശിനികൾ ആവശ്യമില്ല (സീറോ കെമിക്കൽ).',
-    voiceBtn: 'ഉപദേശം കേൾക്കുക (Voice)',
-    pdfBtn: 'കുറിപ്പ് ഡൗൺലോഡ് (PDF)',
-    orderBtn: 'അടുത്തുള്ള അഗ്രി ക്ലിനിക്കിൽ നിന്ന് ഓർഡർ ചെയ്യുക'
+  "ml": {
+    "langName": "മലയാളം",
+    "appName": "കൃഷി സ്വാസ്ഥ്യ സഹായക്",
+    "home": "ഹോം",
+    "cropDoctor": "വിള പരിശോധന",
+    "rxChart": "പോഷക കുറിപ്പ്",
+    "soilFarm": "മണ്ണ് കാർഡ്",
+    "clinic": "അഗ്രി ക്ലിനിക്ക്",
+    "mandi": "വിപണി വില",
+    "calendar": "വളവും കാലാവസ്ഥയും",
+    "schemes": "പദ്ധതികളും ഇൻഷുറൻസും",
+    "mitra": "ഇ-മിത്ര AI",
+    "history": "പരിശോധനാ ചരിത്രം",
+    "welcomeFarmer": "നമസ്കാരം,",
+    "farmerName": "രാമേശ്വർ പാട്ടീദാർ",
+    "locationAcreage": "ഗ്രാമം ധരംപുരി, ധാർ (എം.പി.) • 3.5 ഏക്കർ",
+    "activeCrop": "സോയാബീൻ (JS 20-34)",
+    "weatherTitle": "स्थानीय मौसम व कीट-रोग चेतावनी",
+    "weatherAlert": "തളിക്കാൻ അനുകൂല സമയം ( രാവിലെ 6:30-9:30 ) →",
+    "weatherDesc": "नमी: 76% | हवा: 9.5 km/h • स्प्रे स्कोर: 92/100",
+    "heroCardTitle": "വിള രോഗ & പോഷക പരിശോധന",
+    "heroCardDesc": "ചെടിയുടെ ഇലയുടെ ഫോട്ടോ എടുക്കുക അല്ലെങ്കിൽ വീഡിയോ അപ്‌ലോഡ് ചെയ്യുക — 3-ഘട്ട പോഷക ചികിത്സ നേടുക.",
+    "btnHeroScan": "ഫോട്ടോ എടുക്കുക",
+    "btnHeroVideo": "വീഡിയോ എടുക്കുക",
+    "btnHeroGallery": "ഗാലറി",
+    "homeMitraTitle": "സംസാരിച്ചു ചോദിക്കൂ: കിസാൻ ഇ-മിത്ര AI",
+    "homeMitraSub": "വിപണി വില, വളത്തിന്റെ അളവ്, തളിക്കുന്ന സമയം ചോദിക്കൂ",
+    "homeStateMatrixTitle": "राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)",
+    "homeStateMatrixSub": "म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान",
+    "tileMandiTitle": "വിപണി വില (e-NAM)",
+    "tileMandiSub": "സോയാബീൻ ₹5,120/ക്വിന്റൽ (+MSP)",
+    "tileCalTitle": "വള കാൽക്കുലേറ്ററും കാലാവസ്ഥയും",
+    "tileCalSub": "NPK बोरी व स्प्रे विंडो",
+    "tileSchemesTitle": "സർക്കാർ പദ്ധതികളും ഇൻഷുറൻസും",
+    "tileSchemesSub": "PM-KISAN • 72h बीमा दावा",
+    "tileMitraTitle": "किसान ई-मित्र रडार",
+    "tileMitraSub": "उज्जैन: 38 खेतों में अलर्ट",
+    "quickSoil": "മണ്ണ് കാർഡ്",
+    "quickSoilSub": "സിങ്ക് കുറവ് (0.45 ppm)",
+    "quickRx": "സജീവ കുറിപ്പ്",
+    "quickRxSub": "जिंक सल्फेट 21%",
+    "quickShop": "അഗ്രി ക്ലിനിക്ക്",
+    "quickShopSub": "प्रमाणित बीज, समाधान व बही-खाता",
+    "quickCall": "KVK ശാസ്ത്രജ്ഞൻ",
+    "quickCallSub": "2-घंटे SLA विशेषज्ञ",
+    "recentTitle": "സമീപകാല വിള രോഗനിർണയ ചരിത്രം",
+    "viewAll": "എല്ലാം കാണുക (View All)",
+    "newScan": "+ പുതിയ പരിശോധന",
+    "camTitle": "വിള ഇല പരിശോധന",
+    "tabPhoto": "फोटो",
+    "tabVideo": "वीडियो",
+    "tabUpload": "गैलरी",
+    "tabSamples": "नमूने",
+    "retakeBtn": "വീണ്ടും ഫോട്ടോ/വീഡിയോ എടുക്കുക (Retake)",
+    "proceedBtn": "ശാരീരിക സവിശേഷതകളുടെ വിശകലനം ആരംഭിക്കുക",
+    "reticleOptimal": "दूरी एवं फोकस सही है (Optimal Frame)",
+    "lightLabel": "प्रकाश:",
+    "blurLabel": "फोकस:",
+    "captureCaption": "रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें",
+    "mediaReadyBadge": "📸 फोटो कैप्चर सफल (1920x1080)",
+    "liveAnalysis": "लाइव विश्लेषण",
+    "analyzingTitle": "सिग्नल एवं शारीरिक लक्षण विश्लेषण प्रगति पर...",
+    "stage1Title": "1. डेटा अपलोड एवं खेत प्रोफाइल सिंक",
+    "stage1Desc": "मल्टीस्पेक्ट्रल इमेज डेटा अपलोड, GPS व मृदा कार्ड (Zn: 0.45 ppm) लिंक।",
+    "stage2Title": "2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण",
+    "stage2Desc": "RGB चैनल पृथक्करण, क्लोरोफिल अवशोषण सूचकांक व पत्ती चमक सामान्यीकरण।",
+    "stage3Title": "3. फसल के शारीरिक एवं पोषण लक्षणों की जांच",
+    "stage3Desc": "शिराओं के बीच पीलापन (Interveinal Chlorosis), ऊतक क्षय व कीट प्रभाव स्कैन।",
+    "stage4Title": "4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन",
+    "stage4Desc": "न्यूट्रिशन-फर्स्ट प्रोटोकॉल व राज्य स्तरीय रसायन प्रतिबंध जांच लागू।",
+    "telemetryLog": "टेलीमेट्री स्ट्रीम (Telemetry Log)",
+    "qConfidence": "प्रारंभिक सटीकता:",
+    "qHeading": "सटीक पुष्टि के लिए 2 प्रश्न",
+    "qSub": "खेत की स्थिति देखकर सही विकल्प चुनें:",
+    "q1Text": "प्रश्न 1: पीलापन मुख्य रूप से किस हिस्से की पत्तियों पर दिख रहा है?",
+    "q1Opt1": "पौधे के ऊपरी भाग की नई पत्तियों पर (Top/Young)",
+    "q1Opt2": "पौधे के निचले भाग की पुरानी पत्तियों पर (Bottom/Old)",
+    "q2Text": "प्रश्न 2: क्या पत्तियों के पीछे कोई फफूंद (पाउडर/जाला) है?",
+    "q2Opt1": "नहीं, पत्ती की सतह साफ है (केवल रंग उड़ा है)",
+    "q2Opt2": "हाँ, भूरा-लाल पाउडर जैसा उभर रहा है",
+    "qSubmitBtn": "जवाब जमा करें एवं पर्चा देखें",
+    "rxHighConf": "उच्च सटीकता पुष्टि",
+    "cibrcVerified": "CIB&RC सत्यापित",
+    "zincDef": "സോയാബീൻ: സിങ്ക് കുറവ്",
+    "zincScientific": "Zinc Deficiency (Interveinal Chlorosis) • JS 20-34",
+    "voiceBtn": "ഉപദേശം കേൾക്കുക (Voice)",
+    "pdfBtn": "കുറിപ്പ് ഡൗൺലോഡ് (PDF)",
+    "farmAreaLabel": "खेत का क्षेत्रफल (Farm Area):",
+    "stateRegLabel": "किसान राज्य (State Regulations):",
+    "step1Badge": "ഘട്ടം 1: സൂക്ഷ്മ മൂലക ഇല തളിക്കൽ",
+    "step1Title": "जिंक सल्फेट (ZnSO4 21% हेप्टाहाइड्रेट) + बुझा हुआ चूना",
+    "step1Foliar": "ഏക്കറിന് 200 ലിറ്റർ വെള്ളത്തിൽ 500 ഗ്രാം സിങ്ക് സൾഫേറ്റ് 21% തളിക്കുക.",
+    "step2Badge": "ഘട്ടം 2: ജൈവ മണ്ണ് പരിപാലനം",
+    "step2Title": "जिंक सोल्युबिलाइजिंग बैक्टीरिया (ZSB बायो-फर्टिलाइजर)",
+    "step2Bio": "1 കിലോ ZSB ബാക്ടീരിയ ചാണകപ്പൊടിയുമായി ചേർത്ത് മണ്ണിൽ ചേർക്കുക.",
+    "step3Badge": "ഘട്ടം 3: രാസ കീടനാശിനി ആവശ്യമില്ല",
+    "step3Title": "रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)",
+    "step3Chem": "രാസ കീടനാശിനികൾ ആവശ്യമില്ല (സീറോ കെമിക്കൽ).",
+    "step3Compliance": "CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल",
+    "gradKitBadge": "B.Sc. (Agri) अधिकृत क्लीनिकल समाधान",
+    "gradKitTitle": "🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध",
+    "gradKitDesc": "चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)",
+    "gradKitOrderBtn": "डॉक्टर किट ऑर्डर करें (Rx-to-Cart)",
+    "retakeOther": "अन्य पौधे की जांच करें (Retake)",
+    "orderBtn": "अधिकृत कृषि स्नातक क्लिनिक खोलें",
+    "escBadge": "KVK कृषि वैज्ञानिक को भेजा गया",
+    "escHeading": "विशेषज्ञ परामर्श जारी है",
+    "escSub": "सटीकता 48% होने के कारण मामला वरिष्ठ पादप रोग विशेषज्ञ को स्थानांतरित किया गया है।",
+    "slaLabel": "SLA गारंटी समय सीमा:",
+    "escChatBtn": "वैज्ञानिक से चैट करें",
+    "escCallBtn": "सीधे संपर्क करें",
+    "clinicTitleText": "अधिकृत कृषि स्नातक क्लिनिक",
+    "gradVerifiedSeal": "अधिकृत B.Sc. (Agri)",
+    "tabProducts": "प्रमाणित बीज व भंडार",
+    "tabRx": "Agri-Rx बिलिंग",
+    "tabKhata": "बही-खाता (Pay Later)",
+    "tabConsult": "परामर्श व ड्रोन ऑडिट",
+    "catAll": "सभी उत्पाद (All)",
+    "catSeed": "🌾 प्रमाणित बीज",
+    "catMicro": "🧪 कस्टम सूक्ष्म पोषक",
+    "catKit": "🩺 डॉक्टर क्योर किट",
+    "catBioFert": "🦠 बायो-कल्चर (ZSB)",
+    "catBioPest": "🛡️ बायो-फंगीसाइड",
+    "rxEmblem": "अधिकृत डिजिटल पर्चा (Agri-Rx)",
+    "rxSearchPlaceholder": "किसान मोबाइल (e.g. 9876543210) या पर्चा ID खोजें...",
+    "thProdName": "प्रमाणित उत्पाद / किट",
+    "thProdQty": "मात्रा",
+    "thProdUsage": "अनुमोदित प्रयोग विधि",
+    "thProdPrice": "राशि",
+    "drNotesTitle": "अधिकृत कृषि स्नातक परामर्श निर्देश:",
+    "rxBillingTotalLabel": "कुल बिल राशि (Net Amount):",
+    "payModeHarvestTitle": "फसल कटाई बाद भुगतान (Pay-After-Harvest)",
+    "payModeHarvestSub": "बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय",
+    "payModeUpiTitle": "तत्काल UPI / कैश ऑन डिलीवरी (COD)",
+    "payModeUpiSub": "5% तुरंत नकद छूट (Instant Discount)",
+    "btnDispenseText": "GST चालान जारी करें एवं डिस्पैच करें",
+    "khataBadge": "डिजिटल किसान बही-खाता",
+    "khataLimitLabel": "कुल स्वीकृत क्रेडिट",
+    "khataDueLabel": "वर्तमान देय राशि (Outstanding)",
+    "khataSettledLabel": "जमा की गई राशि (Settled)",
+    "khataRecentTitle": "हालिया आदेश एवं क्रेडिट प्रविष्टियां",
+    "khataRecordPayText": "भुगतान दर्ज करें",
+    "consultCardTitle": "विशेषज्ञ कृषि स्नातक से सीधा परामर्श",
+    "consultCardSub": "व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।",
+    "consultTypeLabel": "परामर्श का प्रकार (Consultation Type):",
+    "consultCropLabel": "फसल का नाम (Crop):",
+    "consultAcreLabel": "रकबा (Acreage):",
+    "consultSlotLabel": "तारीख एवं समय स्लॉट (Date & Time):",
+    "consultDescLabel": "समस्या या लक्षण (Problem Description):",
+    "consultFeeSummaryLabel": "परामर्श शुल्क (Doctor Fee):",
+    "btnBookConsultText": "अपॉइंटमेंट / ऑडिट स्लॉट बुक करें",
+    "recentBookingsTitle": "आपकी हालिया परामर्श बुकिंग्स",
+    "soilPassportTitle": "मृदा स्वास्थ्य कार्ड (Soil Health Passport)",
+    "soilLabelZn": "जिंक (Zn - जस्ता)",
+    "soilStatusZn": "अत्यधिक कमी (<0.60)",
+    "soilLabelPh": "पीएच मान (pH Level)",
+    "soilStatusPh": "सामान्य (Neutral)",
+    "soilLabelN": "नाइट्रोजन (N)",
+    "soilStatusN": "मध्यम (Medium)",
+    "soilLabelK": "पोटाश (K)",
+    "soilStatusK": "पर्याप्त (High)",
+    "farmParcelHeading": "खेत का विवरण (Linked Farm Parcel)",
+    "mandiScreenTitle": "തത്സമയ വിപണി വില (e-NAM)",
+    "mandiCropAll": "എല്ലാ വിളകളും (All)",
+    "mandiQtyLabel": "വിൽക്കാനുള്ള വിളയുടെ അളവ്:",
+    "mandiBestNetPrefix": "ഏറ്റവും മികച്ച വരുമാനം:",
+    "mandiMspCompare": "सरकारी MSP तुलना",
+    "mandiAboveMsp": "ऊपर",
+    "mandiBelowMsp": "नीचे",
+    "mandiNonMsp": "गैर-MSP फसल",
+    "mandiTransportHamali": "भाड़ा + हमाली",
+    "mandiNetPayout": "शुद्ध हाथ में राशि",
+    "mandiSellNow": "तुरंत बेचें (SELL)",
+    "mandiHoldStore": "रोकें / भंडारण (HOLD)",
+    "mandiArrival": "आवक",
+    "mandiDistance": "दूर",
+    "mandiPerQtl": "क्विं",
+    "mandiToday": "आज",
+    "calScreenTitle": "തളിക്കൽ കാലാവസ്ഥ, വളം കണക്കുകൂട്ടൽ & കലണ്ടർ",
+    "sprayStatusOptimal": "छिड़काव के लिए उत्तम समय",
+    "simWeatherBtnText": "बारिश टेस्ट",
+    "npkSectionTitle": "संतुलित खाद (NPK + जिंक) बोरी गणक",
+    "soilLinkedBadge": "मृदा कार्ड लिंक",
+    "npkAcreLabel": "रकबा:",
+    "cropCalTitle": "बुवाई से कटाई वैज्ञानिक फसल कैलेंडर",
+    "schemesScreenTitle": "സർക്കാർ പദ്ധതികളും വിള ഇൻഷുറൻസും",
+    "kccStatLbl": "KCC 4% ऋण पात्रता",
+    "pmfbyStatLbl": "PMFBY फसल बीमा कवर",
+    "pmKisanStatLbl": "PM-KISAN + सब्सिडी",
+    "pmfbyBadge72h": "PMFBY 72-घंटे फसल नुकसान सीधा दावा",
+    "pmfbyBadgeAi": "AI रिपोर्ट संलग्न",
+    "pmfbyClaimDesc": "अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।",
+    "btnSubmitClaimText": "तुरंत 72-घंटे बीमा दावा दर्ज करें",
+    "submittedAppsTitle": "आपके दर्ज आवेदन एवं पावती (Live SQLite Status)",
+    "mitraScreenTitle": "കിസാൻ ഇ-മിത്ര AI & റഡാർ",
+    "mitraBotHeading": "किसान ई-मित्र (Bhashini Voice AI)",
+    "mitraBotSub": "अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें",
+    "mitraPrompt1": "सोयाबीन मंडी भाव?",
+    "mitraPrompt2": "आज स्प्रे करें या नहीं?",
+    "mitraPrompt3": "3 एकड़ खाद मात्रा?",
+    "mitraPrompt4": "सरकारी योजना व बीमा?",
+    "mitraQueryPlaceholder": "यहाँ लिखें या माइक दबाकर बोलें...",
+    "mitraAnsTag": "किसान ई-मित्र उत्तर:",
+    "outbreakRadarHeading": "15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)",
+    "btnReportOutbreak": "+ नया प्रकोप रिपोर्ट करें",
+    "stateMatrixScreenTitle": "राज्य-वार कृषि समस्या व तकनीकी समाधान",
+    "chcBookingsHeading": "आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)",
+    "historyScreenTitle": "വിള പരിശോധന & കുറിപ്പ് ചരിത്രം",
+    "historySearchPlaceholder": "फसल या रोग का नाम खोजें (उदा. सोयाबीन, केला, धान)...",
+    "historyCropAll": "सभी (All)",
+    "historyTotalScansLbl": "कुल जांचें (Scans)",
+    "historyActiveCropsLbl": "सक्रिय फसलें (Crops)",
+    "historyAvgAccLbl": "औसत सटीकता (Avg Acc)",
+    "historyNewScanBtnText": "नई फसल की जांच करें (+ New Scan)",
+    "loginTitle": "കർഷക മൊബൈൽ ലോഗിൻ",
+    "loginSubtitle": "बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें",
+    "namePlaceholder": "किसान का पूरा नाम (Full Name)",
+    "otpLabel": "6-अंकों का OTP कोड",
+    "dpdpTitle": "DPDP Act 2023 स्पष्ट सहमति",
+    "consent1": "फसल रोग निदान एवं पोषण परामर्श",
+    "consent2": "स्थान एवं मौसम डेटा एकीकरण",
+    "consent3": "मृदा परीक्षण कार्ड (Soil Card) लिंक",
+    "authBtnGetOtp": "OTP प्राप्त करें",
+    "authBtnVerify": "लॉगिन सत्यापित करें",
+    "authBannerTitle": "लॉगिन आवश्यक है (Login Required)",
+    "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
+    "logout": "लॉगआउट",
+    "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
+    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
+    "pwaCardBtn": "इंस्टॉल",
+    "langModalTitle": "अपनी भाषा चुनें / Select Language",
+    "viewRxBtn": "पर्चा व किट देखें"
   }
+};
+
+// Multilingual Translation Helper with Fallback
+function t(key, fallback = '') {
+  const langObj = localizations[currentLanguage] || localizations.hi;
+  if (langObj && langObj[key] !== undefined && langObj[key] !== null) return langObj[key];
+  if (localizations.hi && localizations.hi[key] !== undefined) return localizations.hi[key];
+  return fallback;
+}
+
+// Multilingual Voice Code Mapping for Web Speech API (TTS & STT)
+const LANG_VOICE_MAP = {
+  hi: 'hi-IN',
+  en: 'en-IN',
+  pa: 'pa-IN',
+  mr: 'mr-IN',
+  te: 'te-IN',
+  ta: 'ta-IN',
+  gu: 'gu-IN',
+  bn: 'bn-IN',
+  kn: 'kn-IN',
+  ml: 'ml-IN'
 };
 
 // Sample reference crops for instant preview & fallback testing
@@ -672,7 +2604,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initPWA();
   renderSampleJsonLog();
   startSlaTimer();
-  applyLanguageStrings('hi');
+  const savedLang = localStorage.getItem('agriscan_language') || 'hi';
+  currentLanguage = savedLang;
+  window.currentLanguage = savedLang;
+  
+  // Highlight active button in language modal
+  document.querySelectorAll('.lang-option').forEach(btn => btn.classList.remove('active'));
+  const targetOption = document.querySelector(`.lang-option[onclick*="'${savedLang}'"]`);
+  if (targetOption) targetOption.classList.add('active');
+
+  applyLanguageStrings(savedLang);
   loadDiagnosisHistory();
 });
 
@@ -979,14 +2920,21 @@ function closePhoneLangModal(event) {
 
 function selectPhoneLanguage(langCode) {
   currentLanguage = langCode;
+  window.currentLanguage = langCode;
+  try {
+    localStorage.setItem('agriscan_language', langCode);
+  } catch (e) {}
   
   // Highlight active button in language modal
   document.querySelectorAll('.lang-option').forEach(btn => btn.classList.remove('active'));
   const targetOption = document.querySelector(`.lang-option[onclick*="'${langCode}'"]`);
   if (targetOption) targetOption.classList.add('active');
 
-  // Apply localized strings
+  // Apply localized strings across all screens
   applyLanguageStrings(langCode);
+
+  // Re-render active view dynamic components
+  reRenderActiveScreen();
 
   // Close modal
   const modal = document.getElementById('phoneLangModal');
@@ -1003,139 +2951,276 @@ function changeLanguage(langCode) {
   selectPhoneLanguage(langCode);
 }
 
+function setText(id, text) {
+  if (text === undefined || text === null) return;
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
+function setPlaceholder(id, ph) {
+  if (!ph) return;
+  const el = document.getElementById(id);
+  if (el) el.placeholder = ph;
+}
+
+function reRenderActiveScreen() {
+  const currentView = viewHistory[viewHistory.length - 1] || 'viewHome';
+
+  if (currentView === 'viewMandi' || currentView === 'viewMandiBhav') {
+    if (lastMandiPayload) {
+      renderMandiCards(lastMandiPayload.nearbyMandiPrices || [], lastMandiPayload.bestMandiRecommendation);
+    }
+  } else if (currentView === 'viewCalendar' || currentView === 'viewWeatherCalendar') {
+    if (lastSprayPayload) renderSprayAdvisory(lastSprayPayload);
+    if (lastCalendarPayload) refreshCropCalendarAndNpk();
+  } else if (currentView === 'viewSchemes' || currentView === 'viewGovtSchemes') {
+    if (lastSchemesPayload) renderGovernmentSchemes(lastSchemesPayload);
+  } else if (currentView === 'viewStateMatrix') {
+    loadStateChallengeMatrix();
+  } else if (currentView === 'viewClinic' || currentView === 'viewAgriClinic') {
+    loadClinicProducts(currentClinicProductCategory);
+  } else if (currentView === 'viewSearchHistory') {
+    renderSearchHistoryScreen();
+  } else if (currentView === 'viewRecommendation') {
+    if (activeDiagnosisReport) {
+      renderDynamicRecommendation(activeDiagnosisReport);
+    }
+  }
+  // Also always re-render recent diagnoses list on home
+  renderRecentDiagnosesList();
+}
+
 function applyLanguageStrings(langCode) {
   const l = localizations[langCode] || localizations.hi;
+  currentLanguage = langCode;
+  window.currentLanguage = langCode;
 
-  // Update Header Pill
-  const currentLangText = document.getElementById('phoneCurrentLangText');
-  if (currentLangText) currentLangText.innerText = l.langName;
+  // Header & App Brand
+  setText('phoneCurrentLangText', l.langName);
+  setText('screenTitle', l.appName);
+  setText('offlineBannerText', l.offlineBanner);
+  setText('langSheetTitle', l.langModalTitle);
+  setText('pwaCardTitle', l.pwaCardTitle);
+  setText('pwaCardSub', l.pwaCardSub);
+  setText('pwaCardBtn', l.pwaCardBtn);
 
-  // Header Title
-  const screenTitle = document.getElementById('screenTitle');
-  if (screenTitle) screenTitle.innerText = l.appName;
+  // Bottom Navigation (6 Core Tabs)
+  setText('navLabelHome', l.home);
+  setText('navLabelCamera', l.cropDoctor);
+  setText('navLabelMandi', l.mandi);
+  setText('navLabelCalendar', l.calendar);
+  setText('navLabelSchemes', l.schemes);
+  setText('navLabelMitra', l.mitra);
 
-  // Home Screen Elements
-  const greetingSub = document.getElementById('homeGreetingSub');
-  if (greetingSub) greetingSub.innerText = l.welcomeFarmer;
-
-  const farmerName = document.getElementById('homeFarmerName');
-  if (farmerName) farmerName.innerText = l.farmerName;
-
-  const scanTitle = document.getElementById('homeScanTitle');
-  if (scanTitle) scanTitle.innerText = l.heroCardTitle;
-
-  const scanSub = document.getElementById('homeScanSub');
-  if (scanSub) scanSub.innerText = l.heroCardDesc;
-
-  const btnPhoto = document.getElementById('homeBtnPhoto');
-  if (btnPhoto) btnPhoto.innerText = l.btnHeroScan;
-
-  const btnVideo = document.getElementById('homeBtnVideo');
-  if (btnVideo) btnVideo.innerText = l.btnHeroVideo;
-
-  const tileSoil = document.getElementById('homeTileSoil');
-  if (tileSoil) tileSoil.innerText = l.quickSoil;
-
-  const tileRx = document.getElementById('homeTileRx');
-  if (tileRx) tileRx.innerText = l.quickRx;
-
-  const tileClinic = document.getElementById('homeTileClinic');
-  if (tileClinic) tileClinic.innerText = l.quickShop;
-
-  const tileKvk = document.getElementById('homeTileKvk');
-  if (tileKvk) tileKvk.innerText = l.quickCall;
-
-  const recentTitle = document.getElementById('homeRecentTitle');
-  if (recentTitle) recentTitle.innerText = l.recentTitle;
-
-  // Camera Elements
-  const tabPhoto = document.getElementById('tabLabelPhoto');
-  if (tabPhoto) tabPhoto.innerText = l.tabPhoto;
-
-  const tabVideo = document.getElementById('tabLabelVideo');
-  if (tabVideo) tabVideo.innerText = l.tabVideo;
-
-  const tabUpload = document.getElementById('tabLabelUpload');
-  if (tabUpload) tabUpload.innerText = l.tabUpload;
-
-  const tabSamples = document.getElementById('tabLabelSamples');
-  if (tabSamples) tabSamples.innerText = l.tabSamples;
-
-  const btnRetakeText = document.getElementById('btnRetakeText');
-  if (btnRetakeText) btnRetakeText.innerText = l.retakeBtn;
-
-  const btnAnalyzeText = document.getElementById('btnAnalyzeText');
-  if (btnAnalyzeText) btnAnalyzeText.innerText = l.proceedBtn;
-
-  // Bottom Navigation Labels
-  const navLabelHome = document.getElementById('navLabelHome');
-  if (navLabelHome) navLabelHome.innerText = l.home;
-
-  const navLabelCamera = document.getElementById('navLabelCamera');
-  if (navLabelCamera) navLabelCamera.innerText = l.cropDoctor;
-
-  const navLabelRx = document.getElementById('navLabelRx');
-  if (navLabelRx) navLabelRx.innerText = l.rxChart;
-
-  const navLabelSoil = document.getElementById('navLabelSoil');
-  if (navLabelSoil) navLabelSoil.innerText = l.soilFarm;
-
-  const navLabelClinic = document.getElementById('navLabelClinic');
-  if (navLabelClinic) navLabelClinic.innerText = l.clinic;
-
-  // Prescription Screen
-  if (activeDiagnosisReport) {
-    renderDynamicRecommendation();
-  } else {
-    const rxDiseaseTitle = document.getElementById('rxDiseaseTitle');
-    if (rxDiseaseTitle) rxDiseaseTitle.innerText = l.zincDef;
-
-    const rxScientificName = document.getElementById('rxScientificName');
-    if (rxScientificName) rxScientificName.innerText = l.zincScientific;
-
-    const step1Action = document.getElementById('step1ActionText');
-    if (step1Action) step1Action.innerText = l.step1Foliar;
-
-    const step2Action = document.getElementById('step2ActionText');
-    if (step2Action) step2Action.innerText = l.step2Bio;
-
-    const step3Action = document.getElementById('step3ActionText');
-    if (step3Action) step3Action.innerText = l.step3Chem;
+  // Screen 1: Auth & Consent View
+  setText('authHeadingText', l.loginTitle);
+  setText('authSubText', l.loginSubtitle);
+  setPlaceholder('nameInput', l.namePlaceholder);
+  setText('otpLabel', l.otpLabel);
+  setText('dpdpTitleText', l.dpdpTitle);
+  setText('consent1Text', l.consent1);
+  setText('consent2Text', l.consent2);
+  setText('consent3Text', l.consent3);
+  setText('authBannerTitle', l.authBannerTitle);
+  setText('authBannerDesc', l.authBannerDesc);
+  setText('logoutBtnText', l.logout);
+  const authBtnText = document.getElementById('authBtnText');
+  if (authBtnText) {
+    const isOtpStep = !document.getElementById('otpBox')?.classList.contains('hidden');
+    authBtnText.innerText = isOtpStep ? (l.authBtnVerify || 'लॉगिन सत्यापित करें') : (l.authBtnGetOtp || 'OTP प्राप्त करें');
   }
 
-  // Auth & Onboarding Screen
-  const authHeading = document.getElementById('authHeadingText');
-  if (authHeading) authHeading.innerText = l.loginTitle || (langCode === 'en' ? 'Farmer Mobile Login' : 'किसान मोबाइल लॉगिन');
+  // Screen 2: Home Screen
+  setText('homeGreetingSub', l.welcomeFarmer);
+  setText('homeFarmerName', l.farmerName);
+  setText('homeWeatherSub', l.weatherAlert);
+  setText('homeSprayBadge', l.weatherAlert);
+  setText('homeMitraTitle', l.homeMitraTitle);
+  setText('homeMitraSub', l.homeMitraSub);
+  setText('homeStateMatrixTitle', l.homeStateMatrixTitle);
+  setText('homeStateMatrixSub', l.homeStateMatrixSub);
+  setText('homeScanTitle', l.heroCardTitle);
+  setText('homeScanSub', l.heroCardDesc);
+  setText('homeBtnPhoto', l.btnHeroScan);
+  setText('homeBtnVideo', l.btnHeroVideo);
+  setText('homeBtnGallery', l.btnHeroGallery);
+  setText('homeTileMandi', l.tileMandiTitle);
+  setText('homeTileMandiSub', l.tileMandiSub);
+  setText('homeTileCal', l.tileCalTitle);
+  setText('homeTileCalSub', l.tileCalSub);
+  setText('homeTileSchemes', l.tileSchemesTitle);
+  setText('homeTileSchemesSub', l.tileSchemesSub);
+  setText('homeTileMitra', l.tileMitraTitle);
+  setText('homeTileMitraSub', l.tileMitraSub);
+  setText('homeTileSoil', l.quickSoil);
+  setText('homeTileRx', l.quickRx);
+  setText('homeTileClinic', l.quickShop);
+  setText('homeTileKvk', l.quickCall);
+  setText('homeRecentTitle', l.recentTitle);
+  setText('homeViewAllHistoryBtn', l.viewAll);
+  setText('homeNewScanBtn', l.newScan);
 
-  const authSub = document.getElementById('authSubText');
-  if (authSub) authSub.innerText = l.loginSubtitle || (langCode === 'en' ? 'Enter 10-digit mobile number without password' : 'बिना पासवर्ड केवल 10 अंकों का मोबाइल नंबर डालें');
+  // Screen 3: Camera & Viewfinder Screen
+  setText('camHomeBtnText', l.home);
+  setText('camTitleText', l.camTitle);
+  setText('tabLabelPhoto', l.tabPhoto);
+  setText('tabLabelVideo', l.tabVideo);
+  setText('tabLabelUpload', l.tabUpload);
+  setText('tabLabelSamples', l.tabSamples);
+  setText('reticleText', l.reticleOptimal);
+  setText('btnUploadLabel', l.tabUpload);
+  setText('btnVideoLabel', l.tabSamples);
+  setText('btnRetakeText', l.retakeBtn);
+  setText('btnAnalyzeText', l.proceedBtn);
 
-  const nameInputEl = document.getElementById('nameInput');
-  if (nameInputEl) nameInputEl.placeholder = langCode === 'en' ? 'Farmer Full Name' : 'किसान का पूरा नाम (Full Name)';
+  // Screen 4: 4-Stage Physiological Pipeline
+  setText('stage1Desc', l.stage1Desc);
+  setText('stage2Desc', l.stage2Desc);
+  setText('stage3Desc', l.stage3Desc);
+  setText('stage4Desc', l.stage4Desc);
 
-  const logoutBtnText = document.getElementById('logoutBtnText');
-  if (logoutBtnText) logoutBtnText.innerText = langCode === 'en' ? 'Logout' : 'लॉगआउट';
+  // Screen 5: Confirmation Questionnaire
+  setText('qHomeBtnText', l.home);
+  setText('qRetakeBtnText', l.retakeBtn);
+  setText('qHeadingText', l.qHeading);
+  setText('qSubText', l.qSub);
+  setText('btnSubmitQ', l.qSubmitBtn);
 
-  // Farm & Soil Passport Screen
-  const farmPassportTitle = document.getElementById('farmPassportTitle');
-  if (farmPassportTitle) farmPassportTitle.innerText = langCode === 'en' ? 'Soil Health Passport & Farm Profile' : 'मृदा स्वास्थ्य कार्ड (Soil Health Passport)';
+  // Screen 6: Prescription & Recommendation
+  setText('rxHomeBtnText', l.home);
+  setText('rxRetakeBtnText', l.retakeOther);
+  setText('rxHighConfText', l.rxHighConf);
+  setText('calcAreaLabel', l.farmAreaLabel);
+  setText('stateRegLabel', l.stateRegLabel);
+  setText('step1Badge', l.step1Badge);
+  setText('step1Title', l.step1Title);
+  setText('step2Badge', l.step2Badge);
+  setText('step2Title', l.step2Title);
+  setText('step3Badge', l.step3Badge);
+  setText('step3Title', l.step3Title);
+  setText('gradKitBadgeText', l.gradKitBadge);
+  setText('gradKitTitleText', l.gradKitTitle);
+  setText('gradKitDescText', l.gradKitDesc);
+  setText('gradKitOrderBtnText', l.gradKitOrderBtn);
+  setText('rxBottomRetakeText', l.retakeOther);
+  setText('rxOrderBtnText', l.orderBtn);
+  setText('ttsBtnText', l.voiceBtn);
+  setText('pdfBtnText', l.pdfBtn);
 
-  // Clinic Screen
-  const clinicTitleText = document.getElementById('clinicTitleText');
-  if (clinicTitleText) clinicTitleText.innerText = langCode === 'en' ? 'Agri-Clinic POS & Prescription Billing' : 'किसान पर्चा सत्यापन एवं बिलिंग';
+  if (activeDiagnosisReport) {
+    renderDynamicRecommendation(activeDiagnosisReport);
+  } else {
+    setText('rxDiseaseTitle', l.zincDef);
+    setText('rxScientificName', l.zincScientific);
+    setText('step1ActionText', l.step1Foliar);
+    setText('step2ActionText', l.step2Bio);
+    setText('step3ActionText', l.step3Chem);
+  }
 
-  // Escalation Screen
-  const escHeadingText = document.getElementById('escHeadingText');
-  if (escHeadingText) escHeadingText.innerText = langCode === 'en' ? 'Agronomist Consultation Active' : 'विशेषज्ञ परामर्श जारी है';
+  // Screen 7: Agronomist Escalation
+  setText('escHomeBtnText', l.home);
+  setText('escRetakeBtnText', l.retakeBtn);
+  setText('escBadgeText', l.escBadge);
+  setText('escHeadingText', l.escHeading);
+  setText('escSubText', l.escSub);
+  setText('slaLabelText', l.slaLabel);
+  setText('escChatBtn', l.escChatBtn);
+  setText('escCallBtn', l.escCallBtn);
 
-  const ttsBtnText = document.getElementById('ttsBtnText');
-  if (ttsBtnText) ttsBtnText.innerText = l.voiceBtn;
+  // Screen 8: Agri-Clinic & Seed Store
+  setText('clinicHomeBtnText', l.home);
+  setText('clinicScreenTitle', l.clinicTitleText);
+  setText('gradVerifiedSealText', l.gradVerifiedSeal);
+  setText('btnClinicTabProductsText', l.tabProducts);
+  setText('btnClinicTabRxText', l.tabRx);
+  setText('btnClinicTabKhataText', l.tabKhata);
+  setText('btnClinicTabConsultText', l.tabConsult);
+  setText('catFilterAll', l.catAll);
+  setText('catFilterSeed', l.catSeed);
+  setText('catFilterMicro', l.catMicro);
+  setText('catFilterKit', l.catKit);
+  setText('catFilterBioFert', l.catBioFert);
+  setText('catFilterBioPest', l.catBioPest);
+  setText('consultTypeLabel', l.consultTypeLabel);
+  setText('consultCropLabel', l.consultCropLabel);
+  setText('consultAcreLabel', l.consultAcreLabel);
+  setText('consultSlotLabel', l.consultSlotLabel);
+  setText('consultDescLabel', l.consultDescLabel);
+  setText('consultFeeSummaryLabel', l.consultFeeSummaryLabel);
+  setText('btnBookConsultText', l.btnBookConsultText);
+  setText('khataLimitLabel', l.khataLimitLabel);
+  setText('khataOutstandingLabel', l.khataDueLabel);
+  setText('khataSettledLabel', l.khataSettledLabel);
+  setText('khataRecentTitle', l.khataRecentTitle);
+  setText('khataRecordPayText', l.khataRecordPayText);
 
-  const pdfBtnText = document.getElementById('pdfBtnText');
-  if (pdfBtnText) pdfBtnText.innerText = l.pdfBtn;
+  // Screen 9: Soil Health Passport
+  setText('farmHomeBtnText', l.home);
+  setText('farmPassportTitle', l.soilPassportTitle);
+  setText('soilLabelZn', l.soilLabelZn);
+  setText('soilStatusZn', l.soilStatusZn);
+  setText('soilLabelPh', l.soilLabelPh);
+  setText('soilStatusPh', l.soilStatusPh);
+  setText('soilLabelN', l.soilLabelN);
+  setText('soilStatusN', l.soilStatusN);
+  setText('soilLabelK', l.soilLabelK);
+  setText('soilStatusK', l.soilStatusK);
+  setText('farmParcelHeading', l.farmParcelHeading);
 
-  const rxOrderBtnText = document.getElementById('rxOrderBtnText');
-  if (rxOrderBtnText) rxOrderBtnText.innerText = l.orderBtn;
+  // Screen 10: Mandi Bhav
+  setText('mandiHomeBtnText', l.home);
+  setText('mandiScreenTitle', l.mandiScreenTitle);
+  setText('mandiCropAllBtn', l.mandiCropAll);
+  setText('mandiQtyLabel', l.mandiQtyLabel);
+
+  // Screen 11: Weather, Calendar & NPK
+  setText('calHomeBtnText', l.home);
+  setText('calScreenTitle', l.calScreenTitle);
+  setText('simWeatherBtnText', l.simWeatherBtnText);
+  setText('npkSectionTitleText', l.npkSectionTitle);
+  setText('soilLinkedBadge', l.soilLinkedBadge);
+  setText('cropCalTitleText', l.cropCalTitle);
+
+  // Screen 12: Govt Schemes & PMFBY
+  setText('schemesHomeBtnText', l.home);
+  setText('schemesScreenTitle', l.schemesScreenTitle);
+  setText('kccStatLbl', l.kccStatLbl);
+  setText('pmfbyStatLbl', l.pmfbyStatLbl);
+  setText('pmKisanStatLbl', l.pmKisanStatLbl);
+  setText('pmfbyBadge72h', l.pmfbyBadge72h);
+  setText('pmfbyBadgeAi', l.pmfbyBadgeAi);
+  setText('pmfbyClaimDesc', l.pmfbyClaimDesc);
+  setText('btnSubmitClaimText', l.btnSubmitClaimText);
+  setText('submittedAppsTitle', l.submittedAppsTitle);
+
+  // Screen 13: Kisan e-Mitra AI & Radar
+  setText('mitraHomeBtnText', l.home);
+  setText('mitraScreenTitle', l.mitraScreenTitle);
+  setText('mitraBotHeading', l.mitraBotHeading);
+  setText('mitraBotSub', l.mitraBotSub);
+  setText('mitraChip1Text', l.mitraPrompt1);
+  setText('mitraChip2Text', l.mitraPrompt2);
+  setText('mitraChip3Text', l.mitraPrompt3);
+  setText('mitraChip4Text', l.mitraPrompt4);
+  setPlaceholder('mitraQueryInput', l.mitraQueryPlaceholder);
+  setText('mitraAnsTagText', l.mitraAnsTag);
+  setText('outbreakRadarHeadingText', l.outbreakRadarHeading);
+  setText('btnReportOutbreak', l.btnReportOutbreak);
+
+  // Screen 14: State Challenges Matrix
+  setText('stateMatrixHomeBtnText', l.home);
+  setText('stateMatrixScreenTitle', l.stateMatrixScreenTitle);
+  setText('chcBookingsHeadingText', l.chcBookingsHeading);
+
+  // Screen 15: Search & Diagnosis History
+  setText('historyHomeBtnText', l.home);
+  setText('historyScreenTitle', l.historyScreenTitle);
+  setPlaceholder('historySearchInput', l.historySearchPlaceholder);
+  setText('histChipAll', l.historyCropAll);
+  setText('historyTotalScansLbl', l.historyTotalScansLbl);
+  setText('historyActiveCropsLbl', l.historyActiveCropsLbl);
+  setText('historyAvgAccLbl', l.historyAvgAccLbl);
+  setText('historyNewScanBtnText', l.historyNewScanBtnText);
 }
 
 // ==========================================
@@ -2357,7 +4442,7 @@ function updateMandiLotQuantity(val) {
   currentMandiLotQuintals = parseFloat(val) || 25;
   const lbl = document.getElementById('mandiQtyValue');
   if (lbl) {
-    lbl.innerText = currentLang === 'en' ? `${currentMandiLotQuintals} Quintals` : `${currentMandiLotQuintals} क्विंटल`;
+    lbl.innerText = currentLanguage === 'en' ? `${currentMandiLotQuintals} Quintals` : `${currentMandiLotQuintals} क्विंटल`;
   }
   loadMandiIntelligence();
 }
@@ -2431,13 +4516,13 @@ function renderMandiCards(records, bestMandi) {
   if (bestMandi && bestBanner) {
     const netVal = bestMandi.netRealizationInr ?? bestMandi.netRealizationForLotInr ?? 0;
     const mName = bestMandi.mandiName || bestMandi.mandiNameHi || bestMandi.mandi_name;
-    bestBanner.innerHTML = currentLang === 'en'
-      ? `Best Net Payout: <strong>${mName} — ₹${Number(netVal).toLocaleString('en-IN')}</strong> (after transport & hamali)`
-      : `सर्वोत्तम शुद्ध प्राप्ति: <strong>${mName} — ₹${Number(netVal).toLocaleString('en-IN')}</strong> (भाड़ा व हमाली घटाकर)`;
+    const prefix = t('mandiBestNetPrefix', 'सर्वोत्तम शुद्ध प्राप्ति:');
+    const suffix = currentLanguage === 'en' ? '(after transport & hamali)' : '(भाड़ा व हमाली घटाकर)';
+    bestBanner.innerHTML = `${prefix} <strong>${mName} — ₹${Number(netVal).toLocaleString('en-IN')}</strong> ${suffix}`;
   }
 
   if (!records.length) {
-    listEl.innerHTML = '<div class="eco-section-card"><p>इस फसल हेतु मंडी डेटा उपलब्ध नहीं है।</p></div>';
+    listEl.innerHTML = `<div class="eco-section-card"><p>${currentLanguage === 'en' ? 'No Mandi data available for this crop.' : 'इस फसल हेतु मंडी डेटा उपलब्ध नहीं है।'}</p></div>`;
     return;
   }
 
@@ -2449,42 +4534,48 @@ function renderMandiCards(records, bestMandi) {
     const rawSignal = r.sell_hold_signal || r.sellHoldSignal || 'STRONG_SELL';
     const isSell = rawSignal === 'STRONG_SELL' || rawSignal === 'SELL_NOW' || rawSignal === 'SELL_AT_MSP';
     const signalClass = isSell ? 'sell' : 'hold';
-    const signalLabel = isSell
-      ? (currentLang === 'en' ? 'SELL NOW' : 'तुरंत बेचें (SELL)')
-      : (currentLang === 'en' ? 'HOLD / STORE' : 'रोकें / भंडारण (HOLD)');
+    const signalLabel = isSell ? t('mandiSellNow', 'तुरंत बेचें (SELL)') : t('mandiHoldStore', 'रोकें / भंडारण (HOLD)');
     const change24h = r.price_change_24h ?? r.trendChangeInr ?? 0;
     const trendIcon = change24h > 0 ? 'fa-arrow-trend-up text-green' : (change24h < 0 ? 'fa-arrow-trend-down text-red' : 'fa-minus');
     const transportCost = r.lotCalculation?.transportAndHamaliInr ?? r.transportCostInr ?? 0;
     const netRealization = r.lotCalculation?.netRealizationInr ?? r.netRealizationForLotInr ?? 0;
     const mandiTitle = r.mandi_name || r.mandiNameHi || r.mandiName;
-    const cropLabel = currentLang === 'en' ? (r.crop_name_en || r.crop_name_hi || r.cropNameHi) : (r.crop_name_hi || r.cropNameHi);
+    const cropLabel = currentLanguage === 'en' ? (r.crop_name_en || r.crop_name_hi || r.cropNameHi) : (r.crop_name_hi || r.cropNameHi);
     const distKm = r.distance_km ?? r.distanceKm ?? 15;
     const arrivalMt = r.arrival_tonnes ?? r.arrivalTonnes ?? 850;
-    const adviceText = currentLang === 'en' ? (r.advisory_en || r.advisory_hi || r.sellHoldAdviceHi) : (r.advisory_hi || r.sellHoldAdviceHi);
+    const adviceText = currentLanguage === 'en' ? (r.advisory_en || r.advisory_hi || r.sellHoldAdviceHi) : (r.advisory_hi || r.sellHoldAdviceHi);
+    const mspCompareTitle = t('mandiMspCompare', 'सरकारी MSP तुलना');
+    const mspDiffText = mspPrice > 0 ? (isAboveMsp ? `+₹${mspDiff} ${t('mandiAboveMsp', 'ऊपर')}` : `₹${mspDiff} ${t('mandiBelowMsp', 'नीचे')}`) : t('mandiNonMsp', 'गैर-MSP फसल');
+    const transportLabel = `${t('mandiTransportHamali', 'भाड़ा + हमाली')} (${currentMandiLotQuintals} ${t('mandiPerQtl', 'क्विं')})`;
+    const netPayoutLabel = t('mandiNetPayout', 'शुद्ध हाथ में राशि');
+    const perQtlLabel = t('mandiPerQtl', 'क्विं');
+    const todayLabel = t('mandiToday', 'आज');
+    const distLabel = t('mandiDistance', 'दूर');
+    const arrivalLabel = t('mandiArrival', 'आवक');
 
     return `
       <div class="mandi-item-card">
         <div class="mandi-top-row">
           <div>
             <div class="mandi-title">${mandiTitle}</div>
-            <div class="mandi-sub"><i class="fa-solid fa-wheat-awn"></i> ${cropLabel} • <i class="fa-solid fa-location-dot"></i> ${distKm} km दूर • आवक: ${arrivalMt} MT</div>
+            <div class="mandi-sub"><i class="fa-solid fa-wheat-awn"></i> ${cropLabel} • <i class="fa-solid fa-location-dot"></i> ${distKm} km ${distLabel} • ${arrivalLabel}: ${arrivalMt} MT</div>
           </div>
           <div>
-            <div class="mandi-price-val">₹${Number(modalPrice).toLocaleString('en-IN')}<small>/क्विं</small></div>
-            <div class="mandi-msp-tag"><i class="fa-solid ${trendIcon}"></i> ${change24h >= 0 ? '+' : ''}₹${change24h} आज</div>
+            <div class="mandi-price-val">₹${Number(modalPrice).toLocaleString('en-IN')}<small>/${perQtlLabel}</small></div>
+            <div class="mandi-msp-tag"><i class="fa-solid ${trendIcon}"></i> ${change24h >= 0 ? '+' : ''}₹${change24h} ${todayLabel}</div>
           </div>
         </div>
         <div class="mandi-metrics-row">
           <div class="mandi-metric-box">
-            <span>सरकारी MSP तुलना</span>
-            <strong class="${isAboveMsp ? 'text-green' : 'text-red'}">${mspPrice > 0 ? (isAboveMsp ? `+₹${mspDiff} ऊपर` : `₹${mspDiff} नीचे`) : 'गैर-MSP फसल'}</strong>
+            <span>${mspCompareTitle}</span>
+            <strong class="${isAboveMsp ? 'text-green' : 'text-red'}">${mspDiffText}</strong>
           </div>
           <div class="mandi-metric-box">
-            <span>भाड़ा + हमाली (${currentMandiLotQuintals} क्विं)</span>
+            <span>${transportLabel}</span>
             <strong>-₹${Number(transportCost).toLocaleString('en-IN')}</strong>
           </div>
           <div class="mandi-metric-box">
-            <span>शुद्ध हाथ में राशि</span>
+            <span>${netPayoutLabel}</span>
             <strong class="text-green">₹${Number(netRealization).toLocaleString('en-IN')}</strong>
           </div>
         </div>
@@ -2906,22 +4997,24 @@ async function submitMitraInput() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         query,
-        language: currentLang === 'en' ? 'en-IN' : 'hi-IN',
+        language: LANG_VOICE_MAP[currentLanguage] || 'hi-IN',
         crop: 'SOYBEAN',
         acres: 3.5
       })
     });
     const data = await res.json();
-    const reply = currentLang === 'en' ? (data.answerEn || data.answerHi) : data.answerHi;
+    const reply = currentLanguage === 'en' ? (data.answerEn || data.answerHi) : (data.answerHi || data.answerEn);
     if (ansText) ansText.innerText = reply;
     lastMitraSpokenText = data.ttsSpeechTextHi || reply;
-    speakHindiText(lastMitraSpokenText);
+    speakVoiceText(lastMitraSpokenText, currentLanguage);
     updateJsonConsole(data);
   } catch (err) {
-    const fallback = 'आज इंदौर मंडी में सोयाबीन का मॉडल भाव ₹5,240/क्विंटल और उज्जैन मंडी में ₹5,120/क्विंटल है, जो सरकारी MSP (₹4,892) से ऊपर है।';
+    const fallback = currentLanguage === 'en'
+      ? 'Today soybean model rate in Indore is ₹5,240/qtl and Ujjain is ₹5,120/qtl, which is higher than MSP (₹4,892).'
+      : 'आज इंदौर मंडी में सोयाबीन का मॉडल भाव ₹5,240/क्विंटल और उज्जैन मंडी में ₹5,120/क्विंटल है, जो सरकारी MSP (₹4,892) से ऊपर है।';
     if (ansText) ansText.innerText = fallback;
     lastMitraSpokenText = fallback;
-    speakHindiText(fallback);
+    speakVoiceText(fallback, currentLanguage);
   }
 }
 
@@ -2953,7 +5046,7 @@ function startMitraVoiceRecognition() {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.lang = currentLang === 'en' ? 'en-IN' : 'hi-IN';
+  recognition.lang = LANG_VOICE_MAP[currentLanguage] || 'hi-IN';
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
@@ -2976,16 +5069,17 @@ function startMitraVoiceRecognition() {
   recognition.start();
 }
 
-function speakHindiText(text) {
+function speakVoiceText(text, lang = currentLanguage) {
   if (!('speechSynthesis' in window) || !text) return;
   try {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = currentLang === 'en' ? 'en-IN' : 'hi-IN';
+    utterance.lang = LANG_VOICE_MAP[lang] || 'hi-IN';
     utterance.rate = 0.95;
     window.speechSynthesis.speak(utterance);
   } catch (e) {}
 }
+const speakHindiText = speakVoiceText;
 
 function updateJsonConsole(payload) {
   const pre = document.getElementById('jsonLog');
@@ -3412,40 +5506,48 @@ async function loadClinicProducts(category = 'ALL') {
 
   listEl.innerHTML = products.map(p => {
     let catBadgeClass = 'seed';
-    let catBadgeText = 'प्रमाणित बीज (Certified Seed)';
+    let catBadgeText = t('catSeed', 'प्रमाणित बीज (Certified Seed)');
     if (p.category === 'CUSTOM_MICRONUTRIENT') {
       catBadgeClass = 'nutrient';
-      catBadgeText = 'कस्टम पोषक तत्व (FCO Chelate)';
+      catBadgeText = t('catMicro', 'कस्टम पोषक तत्व (FCO Chelate)');
     } else if (p.category === 'DISEASE_SOLUTION_KIT') {
       catBadgeClass = 'kit';
-      catBadgeText = 'डॉक्टर क्योर किट (Curative Pack)';
+      catBadgeText = t('catKit', 'डॉक्टर क्योर किट (Curative Pack)');
     } else if (p.category === 'BIO_FERTILIZER') {
       catBadgeClass = 'bio';
-      catBadgeText = 'बायो-फर्टिलाइजर (ICAR Tech)';
+      catBadgeText = t('catBioFert', 'बायो-फर्टिलाइजर (ICAR Tech)');
     } else if (p.category === 'BIO_PESTICIDE') {
       catBadgeClass = 'bio';
-      catBadgeText = 'बायो-पेस्टीसाइड (CIB&RC)';
+      catBadgeText = t('catBioPest', 'बायो-पेस्टीसाइड (CIB&RC)');
     }
+
+    const prodName = (currentLanguage === 'en' && p.product_name_en) ? p.product_name_en : p.product_name_hi;
+    const lotLabel = currentLanguage === 'en' ? 'Lot:' : 'लॉट:';
+    const germLabel = currentLanguage === 'en' ? 'Germination:' : 'अंकुरण:';
+    const purityLabel = currentLanguage === 'en' ? 'Purity:' : 'शुद्धता:';
+    const usageLabel = currentLanguage === 'en' ? 'Dosage:' : 'अनुशंसित प्रयोग:';
+    const perLabel = currentLanguage === 'en' ? 'per' : 'प्रति';
+    const orderLabel = currentLanguage === 'en' ? 'Order' : 'ऑर्डर करें';
 
     return `
       <div class="agri-product-card">
         <div class="prod-card-top">
           <div class="prod-title-group">
             <span class="prod-badge ${catBadgeClass}">${catBadgeText}</span>
-            <h5>${p.product_name_hi}</h5>
+            <h5>${prodName}</h5>
             <p class="prod-variety">${p.composition_or_variety}</p>
           </div>
         </div>
 
         <div class="prod-meta-tags">
-          <span class="lot-pill">लॉट: ${p.lot_number}</span>
-          ${p.germination_pct ? `<span class="quality-pill"><i class="fa-solid fa-check"></i> अंकुरण: ${p.germination_pct}%</span>` : ''}
-          ${p.purity_pct ? `<span class="quality-pill">शुद्धता: ${p.purity_pct}%</span>` : ''}
+          <span class="lot-pill">${lotLabel} ${p.lot_number}</span>
+          ${p.germination_pct ? `<span class="quality-pill"><i class="fa-solid fa-check"></i> ${germLabel} ${p.germination_pct}%</span>` : ''}
+          ${p.purity_pct ? `<span class="quality-pill">${purityLabel} ${p.purity_pct}%</span>` : ''}
           <span class="lot-pill">${p.unit_spec}</span>
         </div>
 
         <div class="prod-solution-note">
-          <strong>अनुशंसित प्रयोग:</strong> ${p.prescribed_dosage_per_acre}
+          <strong>${usageLabel}</strong> ${p.prescribed_dosage_per_acre}
           <br><small style="color:#64748b;">${p.scientific_solution_note_hi}</small>
         </div>
 
@@ -3453,10 +5555,10 @@ async function loadClinicProducts(category = 'ALL') {
           <div class="prod-pricing">
             <span class="prod-mrp">MRP: ₹${p.mrp_inr}</span>
             <span class="prod-farmer-price">₹${p.farmer_price_inr}</span>
-            <span class="prod-unit">प्रति ${p.unit_spec}</span>
+            <span class="prod-unit">${perLabel} ${p.unit_spec}</span>
           </div>
           <button class="btn-buy-prod" onclick="orderProductDirect('${p.product_code}', '${p.product_name_hi}', ${p.farmer_price_inr})">
-            <i class="fa-solid fa-cart-plus"></i> ऑर्डर करें
+            <i class="fa-solid fa-cart-plus"></i> ${orderLabel}
           </button>
         </div>
       </div>
@@ -4131,12 +6233,15 @@ function renderSearchHistoryScreen() {
   }
 
   if (filtered.length === 0) {
+    const emptyTitle = currentLanguage === 'en' ? 'No scan records found' : 'कोई जांच रिकॉर्ड नहीं मिला';
+    const emptyDesc = currentLanguage === 'en' ? 'No past scan history for selected crop or query.' : 'आपके द्वारा खोजी गई फसल या रोग का कोई पिछला इतिहास नहीं है।';
+    const emptyBtn = currentLanguage === 'en' ? '+ Scan New Crop' : '+ नई फसल स्कैन करें';
     container.innerHTML = `
       <div class="empty-history-box">
         <i class="fa-solid fa-seedling"></i>
-        <h6>कोई जांच रिकॉर्ड नहीं मिला</h6>
-        <p>आपके द्वारा खोजी गई फसल या रोग का कोई पिछला इतिहास नहीं है।</p>
-        <button class="btn btn-outline btn-sm" onclick="openCameraView('photo')">+ नई फसल स्कैन करें</button>
+        <h6>${emptyTitle}</h6>
+        <p>${emptyDesc}</p>
+        <button class="btn btn-outline btn-sm" onclick="openCameraView('photo')">${emptyBtn}</button>
       </div>
     `;
     return;
@@ -4163,7 +6268,7 @@ function renderSearchHistoryScreen() {
           <i class="fa-solid fa-circle-check"></i> ${item.confidence || '94% सटीकता'}
         </span>
         <button class="btn-view-rx-pill" onclick="viewPastDiagnosis('${item.id}')">
-          <i class="fa-solid fa-clipboard-prescription"></i> पर्चा व किट देखें
+          <i class="fa-solid fa-clipboard-prescription"></i> ${t('viewRxBtn', 'पर्चा व किट देखें')}
         </button>
       </div>
     </div>

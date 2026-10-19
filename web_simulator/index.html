@@ -329,8 +329,8 @@
                 <div class="section-title-row">
                   <h5 id="homeRecentTitle">हालिया फसल जांच इतिहास</h5>
                   <div style="display:flex; gap:10px; align-items:center;">
-                    <button class="btn-link text-green" onclick="switchNav('viewSearchHistory', null)" style="font-weight:700;">सभी देखें (View All)</button>
-                    <button class="btn-link" onclick="openCameraView('photo')">+ नई जांच</button>
+                    <button class="btn-link text-green" id="homeViewAllHistoryBtn" onclick="switchNav('viewSearchHistory', null)" style="font-weight:700;">सभी देखें (View All)</button>
+                    <button class="btn-link" id="homeNewScanBtn" onclick="openCameraView('photo')">+ नई जांच</button>
                   </div>
                 </div>
                 <div id="recentDiagnosesList" class="recent-diagnoses-list">
@@ -609,10 +609,10 @@
             <div class="questionnaire-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="qHomeBtnText">होम</span>
                 </button>
                 <button class="btn-retake-pill" onclick="retakePhotoFromInnerScreen()">
-                  <i class="fa-solid fa-camera-rotate"></i> <span>दोबारा फोटो लें</span>
+                  <i class="fa-solid fa-camera-rotate"></i> <span id="qRetakeBtnText">दोबारा फोटो लें</span>
                 </button>
               </div>
 
@@ -751,17 +751,17 @@
               <div class="graduate-kit-cta-box" id="graduateKitCtaBox">
                 <div class="cta-top-row">
                   <div class="graduate-badge-gold">
-                    <i class="fa-solid fa-award"></i> B.Sc. (Agri) अधिकृत क्लीनिकल समाधान
+                    <i class="fa-solid fa-award"></i> <span id="gradKitBadgeText">B.Sc. (Agri) अधिकृत क्लीनिकल समाधान</span>
                   </div>
                   <span class="acabc-tag"><i class="fa-solid fa-shield-halved"></i> JNKVV / ACABC प्रमाणित</span>
                 </div>
                 <div class="cta-body">
                   <div class="cta-text">
-                    <h5>🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध</h5>
-                    <p>चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)</p>
+                    <h5 id="gradKitTitleText">🌿 इस रोग/कमी हेतु तैयार डॉक्टर क्योर किट उपलब्ध</h5>
+                    <p id="gradKitDescText">चिलेटेड पोषण + जैविक रक्षक + अनुमोदित अणु (डिजिटल पर्चा आधारित 1-क्लिक डिलीवरी / पे-आफ्टर-हार्वेस्ट क्रेडिट)</p>
                   </div>
                   <button class="btn btn-gold btn-block" onclick="convertActiveDiagnosisToRxAndCart()">
-                    <i class="fa-solid fa-cart-shopping"></i> डॉक्टर किट ऑर्डर करें (Rx-to-Cart)
+                    <i class="fa-solid fa-cart-shopping"></i> <span id="gradKitOrderBtnText">डॉक्टर किट ऑर्डर करें (Rx-to-Cart)</span>
                   </button>
                 </div>
               </div>
@@ -785,10 +785,10 @@
             <div class="escalation-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="escHomeBtnText">होम</span>
                 </button>
                 <button class="btn-retake-pill" onclick="retakePhotoFromInnerScreen()">
-                  <i class="fa-solid fa-camera-rotate"></i> <span>दोबारा फोटो लें</span>
+                  <i class="fa-solid fa-camera-rotate"></i> <span id="escRetakeBtnText">दोबारा फोटो लें</span>
                 </button>
               </div>
 
@@ -839,9 +839,9 @@
               
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="clinicHomeBtnText">होम</span>
                 </button>
-                <span class="sub-header-title">अधिकृत कृषि स्नातक क्लिनिक</span>
+                <span class="sub-header-title" id="clinicScreenTitle">अधिकृत कृषि स्नातक क्लिनिक</span>
                 <button class="btn-help-pill" onclick="showGraduateStatutoryCredentialsModal()" title="वैधानिक लाइसेंस व प्रमाण-पत्र">
                   <i class="fa-solid fa-id-card"></i>
                 </button>
@@ -856,7 +856,7 @@
                   <div class="grad-meta">
                     <div class="grad-name-row">
                       <h4 id="gradNameText">विकास चतुर्वेदी (Vikas Chaturvedi)</h4>
-                      <span class="verified-seal"><i class="fa-solid fa-circle-check"></i> अधिकृत B.Sc. (Agri)</span>
+                      <span class="verified-seal"><i class="fa-solid fa-circle-check"></i> <span id="gradVerifiedSealText">अधिकृत B.Sc. (Agri)</span></span>
                     </div>
                     <p class="grad-degree" id="gradDegreeText">B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Tech</p>
                     <p class="grad-uni" id="gradUniText">जवाहरलाल नेहरू कृषि विश्वविद्यालय (JNKVV), जबलपुर</p>
@@ -889,16 +889,16 @@
               <!-- Clinic Feature Navigation Tabs -->
               <div class="clinic-sub-tabs">
                 <button class="clinic-tab-btn active" id="btnClinicTabProducts" onclick="switchClinicSubTab('products')">
-                  <i class="fa-solid fa-boxes-stacked"></i> <span>प्रमाणित बीज व भंडार</span>
+                  <i class="fa-solid fa-boxes-stacked"></i> <span id="btnClinicTabProductsText">प्रमाणित बीज व भंडार</span>
                 </button>
                 <button class="clinic-tab-btn" id="btnClinicTabRx" onclick="switchClinicSubTab('rx')">
-                  <i class="fa-solid fa-prescription"></i> <span>Agri-Rx बिलिंग</span>
+                  <i class="fa-solid fa-prescription"></i> <span id="btnClinicTabRxText">Agri-Rx बिलिंग</span>
                 </button>
                 <button class="clinic-tab-btn" id="btnClinicTabKhata" onclick="switchClinicSubTab('khata')">
-                  <i class="fa-solid fa-book-bookmark"></i> <span>बही-खाता (Pay Later)</span>
+                  <i class="fa-solid fa-book-bookmark"></i> <span id="btnClinicTabKhataText">बही-खाता (Pay Later)</span>
                 </button>
                 <button class="clinic-tab-btn" id="btnClinicTabConsult" onclick="switchClinicSubTab('consult')">
-                  <i class="fa-solid fa-video"></i> <span>परामर्श व ड्रोन ऑडिट</span>
+                  <i class="fa-solid fa-video"></i> <span id="btnClinicTabConsultText">परामर्श व ड्रोन ऑडिट</span>
                 </button>
               </div>
 
@@ -909,12 +909,12 @@
                 
                 <!-- Category Filter Pills -->
                 <div class="product-category-bar">
-                  <button class="prod-cat-chip active" onclick="filterClinicProducts('ALL', this)">सभी उत्पाद (All)</button>
-                  <button class="prod-cat-chip" onclick="filterClinicProducts('CERTIFIED_SEED', this)">🌾 प्रमाणित बीज</button>
-                  <button class="prod-cat-chip" onclick="filterClinicProducts('CUSTOM_MICRONUTRIENT', this)">🧪 कस्टम सूक्ष्म पोषक</button>
-                  <button class="prod-cat-chip" onclick="filterClinicProducts('DISEASE_SOLUTION_KIT', this)">🩺 डॉक्टर क्योर किट</button>
-                  <button class="prod-cat-chip" onclick="filterClinicProducts('BIO_FERTILIZER', this)">🦠 बायो-कल्चर (ZSB)</button>
-                  <button class="prod-cat-chip" onclick="filterClinicProducts('BIO_PESTICIDE', this)">🛡️ बायो-फंगीसाइड</button>
+                  <button class="prod-cat-chip active" id="catFilterAll" onclick="filterClinicProducts('ALL', this)">सभी उत्पाद (All)</button>
+                  <button class="prod-cat-chip" id="catFilterSeed" onclick="filterClinicProducts('CERTIFIED_SEED', this)">🌾 प्रमाणित बीज</button>
+                  <button class="prod-cat-chip" id="catFilterMicro" onclick="filterClinicProducts('CUSTOM_MICRONUTRIENT', this)">🧪 कस्टम सूक्ष्म पोषक</button>
+                  <button class="prod-cat-chip" id="catFilterKit" onclick="filterClinicProducts('DISEASE_SOLUTION_KIT', this)">🩺 डॉक्टर क्योर किट</button>
+                  <button class="prod-cat-chip" id="catFilterBioFert" onclick="filterClinicProducts('BIO_FERTILIZER', this)">🦠 बायो-कल्चर (ZSB)</button>
+                  <button class="prod-cat-chip" id="catFilterBioPest" onclick="filterClinicProducts('BIO_PESTICIDE', this)">🛡️ बायो-फंगीसाइड</button>
                 </div>
 
                 <!-- Products Grid / List -->
@@ -940,7 +940,7 @@
                   <div class="rx-card-top">
                     <div class="rx-clinic-emblem">
                       <i class="fa-solid fa-stamp"></i>
-                      <span>अधिकृत डिजिटल पर्चा (Agri-Rx)</span>
+                      <span id="rxEmblemTitle">अधिकृत डिजिटल पर्चा (Agri-Rx)</span>
                     </div>
                     <span class="rx-no-tag" id="rxCardNoTag">AGRI-RX-2026-0814</span>
                   </div>
@@ -962,10 +962,10 @@
                     <table class="rx-table" id="rxItemsTable">
                       <thead>
                         <tr>
-                          <th>प्रमाणित उत्पाद / किट</th>
-                          <th>मात्रा</th>
-                          <th>अनुमोदित प्रयोग विधि</th>
-                          <th>राशि</th>
+                          <th id="thProdName">प्रमाणित उत्पाद / किट</th>
+                          <th id="thProdQty">मात्रा</th>
+                          <th id="thProdUsage">अनुमोदित प्रयोग विधि</th>
+                          <th id="thProdPrice">राशि</th>
                         </tr>
                       </thead>
                       <tbody id="rxItemsTbody">
@@ -976,8 +976,8 @@
 
                   <!-- Doctor Scientific Notes -->
                   <div class="rx-doctor-note-box">
-                    <div class="dr-note-title">
-                      <i class="fa-solid fa-user-doctor"></i> अधिकृत कृषि स्नातक परामर्श निर्देश:
+                    <div class="dr-note-title" id="rxDrNoteTitle">
+                      <i class="fa-solid fa-user-doctor"></i> <span>अधिकृत कृषि स्नातक परामर्श निर्देश:</span>
                     </div>
                     <p id="rxDoctorNotesText">दिन के समय तेज धूप में छिड़काव न करें। सुबह 07:00 से 10:00 बजे के बीच सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप रिपोर्ट दें।</p>
                   </div>
@@ -1000,7 +1000,7 @@
                   <!-- Order Billing & Payment Mode Selection -->
                   <div class="rx-billing-action-box">
                     <div class="billing-total-row">
-                      <span>कुल बिल राशि (Net Amount):</span>
+                      <span id="rxBillingTotalLabel">कुल बिल राशि (Net Amount):</span>
                       <strong class="total-amt-text" id="rxBillingTotalAmt">₹ 3,200.00</strong>
                     </div>
 
@@ -1010,8 +1010,8 @@
                         <div class="pay-option-card">
                           <i class="fa-solid fa-wheat-awn text-green"></i>
                           <div>
-                            <strong>फसल कटाई बाद भुगतान (Pay-After-Harvest)</strong>
-                            <small>बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय</small>
+                            <strong id="payModeHarvestTitle">फसल कटाई बाद भुगतान (Pay-After-Harvest)</strong>
+                            <small id="payModeHarvestSub">बुवाई समय ₹0 भुगतान • सोयाबीन मंडी विक्रय उपरांत देय</small>
                           </div>
                         </div>
                       </label>
@@ -1020,15 +1020,15 @@
                         <div class="pay-option-card">
                           <i class="fa-solid fa-qrcode text-blue"></i>
                           <div>
-                            <strong>तत्काल UPI / कैश ऑन डिलीवरी (COD)</strong>
-                            <small>5% तुरंत नकद छूट (Instant Discount)</small>
+                            <strong id="payModeUpiTitle">तत्काल UPI / कैश ऑन डिलीवरी (COD)</strong>
+                            <small id="payModeUpiSub">5% तुरंत नकद छूट (Instant Discount)</small>
                           </div>
                         </div>
                       </label>
                     </div>
 
                     <button class="btn btn-primary btn-block btn-lg" onclick="dispenseAndBillRxOrder()">
-                      <i class="fa-solid fa-file-invoice-dollar"></i> GST चालान जारी करें एवं डिस्पैच करें
+                      <i class="fa-solid fa-file-invoice-dollar"></i> <span id="btnDispenseText">GST चालान जारी करें एवं डिस्पैच करें</span>
                     </button>
                   </div>
 
@@ -1043,7 +1043,7 @@
                 <div class="khata-header-card">
                   <div class="khata-top">
                     <div>
-                      <span class="khata-badge"><i class="fa-solid fa-book"></i> डिजिटल किसान बही-खाता</span>
+                      <span class="khata-badge" id="khataBadgeText"><i class="fa-solid fa-book"></i> डिजिटल किसान बही-खाता</span>
                       <h4 id="khataFarmerName">रमेश पटेल (खाता #KHT-9876543210)</h4>
                     </div>
                     <button class="btn btn-xs btn-outline" onclick="loadFarmerKhataLedger()"><i class="fa-solid fa-arrows-rotate"></i> रीफ्रेश</button>
@@ -1051,17 +1051,17 @@
 
                   <div class="khata-metrics-grid">
                     <div class="khata-metric-box">
-                      <span class="lbl">कुल स्वीकृत क्रेडिट</span>
+                      <span class="lbl" id="khataLimitLabel">कुल स्वीकृत क्रेडिट</span>
                       <strong class="text-blue" id="khataTotalCreditLimit">₹ 25,000</strong>
                       <small>ACABC स्नातक गारंटी</small>
                     </div>
                     <div class="khata-metric-box highlight-due">
-                      <span class="lbl">वर्तमान देय राशि (Outstanding)</span>
+                      <span class="lbl" id="khataDueLabel">वर्तमान देय राशि (Outstanding)</span>
                       <strong class="text-red" id="khataOutstandingDue">₹ 2,200</strong>
                       <small id="khataDueDate">देय: 20 Nov 2026</small>
                     </div>
                     <div class="khata-metric-box">
-                      <span class="lbl">जमा की गई राशि (Settled)</span>
+                      <span class="lbl" id="khataSettledLabel">जमा की गई राशि (Settled)</span>
                       <strong class="text-green" id="khataSettledAmount">₹ 1,000</strong>
                       <small>मंडी चालान द्वारा</small>
                     </div>
@@ -1071,8 +1071,8 @@
                 <!-- Ledger Entries List -->
                 <div class="khata-ledger-box">
                   <div class="section-title-row">
-                    <h5>हालिया आदेश एवं क्रेडिट प्रविष्टियां</h5>
-                    <button class="btn btn-xs btn-primary" onclick="openKhataSettlementModal()"><i class="fa-solid fa-plus"></i> भुगतान दर्ज करें</button>
+                    <h5 id="khataRecentTitle">हालिया आदेश एवं क्रेडिट प्रविष्टियां</h5>
+                    <button class="btn btn-xs btn-primary" onclick="openKhataSettlementModal()"><i class="fa-solid fa-plus"></i> <span id="khataRecordPayText">भुगतान दर्ज करें</span></button>
                   </div>
                   <div class="khata-orders-list" id="khataOrdersList">
                     <!-- Populated dynamically -->
@@ -1090,14 +1090,14 @@
                     <i class="fa-solid fa-headset"></i>
                   </div>
                   <div>
-                    <h4>विशेषज्ञ कृषि स्नातक से सीधा परामर्श</h4>
-                    <p>व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।</p>
+                    <h4 id="consultCardTitle">विशेषज्ञ कृषि स्नातक से सीधा परामर्श</h4>
+                    <p id="consultCardSub">व्हाट्सएप HD वीडियो कॉल, खेत पर जाकर क्रॉप ऑडिट अथवा किसान ड्रोन स्प्रे सर्विलांस बुक करें।</p>
                   </div>
                 </div>
 
                 <div class="consult-booking-form">
                   <div class="form-group">
-                    <label>परामर्श का प्रकार (Consultation Type):</label>
+                    <label id="consultTypeLabel">परामर्श का प्रकार (Consultation Type):</label>
                     <select id="consultTypeSelect" class="form-select" onchange="updateConsultationFeeDisplay()">
                       <option value="TELE_VIDEO_CALL">📱 व्हाट्सएप HD लाइव वीडियो कॉल (15 मिनट - निःशुल्क ACABC)</option>
                       <option value="IN_PERSON_FIELD_AUDIT">🚜 खेत पर व्यक्तिगत फसल ऑडिट एवं मृदा जांच (₹499)</option>
@@ -1107,39 +1107,39 @@
 
                   <div class="form-row-2">
                     <div class="form-group">
-                      <label>फसल का नाम (Crop):</label>
+                      <label id="consultCropLabel">फसल का नाम (Crop):</label>
                       <input type="text" id="consultCropName" class="form-control" value="सोयाबीन (Soybean)">
                     </div>
                     <div class="form-group">
-                      <label>रकबा (Acreage):</label>
+                      <label id="consultAcreLabel">रकबा (Acreage):</label>
                       <input type="number" id="consultAcreage" class="form-control" value="3.5" step="0.5">
                     </div>
                   </div>
 
                   <div class="form-group">
-                    <label>तारीख एवं समय स्लॉट (Date & Time):</label>
+                    <label id="consultSlotLabel">तारीख एवं समय स्लॉट (Date & Time):</label>
                     <input type="text" id="consultSlotInput" class="form-control" value="2026-10-19 शाम 05:30 बजे (Live HD Video)">
                   </div>
 
                   <div class="form-group">
-                    <label>समस्या या लक्षण (Problem Description):</label>
+                    <label id="consultDescLabel">समस्या या लक्षण (Problem Description):</label>
                     <textarea id="consultNotesInput" class="form-control" rows="2" placeholder="पत्तियों पर पीले धब्बे, फलियों में दाने न भरना..."></textarea>
                   </div>
 
                   <div class="consult-fee-summary">
-                    <span>परामर्श शुल्क (Doctor Fee):</span>
+                    <span id="consultFeeSummaryLabel">परामर्श शुल्क (Doctor Fee):</span>
                     <strong class="text-green" id="consultFeeLabel">₹ 0 (निःशुल्क ACABC योजना)</strong>
                   </div>
 
                   <button class="btn btn-primary btn-block btn-lg" onclick="submitGraduateConsultationBooking()">
-                    <i class="fa-solid fa-calendar-check"></i> अपॉइंटमेंट / ऑडिट स्लॉट बुक करें
+                    <i class="fa-solid fa-calendar-check"></i> <span id="btnBookConsultText">अपॉइंटमेंट / ऑडिट स्लॉट बुक करें</span>
                   </button>
                 </div>
 
                 <!-- Recent Bookings -->
                 <div class="recent-consult-bookings" id="recentConsultBookingsContainer">
                   <div class="section-title-row">
-                    <h5>आपकी हालिया परामर्श बुकिंग्स</h5>
+                    <h5 id="recentBookingsTitle">आपकी हालिया परामर्श बुकिंग्स</h5>
                   </div>
                   <div id="recentConsultBookingsList">
                     <!-- Populated dynamically -->
@@ -1158,7 +1158,7 @@
             <div class="farm-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="farmHomeBtnText">होम</span>
                 </button>
               </div>
 
@@ -1169,35 +1169,35 @@
 
               <div class="soil-radar-grid">
                 <div class="soil-metric-pill alert-deficiency">
-                  <span class="soil-label">जिंक (Zn - जस्ता)</span>
+                  <span class="soil-label" id="soilLabelZn">जिंक (Zn - जस्ता)</span>
                   <strong class="soil-val">0.45 ppm</strong>
-                  <span class="soil-status text-red"><i class="fa-solid fa-circle-down"></i> अत्यधिक कमी (&lt;0.60)</span>
+                  <span class="soil-status text-red" id="soilStatusZn"><i class="fa-solid fa-circle-down"></i> अत्यधिक कमी (&lt;0.60)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
-                  <span class="soil-label">पीएच मान (pH Level)</span>
+                  <span class="soil-label" id="soilLabelPh">पीएच मान (pH Level)</span>
                   <strong class="soil-val">7.4</strong>
-                  <span class="soil-status text-green"><i class="fa-solid fa-circle-check"></i> सामान्य (Neutral)</span>
+                  <span class="soil-status text-green" id="soilStatusPh"><i class="fa-solid fa-circle-check"></i> सामान्य (Neutral)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
-                  <span class="soil-label">नाइट्रोजन (N)</span>
+                  <span class="soil-label" id="soilLabelN">नाइट्रोजन (N)</span>
                   <strong class="soil-val">210 kg/ha</strong>
-                  <span class="soil-status text-amber">मध्यम (Medium)</span>
+                  <span class="soil-status text-amber" id="soilStatusN">मध्यम (Medium)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
-                  <span class="soil-label">पोटाश (K)</span>
+                  <span class="soil-label" id="soilLabelK">पोटाश (K)</span>
                   <strong class="soil-val">340 kg/ha</strong>
-                  <span class="soil-status text-green">पर्याप्त (High)</span>
+                  <span class="soil-status text-green" id="soilStatusK">पर्याप्त (High)</span>
                 </div>
               </div>
 
               <div class="farm-details-card">
-                <h5>खेत का विवरण (Linked Farm Parcel)</h5>
+                <h5 id="farmParcelHeading">खेत का विवरण (Linked Farm Parcel)</h5>
                 <p>खसरा क्रमांक: <strong>241/2</strong> | रकबा: <strong>3.5 एकड़</strong></p>
-                <p>मिट्टी का प्रकार: <strong>काली चिकनी मिट्टी (Medium Black Clay)</strong></p>
-                <p>सिंचाई साधन: <strong>ट्यूबवेल + ड्रिप सिंचाई</strong></p>
+                <p id="soilTypeDesc">मिट्टी का प्रकार: <strong>काली चिकनी मिट्टी (Medium Black Clay)</strong></p>
+                <p id="irrigationDesc">सिंचाई साधन: <strong>ट्यूबवेल + ड्रिप सिंचाई</strong></p>
               </div>
             </div>
           </section>
@@ -1209,7 +1209,7 @@
             <div class="ecosystem-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="mandiHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="mandiScreenTitle">लाइव मंडी भाव (e-NAM)</span>
                 <button class="btn-help-pill" onclick="speakMandiSummary()" title="मंडी भाव सुनें">
@@ -1219,7 +1219,7 @@
 
               <!-- Crop Filter Bar for Mandi -->
               <div class="crop-bar" id="mandiCropBar">
-                <button class="crop-chip active" onclick="filterMandiByCrop('ALL', this)">सभी फसलें (All)</button>
+                <button class="crop-chip active" id="mandiCropAllBtn" onclick="filterMandiByCrop('ALL', this)">सभी फसलें (All)</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('SOYBEAN', this)">सोयाबीन</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('PADDY', this)">धान (Paddy)</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('WHEAT', this)">गेहूँ (Wheat)</button>
@@ -1257,7 +1257,7 @@
             <div class="ecosystem-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="calHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="calScreenTitle">स्प्रे मौसम, खाद गणक व कैलेंडर</span>
                 <button class="btn-help-pill" onclick="speakCalendarSummary()" title="खाद व स्प्रे सलाह सुनें">
@@ -1284,8 +1284,8 @@
               <!-- Section B: Soil-Health Linked NPK & Micronutrient Bag Calculator -->
               <div class="eco-section-card">
                 <div class="eco-card-header">
-                  <h5><i class="fa-solid fa-calculator text-green"></i> संतुलित खाद (NPK + जिंक) बोरी गणक</h5>
-                  <span class="badge-soil-linked">मृदा कार्ड लिंक</span>
+                  <h5><i class="fa-solid fa-calculator text-green"></i> <span id="npkSectionTitleText">संतुलित खाद (NPK + जिंक) बोरी गणक</span></h5>
+                  <span class="badge-soil-linked" id="soilLinkedBadge">मृदा कार्ड लिंक</span>
                 </div>
 
                 <div class="npk-controls-row">
@@ -1302,7 +1302,7 @@
                     <option value="POTATO">आलू (Potato)</option>
                   </select>
                   <div class="npk-acre-pill">
-                    <span>रकबा: <strong id="npkAcreDisplay">2.0 एकड़</strong></span>
+                    <span><span id="npkAcreLabel">रकबा:</span> <strong id="npkAcreDisplay">2.0 एकड़</strong></span>
                     <input type="range" id="npkAcreSlider" min="0.5" max="15" step="0.5" value="2.0" class="slider" oninput="onNpkAcreInput(this.value)">
                   </div>
                 </div>
@@ -1319,7 +1319,7 @@
               <!-- Section C: 5-Stage Scientific Crop Calendar -->
               <div class="eco-section-card">
                 <div class="eco-card-header">
-                  <h5><i class="fa-solid fa-calendar-days text-green"></i> बुवाई से कटाई वैज्ञानिक फसल कैलेंडर</h5>
+                  <h5><i class="fa-solid fa-calendar-days text-green"></i> <span id="cropCalTitleText">बुवाई से कटाई वैज्ञानिक फसल कैलेंडर</span></h5>
                 </div>
                 <div id="cropCalendarTimeline" class="calendar-timeline">
                   <!-- Populated dynamically from /v1/advisory/crop-calendar -->
@@ -1335,7 +1335,7 @@
             <div class="ecosystem-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="schemesHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="schemesScreenTitle">सरकारी योजना, KCC व फसल बीमा</span>
                 <button class="btn-help-pill" onclick="speakSchemesSummary()" title="योजना पात्रता सुनें">
@@ -1346,15 +1346,15 @@
               <!-- Financial Eligibility Summary Hero -->
               <div class="schemes-summary-hero" id="schemesSummaryHero">
                 <div class="scheme-stat-box">
-                  <span class="stat-lbl">KCC 4% ऋण पात्रता</span>
+                  <span class="stat-lbl" id="kccStatLbl">KCC 4% ऋण पात्रता</span>
                   <strong class="stat-val" id="kccLimitVal">₹94,325</strong>
                 </div>
                 <div class="scheme-stat-box">
-                  <span class="stat-lbl">PMFBY फसल बीमा कवर</span>
+                  <span class="stat-lbl" id="pmfbyStatLbl">PMFBY फसल बीमा कवर</span>
                   <strong class="stat-val" id="pmfbyCoverVal">₹85,750</strong>
                 </div>
                 <div class="scheme-stat-box">
-                  <span class="stat-lbl">PM-KISAN + सब्सिडी</span>
+                  <span class="stat-lbl" id="pmKisanStatLbl">PM-KISAN + सब्सिडी</span>
                   <strong class="stat-val text-green" id="subsidyPotVal">₹6,000/वर्ष</strong>
                 </div>
               </div>
@@ -1362,10 +1362,10 @@
               <!-- Fast 72-Hour PMFBY Crop Loss Intimation Card (Linked to AI Diagnosis) -->
               <div class="pmfby-claim-card">
                 <div class="pmfby-header">
-                  <span class="badge-72h"><i class="fa-solid fa-bolt"></i> PMFBY 72-घंटे फसल नुकसान सीधा दावा</span>
-                  <span class="badge-ai-linked"><i class="fa-solid fa-link"></i> AI रिपोर्ट संलग्न</span>
+                  <span class="badge-72h" id="pmfbyBadge72h"><i class="fa-solid fa-bolt"></i> <span id="pmfbyBadge72hText">PMFBY 72-घंटे फसल नुकसान सीधा दावा</span></span>
+                  <span class="badge-ai-linked" id="pmfbyBadgeAi"><i class="fa-solid fa-link"></i> <span id="pmfbyBadgeAiText">AI रिपोर्ट संलग्न</span></span>
                 </div>
-                <p class="pmfby-desc">
+                <p class="pmfby-desc" id="pmfbyClaimDesc">
                   अतिवृष्टि, ओलावृष्टि या महामारी रोग से फसल खराब होने पर 72 घंटे के भीतर अपनी AI जांच रिपोर्ट व GPS लोकेशन के साथ बीमा दावा दर्ज करें।
                 </p>
                 <div class="pmfby-form-row">
@@ -1375,7 +1375,7 @@
                     <option value="ओलावृष्टि एवं तेज आंधी से फसल क्षति (Hailstorm & Lodging Damage)">ओलावृष्टि व आंधी (Hailstorm)</option>
                   </select>
                   <button class="btn btn-primary btn-block mt-1" onclick="submitInstantPmfbyClaim()">
-                    <i class="fa-solid fa-file-shield"></i> तुरंत 72-घंटे बीमा दावा दर्ज करें
+                    <i class="fa-solid fa-file-shield"></i> <span id="btnSubmitClaimText">तुरंत 72-घंटे बीमा दावा दर्ज करें</span>
                   </button>
                 </div>
               </div>
@@ -1383,7 +1383,7 @@
               <!-- Submitted Claims & Scheme Applications Tracker -->
               <div class="eco-section-card" id="submittedClaimsBox">
                 <div class="eco-card-header">
-                  <h5><i class="fa-solid fa-clipboard-check text-green"></i> आपके दर्ज आवेदन एवं पावती (Live SQLite Status)</h5>
+                  <h5 id="submittedAppsTitle"><i class="fa-solid fa-clipboard-check text-green"></i> <span id="submittedAppsTitleText">आपके दर्ज आवेदन एवं पावती (Live SQLite Status)</span></h5>
                 </div>
                 <div id="submittedApplicationsList">
                   <!-- Populated dynamically -->
@@ -1404,7 +1404,7 @@
             <div class="ecosystem-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="mitraHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="mitraScreenTitle">किसान ई-मित्र AI एवं रोग रडार</span>
                 <button class="btn-help-pill" onclick="speakLastMitraAnswer()" title="उत्तर सुनें">
@@ -1417,24 +1417,24 @@
                 <div class="mitra-header-row">
                   <div class="mitra-bot-avatar"><i class="fa-solid fa-robot"></i></div>
                   <div>
-                    <h5>किसान ई-मित्र (Bhashini Voice AI)</h5>
-                    <p>अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें</p>
+                    <h5 id="mitraBotHeading">किसान ई-मित्र (Bhashini Voice AI)</h5>
+                    <p id="mitraBotSub">अपनी आवाज में हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें</p>
                   </div>
                 </div>
 
                 <!-- Quick Voice Prompt Chips -->
                 <div class="mitra-prompt-chips">
-                  <button class="prompt-chip" onclick="askMitraQuestion('आज सोयाबीन का मंडी भाव क्या है और कहाँ बेचें?')">
-                    💰 सोयाबीन मंडी भाव?
+                  <button class="prompt-chip" id="mitraChip1" onclick="askMitraQuestion('आज सोयाबीन का मंडी भाव क्या है और कहाँ बेचें?')">
+                    💰 <span id="mitraChip1Text">सोयाबीन मंडी भाव?</span>
                   </button>
-                  <button class="prompt-chip" onclick="askMitraQuestion('क्या आज खेत में स्प्रे (छिड़काव) करने का सही मौसम है?')">
-                    🌦️ आज स्प्रे करें या नहीं?
+                  <button class="prompt-chip" id="mitraChip2" onclick="askMitraQuestion('क्या आज खेत में स्प्रे (छिड़काव) करने का सही मौसम है?')">
+                    🌦️ <span id="mitraChip2Text">आज स्प्रे करें या नहीं?</span>
                   </button>
-                  <button class="prompt-chip" onclick="askMitraQuestion('3 एकड़ सोयाबीन में कितनी डीएपी, यूरिया व जिंक खाद डालें?')">
-                    🌱 3 एकड़ खाद मात्रा?
+                  <button class="prompt-chip" id="mitraChip3" onclick="askMitraQuestion('3 एकड़ सोयाबीन में कितनी डीएपी, यूरिया व जिंक खाद डालें?')">
+                    🌱 <span id="mitraChip3Text">3 एकड़ खाद मात्रा?</span>
                   </button>
-                  <button class="prompt-chip" onclick="askMitraQuestion('पीएम किसान, KCC लोन और फसल बीमा दावा कैसे मिलेगा?')">
-                    🏛️ सरकारी योजना व बीमा?
+                  <button class="prompt-chip" id="mitraChip4" onclick="askMitraQuestion('पीएम किसान, KCC लोन और फसल बीमा दावा कैसे मिलेगा?')">
+                    🏛️ <span id="mitraChip4Text">सरकारी योजना व बीमा?</span>
                   </button>
                 </div>
 
@@ -1451,7 +1451,7 @@
 
                 <!-- AI Answer Output Bubble -->
                 <div id="mitraAnswerBox" class="mitra-answer-bubble">
-                  <div class="mitra-ans-tag"><i class="fa-solid fa-sparkles"></i> किसान ई-मित्र उत्तर:</div>
+                  <div class="mitra-ans-tag" id="mitraAnsTag"><i class="fa-solid fa-sparkles"></i> <span id="mitraAnsTagText">किसान ई-मित्र उत्तर:</span></div>
                   <p id="mitraAnswerText">
                     आज उज्जैन मंडी में सोयाबीन का मॉडल भाव ₹5,120/क्विंटल है, जो सरकारी MSP (₹4,892) से ₹228 अधिक है। 10% से कम नमी वाला माल बेचने का उत्तम समय है।
                   </p>
@@ -1461,8 +1461,8 @@
               <!-- 15km Community Pest & Disease Outbreak Radar -->
               <div class="eco-section-card">
                 <div class="eco-card-header">
-                  <h5><i class="fa-solid fa-tower-broadcast text-red"></i> 15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)</h5>
-                  <button class="btn-report-outbreak" onclick="reportNewVillageOutbreak()">
+                  <h5 id="outbreakRadarHeading"><i class="fa-solid fa-tower-broadcast text-red"></i> <span id="outbreakRadarHeadingText">15 किमी क्षेत्रीय रोग एवं कीट रडार (KVK सत्यापित)</span></h5>
+                  <button class="btn-report-outbreak" id="btnReportOutbreak" onclick="reportNewVillageOutbreak()">
                     + नया प्रकोप रिपोर्ट करें
                   </button>
                 </div>
@@ -1480,7 +1480,7 @@
             <div class="ecosystem-screen-card">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="stateMatrixHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="stateMatrixScreenTitle">राज्य-वार कृषि समस्या व तकनीकी समाधान</span>
                 <button class="btn-help-pill" onclick="speakStateChallengeSummary()" title="राज्य समाधान सुनें">
@@ -1508,7 +1508,7 @@
               <!-- Active CHC Machinery & Kisan Drone Bookings List (SQLite Live) -->
               <div class="eco-section-card">
                 <div class="eco-card-header">
-                  <h5><i class="fa-solid fa-helicopter text-green"></i> आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)</h5>
+                  <h5 id="chcBookingsHeading"><i class="fa-solid fa-helicopter text-green"></i> <span id="chcBookingsHeadingText">आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (CHC SQLite)</span></h5>
                 </div>
                 <div id="chcBookingsListContainer">
                   <!-- Populated dynamically -->
@@ -1524,9 +1524,9 @@
             <div class="search-history-container">
               <div class="view-sub-header">
                 <button class="btn-back-pill" onclick="navigateToHome()">
-                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                  <i class="fa-solid fa-house"></i> <span id="historyHomeBtnText">होम</span>
                 </button>
-                <span class="sub-header-title">फसल जांच एवं पर्चा इतिहास</span>
+                <span class="sub-header-title" id="historyScreenTitle">फसल जांच एवं पर्चा इतिहास</span>
                 <button class="btn-help-pill" onclick="refreshDiagnosisHistory(true)" title="रीफ्रेश करें">
                   <i class="fa-solid fa-arrows-rotate"></i>
                 </button>
@@ -1541,7 +1541,7 @@
 
                 <!-- Crop Filter Chips -->
                 <div class="history-filter-chips" id="historyCropFilterChips">
-                  <button class="crop-chip active" onclick="filterHistoryByCrop('ALL', this)">सभी (All)</button>
+                  <button class="crop-chip active" id="histChipAll" onclick="filterHistoryByCrop('ALL', this)">सभी (All)</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('SOYBEAN', this)">सोयाबीन</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('BANANA', this)">केला</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('PADDY', this)">धान</button>
@@ -1554,15 +1554,15 @@
               <!-- History Metrics Summary -->
               <div class="history-metrics-row">
                 <div class="h-metric-pill">
-                  <span class="lbl">कुल जांचें (Scans)</span>
+                  <span class="lbl" id="historyTotalScansLbl">कुल जांचें (Scans)</span>
                   <strong id="historyTotalCount">0</strong>
                 </div>
                 <div class="h-metric-pill">
-                  <span class="lbl">सक्रिय फसलें (Crops)</span>
+                  <span class="lbl" id="historyActiveCropsLbl">सक्रिय फसलें (Crops)</span>
                   <strong class="text-green" id="historyActiveCropsCount">0</strong>
                 </div>
                 <div class="h-metric-pill">
-                  <span class="lbl">औसत सटीकता (Avg Acc)</span>
+                  <span class="lbl" id="historyAvgAccLbl">औसत सटीकता (Avg Acc)</span>
                   <strong class="text-blue" id="historyAvgAccuracy">94.2%</strong>
                 </div>
               </div>
@@ -1575,7 +1575,7 @@
               <!-- Action Bar at Bottom -->
               <div class="history-bottom-actions">
                 <button class="btn btn-primary btn-block" onclick="openCameraView('photo')">
-                  <i class="fa-solid fa-camera"></i> नई फसल की जांच करें (+ New Scan)
+                  <i class="fa-solid fa-camera"></i> <span id="historyNewScanBtnText">नई फसल की जांच करें (+ New Scan)</span>
                 </button>
               </div>
             </div>
