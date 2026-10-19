@@ -4,7 +4,7 @@
   "private": true,
   "description": "Krishi Swasthya Sahayak (AgriScan AI) Web Platform",
   "scripts": {
-    "build": "mkdir -p public && cp -r web_simulator/* public/",
+    "build": "mkdir -p public web_app && cp -r web_simulator/* public/ && cp -r web_simulator/* web_app/",
     "start": "cd backend && npm start"
   }
 }

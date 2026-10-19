@@ -6,6 +6,14 @@
     {
       "source": "/app",
       "destination": "/index.html"
+    },
+    {
+      "source": "/web_simulator/:path*",
+      "destination": "/:path*"
+    },
+    {
+      "source": "/web_app/:path*",
+      "destination": "/:path*"
     }
   ]
 }
