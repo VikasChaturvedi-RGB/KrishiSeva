@@ -4,7 +4,7 @@
   "private": true,
   "description": "Krishi Swasthya Sahayak (AgriScan AI) Web Platform",
   "scripts": {
-    "build": "mkdir -p public web_app && cp -r web_simulator/* public/ && cp -r web_simulator/* web_app/",
+    "build": "node -e \"const fs=require('fs'); fs.cpSync('web_simulator', 'public', {recursive:true}); fs.cpSync('web_simulator', 'web_app', {recursive:true}); console.log('Build output ready: public & web_app');\"",
     "start": "cd backend && npm start"
   }
 }
