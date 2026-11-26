@@ -98,6 +98,7 @@ body.farmer-portal-body {
 
 .phone-screen {
   flex: 1;
+  min-height: 0;
   background: #f8fafc;
   overflow: hidden;
   display: flex;
@@ -114,6 +115,8 @@ body.farmer-portal-body {
 
 .phone-header {
   height: 56px;
+  min-height: 56px;
+  flex-shrink: 0;
   background: var(--primary-green);
   color: white;
   display: flex;
@@ -227,15 +230,16 @@ body.farmer-portal-body {
    3. LANGUAGE BOTTOM SHEET MODAL
    ========================================================================== */
 .phone-modal-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
-  z-index: 100;
+  z-index: 999;
   display: flex;
+  justify-content: center;
   align-items: flex-end;
   animation: fadeIn 0.2s ease;
 }
@@ -243,6 +247,9 @@ body.farmer-portal-body {
 .phone-lang-sheet {
   background: white;
   width: 100%;
+  max-width: 520px;
+  max-height: 88dvh;
+  overflow-y: auto;
   border-radius: 24px 24px 0 0;
   padding: 16px;
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.25);
@@ -333,6 +340,7 @@ body.farmer-portal-body {
    ========================================================================== */
 .phone-viewport {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
@@ -4467,6 +4475,7 @@ body.farmer-portal-body {
    PURE GUIDANCE TRUST BAR, 22-LANGUAGE AUDIO PICKER & VOICE COMPANION
    ========================================================================== */
 .farmer-trust-access-bar {
+  flex-shrink: 0;
   background: #f0fdf4;
   border-bottom: 1px solid #bbf7d0;
   padding: 6px 12px;

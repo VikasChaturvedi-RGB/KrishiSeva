@@ -1,5 +1,5 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-free';
+const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-b2c-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -99,23 +99,23 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkRes) => {
-          if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
-            const copy = networkRes.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
-          }
-          return networkRes;
-        })
-        .catch(() => {
+    fetch(event.request)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
+          const copy = networkRes.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
+        }
+        return networkRes;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
-          return cached;
-        });
-      return cached || fetchPromise;
-    })
+          return undefined;
+        })
+      )
   );
 });
 

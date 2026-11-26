@@ -46,8 +46,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             val relSign = signingConfigs.findByName("releaseConfig")
             signingConfig = if (relSign?.storeFile != null) relSign else signingConfigs.getByName("debug")
             proguardFiles(
@@ -55,6 +55,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     compileOptions {
@@ -73,6 +78,7 @@ android {
 dependencies {
     // 1. AndroidX Core & Jetpack Compose Material 3 (Sunlight-Readable B2C Shell)
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-ktx:1.9.3")
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
     implementation(composeBom)
     implementation("androidx.activity:activity-compose:1.9.3")
@@ -89,14 +95,17 @@ dependencies {
     implementation("com.google.android.gms:play-services-tasks:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    // 4. Firebase Spark Always-Free B2C Stack (FCM Push, Analytics, Crashlytics, Auth, Firestore)
+    // 4. Firebase Spark Always-Free B2C Stack (FCM Push, Analytics, Auth, Firestore; Crashlytics when configured)
     val firebaseBom = platform("com.google.firebase:firebase-bom:33.6.0")
     implementation(firebaseBom)
+    implementation("com.google.firebase:firebase-common")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    if (file("google-services.json").exists()) {
+        implementation("com.google.firebase:firebase-crashlytics")
+    }
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

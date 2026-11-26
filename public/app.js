@@ -2752,7 +2752,9 @@ function switchView(viewId, pushHistory = true) {
   } else if (viewId === 'viewClinic') {
     const navClinic = document.getElementById('navClinic');
     if (navClinic) navClinic.classList.add('active');
-    loadAgriGraduateClinicHub();
+    if (typeof window.renderSelfReliantGuidanceHub === 'function') {
+      window.renderSelfReliantGuidanceHub();
+    }
   } else if (viewId === 'viewMandi') {
     const navMandi = document.getElementById('navMandi');
     if (navMandi) navMandi.classList.add('active');
@@ -3027,33 +3029,6 @@ function applyLanguageStrings(langCode) {
   document.documentElement.lang = langCode;
   document.documentElement.dir = (langMeta && langMeta.rtl) ? 'rtl' : 'ltr';
 
-  if (typeof gp === 'function') {
-    setText('zeroSellPledgeText', gp('zeroSellPledge'));
-    setText('headerListenBtnText', gp('listenBtn'));
-    setText('floatingVoiceLabel', gp('speakAskBtn'));
-    setText('tabClimateRescueText', gp('tabClimateRescue'));
-    setText('btnClinicTabProductsText', gp('tabDiyBio'));
-    setText('btnClinicTabRxText', gp('tabPurityTest'));
-    setText('btnClinicTabKhataText', gp('tabFarmDiary'));
-    setText('btnClinicTabConsultText', gp('tabFreeHelpline'));
-    setText('clinicScreenTitle', gp('guideTitle'));
-    setText('homeTileClinic', gp('tileClinicTitle'));
-    setText('homeTileClinicSub', gp('tileClinicSub'));
-    setText('homeTileKvk', gp('tileKvkTitle'));
-    setText('homeTileKvkSub', gp('tileKvkSub'));
-    setText('logoutBtnText', gp('profileBtn'));
-    setText('authHeadingText', gp('profileScreenTitle'));
-    setText('authSubText', gp('profileScreenSub'));
-    setText('authBtnText', gp('saveProfileBtn'));
-    setText('gradKitBadgeText', gp('rxNoSellBadge'));
-    setText('gradKitTitleText', gp('rxDiyCtaTitle'));
-    setText('gradKitDescText', gp('rxDiyCtaDesc'));
-    setText('gradKitOrderBtnText', gp('rxDiyCtaBtn'));
-    setText('rxOrderBtnText', gp('rxFreeKvkBtn'));
-    const unitKey = (window.KRISHI_UNIT_FACTORS && window.KRISHI_UNIT_FACTORS[window.KRISHI_LAND_UNIT || 'ACRE'])?.key || 'unitAcre';
-    setText('landUnitBtnLabel', gp(unitKey));
-  }
-
   // Header & App Brand
   setText('phoneCurrentLangText', (langMeta && langMeta.native) || l.langName);
   setText('screenTitle', l.appName);
@@ -3280,6 +3255,36 @@ function applyLanguageStrings(langCode) {
   setText('historyActiveCropsLbl', l.historyActiveCropsLbl);
   setText('historyAvgAccLbl', l.historyAvgAccLbl);
   setText('historyNewScanBtnText', l.historyNewScanBtnText);
+
+  // Final Zero-Selling B2C 22-Language Overrides (applied last so legacy commercial labels never win)
+  if (typeof gp === 'function') {
+    setText('screenTitle', gp('appName'));
+    setText('zeroSellPledgeText', gp('zeroSellPledge'));
+    setText('headerListenBtnText', gp('listenBtn'));
+    setText('floatingVoiceLabel', gp('speakAskBtn'));
+    setText('navLabelClinic', gp('selfReliant'));
+    setText('tabClimateRescueText', gp('tabClimateRescue'));
+    setText('btnClinicTabProductsText', gp('tabDiyBio'));
+    setText('btnClinicTabRxText', gp('tabPurityTest'));
+    setText('btnClinicTabKhataText', gp('tabFarmDiary'));
+    setText('btnClinicTabConsultText', gp('tabFreeHelpline'));
+    setText('clinicScreenTitle', gp('guideTitle'));
+    setText('homeTileClinic', gp('tileClinicTitle'));
+    setText('homeTileClinicSub', gp('tileClinicSub'));
+    setText('homeTileKvk', gp('tileKvkTitle'));
+    setText('homeTileKvkSub', gp('tileKvkSub'));
+    setText('logoutBtnText', gp('profileBtn'));
+    setText('authHeadingText', gp('profileScreenTitle'));
+    setText('authSubText', gp('profileScreenSub'));
+    setText('authBtnText', gp('saveProfileBtn'));
+    setText('gradKitBadgeText', gp('rxNoSellBadge'));
+    setText('gradKitTitleText', gp('rxDiyCtaTitle'));
+    setText('gradKitDescText', gp('rxDiyCtaDesc'));
+    setText('gradKitOrderBtnText', gp('rxDiyCtaBtn'));
+    setText('rxOrderBtnText', gp('rxFreeKvkBtn'));
+    const unitKey = (window.KRISHI_UNIT_FACTORS && window.KRISHI_UNIT_FACTORS[window.KRISHI_LAND_UNIT || 'ACRE'])?.key || 'unitAcre';
+    setText('landUnitBtnLabel', gp(unitKey));
+  }
 }
 
 // ==========================================
@@ -6078,7 +6083,7 @@ const DEFAULT_SEED_DIAGNOSES = [
 async function loadDiagnosisHistory() {
   let serverItems = [];
   try {
-    const res = await fetch(`${API_BASE}/v1/diagnosis/history`);
+    const res = await fetch(`${API_BASE}/diagnosis/history`);
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.history) && data.history.length > 0) {

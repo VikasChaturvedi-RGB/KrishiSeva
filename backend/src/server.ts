@@ -93,11 +93,10 @@ app.get('/health', (req, res) => {
 
 function startServer(port: number) {
   const srv = app.listen(port, '0.0.0.0', () => {
-    console.log(`🌾 AgriScan AI Backend Services Gateway running at http://localhost:${port}`);
-    console.log(`📱 PWA Web Simulator: http://localhost:${port}/index.html`);
-    console.log(`📱 PWA Web Simulator (App route): http://localhost:${port}/app`);
-    console.log(`💾 Native SQLite Database Active with WAL mode`);
-    console.log(`📄 OpenAPI Contracts: http://localhost:${port}/contracts`);
+    console.log(`🌾 Krishi Sahayak — 100% Free B2C Farmer Guidance Server running at http://localhost:${port}`);
+    console.log(`📱 Multilingual B2C PWA (22 Indian Languages): http://localhost:${port}`);
+    console.log(`☁️ Google Cloud Always-Free Status API: http://localhost:${port}/v1/google-free/status`);
+    console.log(`🌿 Self-Reliant Bio-Recipes & Purity Hub API: http://localhost:${port}/v1/guidance/self-reliant`);
     console.log(`🩺 Health check: http://localhost:${port}/health`);
   });
 

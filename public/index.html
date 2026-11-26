@@ -227,8 +227,8 @@
               <button id="authBtn" class="btn btn-primary btn-block" onclick="window.KrishiGoogleCloud.saveFarmProfilePreference()">
                 <i class="fa-solid fa-floppy-disk"></i> <span id="authBtnText">खेत विवरण सुरक्षित करें</span>
               </button>
-            </div>
-                        <!-- B2C Smart Free Alerts (Firebase Cloud Messaging) & DPDP Privacy Controls -->
+
+              <!-- B2C Smart Free Alerts (Firebase Cloud Messaging) & DPDP Privacy Controls -->
               <div class="dpdp-box" style="margin-top:14px; text-align:left;">
                 <div class="dpdp-title">
                   <i class="fa-solid fa-bell text-green"></i>
@@ -1466,7 +1466,7 @@
 
         </main>
 
-        <!-- Phone Bottom Navigation Bar (6 Core Indian Farmer Tabs) -->
+        <!-- Phone Bottom Navigation Bar (5 Core Zero-Selling B2C Farmer Tabs + Voice FAB) -->
         <nav class="phone-bottom-nav">
           <button class="nav-item active" id="navHome" onclick="switchNav('viewHome', this)">
             <i class="fa-solid fa-house"></i>
@@ -1476,21 +1476,17 @@
             <i class="fa-solid fa-camera"></i>
             <span id="navLabelCamera">फसल जांच</span>
           </button>
+          <button class="nav-item" id="navClinic" onclick="switchNav('viewClinic', this)">
+            <i class="fa-solid fa-seedling"></i>
+            <span id="navLabelClinic">घरेलू व परख</span>
+          </button>
           <button class="nav-item" id="navMandi" onclick="openEcosystemView('viewMandi', this)">
             <i class="fa-solid fa-indian-rupee-sign"></i>
             <span id="navLabelMandi">मंडी भाव</span>
           </button>
-          <button class="nav-item" id="navCalendar" onclick="openEcosystemView('viewCalendar', this)">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span id="navLabelCalendar">खाद/मौसम</span>
-          </button>
           <button class="nav-item" id="navSchemes" onclick="openEcosystemView('viewSchemes', this)">
             <i class="fa-solid fa-landmark-dome"></i>
-            <span id="navLabelSchemes">योजना/बीमा</span>
-          </button>
-          <button class="nav-item" id="navMitra" onclick="openEcosystemView('viewMitra', this)">
-            <i class="fa-solid fa-microphone-lines"></i>
-            <span id="navLabelMitra">ई-मित्र AI</span>
+            <span id="navLabelSchemes">योजना/हक</span>
           </button>
         </nav>
 
