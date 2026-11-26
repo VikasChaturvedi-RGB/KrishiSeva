@@ -39,17 +39,28 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  height: auto;
+  min-height: 100%;
+  overflow-x: clip;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
 body.farmer-portal-body {
   font-family: var(--font-main);
   background: linear-gradient(160deg, #ecfdf5 0%, #dcfce7 50%, #f1f5f9 100%);
   color: var(--text-dark);
   min-height: 100vh;
   min-height: 100dvh;
+  height: auto;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y pinch-zoom;
 }
 
 .hidden { display: none !important; }
@@ -59,11 +70,12 @@ body.farmer-portal-body {
 .text-harvest { color: #f59e0b !important; }
 .text-xs { font-size: 11px !important; }
 
-/* Full-Bleed Mobile App Container (100% Viewport on Android/Mobile, Clean Card Shell on Desktop) */
+/* Native Document-Scrollable Mobile App Container (Zero Nested Overflow Traps) */
 .mobile-app-stage {
   width: 100%;
   max-width: 520px;
   min-height: 100dvh;
+  height: auto;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -71,50 +83,42 @@ body.farmer-portal-body {
 
 .device-mockup {
   width: 100%;
-  flex: 1;
+  flex: 1 0 auto;
   min-height: 100dvh;
+  height: auto;
   background: #f8fafc;
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: visible;
   box-shadow: 0 12px 42px rgba(20, 83, 45, 0.14);
 }
 
 @media (min-width: 600px) {
   body.farmer-portal-body {
-    padding: 12px;
-  }
-  .mobile-app-stage {
-    min-height: calc(100dvh - 24px);
+    padding: 0 12px;
   }
   .device-mockup {
-    min-height: calc(100dvh - 24px);
-    max-height: calc(100dvh - 24px);
-    border-radius: 24px;
-    border: 2px solid #bbf7d0;
-    overflow: hidden;
+    border-left: 2px solid #bbf7d0;
+    border-right: 2px solid #bbf7d0;
   }
 }
 
 .phone-screen {
-  flex: 1;
-  min-height: 0;
+  flex: 1 0 auto;
+  min-height: 100dvh;
+  height: auto;
   background: #f8fafc;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 100dvh;
-}
-
-@media (min-width: 600px) {
-  .phone-screen {
-    height: calc(100dvh - 28px);
-  }
 }
 
 .phone-header {
-  height: 56px;
+  position: sticky;
+  top: 0;
+  height: auto;
   min-height: 56px;
   flex-shrink: 0;
   background: var(--primary-green);
@@ -122,9 +126,8 @@ body.farmer-portal-body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
-  padding-top: env(safe-area-inset-top, 0px);
-  z-index: 40;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) 14px 6px 14px;
+  z-index: 60;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -339,19 +342,16 @@ body.farmer-portal-body {
    4. PHONE VIEWPORT & SCREEN VIEWS
    ========================================================================== */
 .phone-viewport {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1 0 auto;
+  height: auto;
+  overflow: visible;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 64px; /* clearance for bottom nav */
+  display: block;
+  padding-bottom: calc(132px + env(safe-area-inset-bottom, 0px)); /* generous clearance for fixed bottom nav + voice FAB */
 }
 
 .screen-view {
   display: none;
-  flex: 1;
   padding: 14px;
   animation: fadeIn 0.2s ease-in-out;
 }
@@ -1011,6 +1011,8 @@ body.farmer-portal-body {
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
   padding: 4px 0;
   scrollbar-width: none;
 }
@@ -2149,18 +2151,22 @@ body.farmer-portal-body {
    12. PHONE BOTTOM NAVIGATION
    ========================================================================== */
 .phone-bottom-nav {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
+  min-height: 62px;
+  height: auto;
   background: #ffffff;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #cbd5e1;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  z-index: 50;
-  padding: 0 4px;
+  z-index: 70;
+  padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px)) 4px;
 }
 
 .nav-item {
@@ -2461,21 +2467,22 @@ body.farmer-portal-body {
 /* ==========================================================================
    14. RESPONSIVE MOBILE VIEWPORT (100% PHONE FRAME ON ACTUAL MOBILE SCREENS)
    ========================================================================== */
-@media (max-width: 500px) {
+@media (max-width: 599px) {
   body.farmer-portal-body {
     padding: 0;
-    background: #000;
+    background: #f8fafc;
   }
 
   .mobile-app-stage {
     max-width: 100%;
-    height: 100vh;
-    height: 100dvh;
+    min-height: 100dvh;
+    height: auto;
   }
 
   .device-mockup {
     max-width: 100%;
-    height: 100%;
+    min-height: 100dvh;
+    height: auto;
     border-radius: 0;
     padding: 0;
     box-shadow: none;
@@ -2488,6 +2495,8 @@ body.farmer-portal-body {
 
   .phone-screen {
     border-radius: 0;
+    height: auto;
+    overflow: visible;
   }
 }
 
@@ -3561,27 +3570,35 @@ body.farmer-portal-body {
 
 /* Clinic Sub Navigation Tabs */
 .clinic-sub-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 6px;
   background: #f1f5f9;
-  padding: 4px;
+  padding: 5px;
   border-radius: 12px;
   margin-bottom: 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  scrollbar-width: none;
+}
+
+.clinic-sub-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .clinic-tab-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
   background: transparent;
   border: none;
   border-radius: 9px;
-  padding: 8px 4px;
+  padding: 8px 10px;
   font-family: var(--font-main);
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 700;
   color: #64748b;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
   transition: all 0.2s ease;
@@ -4275,6 +4292,8 @@ body.farmer-portal-body {
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
   padding-bottom: 2px;
   scrollbar-width: none;
 }
@@ -4475,6 +4494,8 @@ body.farmer-portal-body {
    PURE GUIDANCE TRUST BAR, 22-LANGUAGE AUDIO PICKER & VOICE COMPANION
    ========================================================================== */
 .farmer-trust-access-bar {
+  position: sticky;
+  top: 56px;
   flex-shrink: 0;
   background: #f0fdf4;
   border-bottom: 1px solid #bbf7d0;
@@ -4484,7 +4505,7 @@ body.farmer-portal-body {
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
-  z-index: 35;
+  z-index: 55;
 }
 
 .zero-sell-pill {
@@ -4582,8 +4603,8 @@ body.farmer-portal-body {
 
 .floating-voice-btn {
   position: fixed;
-  right: 14px;
-  bottom: 74px;
+  right: max(12px, calc(50vw - 248px));
+  bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   z-index: 80;
   background: linear-gradient(135deg, #15803d, #16a34a);
   color: #ffffff;

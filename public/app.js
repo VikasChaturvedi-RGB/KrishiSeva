@@ -2717,6 +2717,11 @@ function switchView(viewId, pushHistory = true) {
     target.classList.add('active');
     const viewport = document.getElementById('phoneViewport') || document.querySelector('.phone-screen');
     if (viewport) viewport.scrollTop = 0;
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    } catch (e) {}
   }
 
   // Update top header Back & Home icons

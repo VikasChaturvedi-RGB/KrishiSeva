@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -130,12 +132,24 @@ fun KrishiFarmerB2CScreen(
         modifier = Modifier.fillMaxSize(),
         factory = { ctx ->
             WebView(ctx).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                isVerticalScrollBarEnabled = true
+                isHorizontalScrollBarEnabled = false
+                overScrollMode = View.OVER_SCROLL_IF_CONTENT_SCROLLS
+
                 settings.apply {
                     javaScriptEnabled = true
                     domStorageEnabled = true
                     databaseEnabled = true
                     mediaPlaybackRequiresUserGesture = false
                     allowFileAccess = true
+                    builtInZoomControls = true
+                    displayZoomControls = false
+                    useWideViewPort = true
+                    loadWithOverviewMode = true
                     cacheMode = WebSettings.LOAD_DEFAULT
                 }
 
