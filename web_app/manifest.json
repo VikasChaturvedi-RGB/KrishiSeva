@@ -1,16 +1,16 @@
 {
-  "name": "AgriScan AI - कृषि स्वास्थ्य सहायक",
-  "short_name": "AgriScan AI",
-  "description": "AI-Native Plant Pathology, Nutrition-First Agronomic Advisory & Offline Diagnostic System for Indian Farmers",
+  "name": "कृषि सहायक (Krishi Sahayak) — निःशुल्क किसान मार्गदर्शक",
+  "short_name": "कृषि सहायक",
+  "description": "100% Free, Non-Commercial Multilingual Crop Health, Soil, Weather, DIY Bio-Remedies & Mandi Guidance App for Indian Farmers (22 Languages, Offline-First)",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0a130e",
-  "theme_color": "#1b7340",
+  "background_color": "#f0fdf4",
+  "theme_color": "#14532d",
   "lang": "hi",
-  "dir": "ltr",
-  "categories": ["agriculture", "productivity", "utilities", "education"],
+  "dir": "auto",
+  "categories": ["agriculture", "education", "utilities"],
   "icons": [
     {
       "src": "icons/icon-192.svg",
@@ -27,41 +27,32 @@
   ],
   "shortcuts": [
     {
-      "name": "Scan Crop Leaf (पत्ती स्कैन)",
-      "short_name": "Scan Leaf",
-      "description": "Open camera for instant AI crop disease & nutrition diagnosis",
+      "name": "पत्ती जांच (Scan Crop Leaf)",
+      "short_name": "पत्ती जांच",
+      "description": "निःशुल्क AI फसल रोग व पोषण जांच",
       "url": "./index.html#scan",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Soil Health Card (मृदा स्वास्थ्य)",
-      "short_name": "Soil Health",
-      "description": "View Soil nutrient parameters and mineral deficiencies",
-      "url": "./index.html#soil",
+      "name": "घरेलू नुस्खे व खाद परख (DIY & Purity)",
+      "short_name": "घरेलू नुस्खे",
+      "description": "जीवामृत/नीमास्त्र विधि एवं नकली डीएपी-यूरिया जांच",
+      "url": "./index.html#diy",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Prescription Slip (पोषण पर्चा)",
-      "short_name": "Prescription",
-      "description": "View Nutrition-First 3-step prescription & dosage calculator",
-      "url": "./index.html#rx",
+      "name": "बोलो मित्र (Voice Companion)",
+      "short_name": "बोलो मित्र",
+      "description": "अपनी भाषा में बोलकर खेती सलाह सुनें",
+      "url": "./index.html#mitra",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
     },
     {
-      "name": "Agri-Clinic POS Mode (क्लिनिक)",
-      "short_name": "Agri-Clinic",
-      "description": "Retailer mode for prescription verification and batch dispensing",
-      "url": "./index.html#clinic",
+      "name": "मंडी मार्गदर्शन (Mandi & MSP Guide)",
+      "short_name": "मंडी भाव",
+      "description": "नजदीकी मंडी शुद्ध प्राप्ति व MSP तुलना",
+      "url": "./index.html#mandi",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icons/icon-512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "form_factor": "narrow",
-      "label": "AgriScan AI Mobile Diagnosis View"
     }
   ]
 }

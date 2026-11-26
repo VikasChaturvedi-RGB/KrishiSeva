@@ -1,0 +1,9 @@
+node_modules
+backend/node_modules
+backend/dist
+backend/data/*.db-wal
+backend/data/*.db-shm
+.git
+.DS_Store
+android_app/build
+android_app/.gradle

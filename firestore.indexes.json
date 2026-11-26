@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "community_outbreaks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

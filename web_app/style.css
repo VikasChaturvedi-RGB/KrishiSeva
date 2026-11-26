@@ -41,101 +41,77 @@
 
 body.farmer-portal-body {
   font-family: var(--font-main);
-  background: #0f172a;
-  background-image: radial-gradient(circle at 50% 30%, #1e293b 0%, #0f172a 100%);
+  background: linear-gradient(160deg, #ecfdf5 0%, #dcfce7 50%, #f1f5f9 100%);
   color: var(--text-dark);
   min-height: 100vh;
   min-height: 100dvh;
+  margin: 0;
+  padding: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
   overflow-x: hidden;
-  padding: 16px;
 }
 
-/* Utilities */
-.hidden {
-  display: none !important;
-}
-
+.hidden { display: none !important; }
 .text-green { color: #15803d !important; }
 .text-red { color: #dc2626 !important; }
 .text-amber { color: #d97706 !important; }
 .text-harvest { color: #f59e0b !important; }
 .text-xs { font-size: 11px !important; }
 
-/* ==========================================================================
-   1. MOBILE APP STAGE & PHONE CONTAINER (FARMER FOCAL VIEWPORT)
-   ========================================================================== */
+/* Full-Bleed Mobile App Container (100% Viewport on Android/Mobile, Clean Card Shell on Desktop) */
 .mobile-app-stage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
-  max-width: 440px;
+  max-width: 520px;
+  min-height: 100dvh;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .device-mockup {
   width: 100%;
-  max-width: 412px;
-  height: 844px;
-  max-height: 94vh;
-  background: #000000;
-  border-radius: 46px;
-  padding: 12px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 3px #334155, 0 0 40px rgba(21, 128, 61, 0.25);
-  position: relative;
+  flex: 1;
+  min-height: 100dvh;
+  background: #f8fafc;
   display: flex;
   flex-direction: column;
+  position: relative;
+  box-shadow: 0 12px 42px rgba(20, 83, 45, 0.14);
 }
 
-/* Speaker Notch */
-.phone-notch {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 24px;
-  background: #000000;
-  border-radius: 14px;
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+@media (min-width: 600px) {
+  body.farmer-portal-body {
+    padding: 12px;
+  }
+  .mobile-app-stage {
+    min-height: calc(100dvh - 24px);
+  }
+  .device-mockup {
+    min-height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px);
+    border-radius: 24px;
+    border: 2px solid #bbf7d0;
+    overflow: hidden;
+  }
 }
 
-.speaker {
-  width: 42px;
-  height: 4px;
-  background: #222222;
-  border-radius: 2px;
-}
-
-.camera-lens {
-  width: 9px;
-  height: 9px;
-  background: #111e2e;
-  border-radius: 50%;
-  border: 1.5px solid #334155;
-}
-
-/* Phone Screen */
 .phone-screen {
   flex: 1;
   background: #f8fafc;
-  border-radius: 36px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 100dvh;
 }
 
-/* ==========================================================================
-   2. PHONE HEADER (Navigation & Localization)
-   ========================================================================== */
+@media (min-width: 600px) {
+  .phone-screen {
+    height: calc(100dvh - 28px);
+  }
+}
+
 .phone-header {
   height: 56px;
   background: var(--primary-green);
@@ -144,7 +120,7 @@ body.farmer-portal-body {
   align-items: center;
   justify-content: space-between;
   padding: 0 14px;
-  padding-top: 10px;
+  padding-top: env(safe-area-inset-top, 0px);
   z-index: 40;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -4485,3 +4461,176 @@ body.farmer-portal-body {
 
 
 
+
+
+/* ==========================================================================
+   PURE GUIDANCE TRUST BAR, 22-LANGUAGE AUDIO PICKER & VOICE COMPANION
+   ========================================================================== */
+.farmer-trust-access-bar {
+  background: #f0fdf4;
+  border-bottom: 1px solid #bbf7d0;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  z-index: 35;
+}
+
+.zero-sell-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #14532d;
+}
+
+.zero-sell-pill i {
+  color: #16a34a;
+}
+
+.access-quick-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.acc-pill-btn {
+  border: 1px solid #86efac;
+  background: #ffffff;
+  color: #14532d;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+}
+
+.acc-pill-btn:active {
+  background: #dcfce7;
+}
+
+#langGrid22 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 62vh;
+  overflow-y: auto;
+  padding-bottom: 12px;
+}
+
+#langGrid22 .lang-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 10px 10px;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.lang-opt-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lang-audio-preview-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.card-listen-chip {
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  color: #14532d;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.floating-voice-btn {
+  position: fixed;
+  right: 14px;
+  bottom: 74px;
+  z-index: 80;
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  color: #ffffff;
+  border: 2px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 10px 15px;
+  font-size: 12.5px;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(21, 128, 61, 0.38);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+[dir="rtl"] .header-left,
+[dir="rtl"] .farmer-trust-access-bar,
+[dir="rtl"] .prod-card-top {
+  direction: rtl;
+}
+
+.b2c-my-crops-strip {
+  background: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(20, 83, 45, 0.05);
+}
+
+.b2c-crop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.b2c-crop-pill {
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 9px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.b2c-crop-pill.active {
+  border-color: #16a34a;
+  background: #dcfce7;
+  color: #14532d;
+}

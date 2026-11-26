@@ -1,0 +1,37 @@
+{
+  "packageId": "in.gov.krishisahayak.guide",
+  "host": "krishi-sahayak-free.web.app",
+  "name": "कृषि सहायक (Krishi Sahayak)",
+  "launcherName": "कृषि सहायक",
+  "display": "standalone",
+  "themeColor": "#14532D",
+  "navigationColor": "#14532D",
+  "backgroundColor": "#F0FDF4",
+  "enableNotifications": true,
+  "startUrl": "/index.html",
+  "iconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
+  "maskableIconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
+  "appVersionName": "2.0.0",
+  "appVersionCode": 2,
+  "shortcuts": [
+    {
+      "name": "पत्ती जांच (Leaf Scan)",
+      "shortName": "पत्ती जांच",
+      "url": "/index.html#scan"
+    },
+    {
+      "name": "घरेलू नुस्खे व खाद परख",
+      "shortName": "घरेलू नुस्खे",
+      "url": "/index.html#diy"
+    },
+    {
+      "name": "बोलो मित्र (Voice AI)",
+      "shortName": "बोलो मित्र",
+      "url": "/index.html#mitra"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "fallbackType": "webview",
+  "enableSiteSettingsShortcut": true,
+  "orientation": "portrait"
+}

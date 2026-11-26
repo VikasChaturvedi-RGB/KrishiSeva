@@ -7,8 +7,8 @@ let currentLanguage = 'hi';
 let currentCrop = 'SOYBEAN';
 let currentAcreage = 2.0;
 let isOtpSent = false;
-let authToken = null;
-let currentUser = null;
+let authToken = 'google-free-anon-session';
+let currentUser = { name: 'रामेश्वर पाटीदार', mobileNumber: 'निःशुल्क किसान प्रोफाइल', location: 'मध्य प्रदेश • 3.5 एकड़', crop: 'SOYBEAN' };
 let pendingProtectedView = null;
 let currentDiagnosisData = null;
 let isSpeaking = false;
@@ -2601,20 +2601,42 @@ function syncOfflineDiagnoses() {
 // 3. Application Lifecycle Initialization
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+  if (typeof window.hydrate22Localizations === 'function') {
+    window.hydrate22Localizations();
+  }
   initPWA();
   renderSampleJsonLog();
   startSlaTimer();
+
   const savedLang = localStorage.getItem('agriscan_language') || 'hi';
   currentLanguage = savedLang;
   window.currentLanguage = savedLang;
-  
-  // Highlight active button in language modal
-  document.querySelectorAll('.lang-option').forEach(btn => btn.classList.remove('active'));
-  const targetOption = document.querySelector(`.lang-option[onclick*="'${savedLang}'"]`);
-  if (targetOption) targetOption.classList.add('active');
+
+  if (window.KRISHI_FONT_SCALE && window.KRISHI_FONT_SCALE !== 1) {
+    document.documentElement.style.fontSize = `${Math.round(window.KRISHI_FONT_SCALE * 100)}%`;
+  }
+
+  if (typeof window.render22LanguageGrid === 'function') {
+    window.render22LanguageGrid();
+  }
+  if (window.KrishiGoogleCloud) {
+    window.KrishiGoogleCloud.init();
+    window.KrishiGoogleCloud.hydrateSavedFarmProfile();
+  }
 
   applyLanguageStrings(savedLang);
+  if (typeof window.renderSelfReliantGuidanceHub === 'function') {
+    window.renderSelfReliantGuidanceHub();
+  }
   loadDiagnosisHistory();
+
+  // Support PWA deep-link shortcuts (#scan, #diy, #mitra, #mandi)
+  const hash = (window.location.hash || '').toLowerCase();
+  if (hash === '#scan') switchView('viewCamera');
+  else if (hash === '#diy') switchView('viewClinic');
+  else if (hash === '#mitra') openEcosystemView('viewMitra', document.getElementById('navMitra'));
+  else if (hash === '#mandi') openEcosystemView('viewMandi', document.getElementById('navMandi'));
+  else switchView('viewHome', false);
 });
 
 // ==========================================
@@ -2624,14 +2646,7 @@ function isUserLoggedIn() {
   return authToken !== null && currentUser !== null;
 }
 
-const PROTECTED_VIEWS = [
-  'viewCamera',          // Crop Doctor / Plant Health Scanner
-  'viewProcessing',      // 4-Stage Physiological Signal Processing
-  'viewQuestionnaire',   // Adaptive Agronomic Questionnaire
-  'viewRecommendation',  // Rx Chart / Nutrition-First Prescription
-  'viewFarm',            // Soil Health Card & Farm Parcel
-  'viewClinic'           // Agri-Clinic Pro / Inventory / Escalations
-];
+const PROTECTED_VIEWS = []; // Zero login wall: 100% open farmer guidance
 
 function getProtectedViewName(viewId) {
   switch (viewId) {
@@ -2986,8 +3001,17 @@ function reRenderActiveScreen() {
       renderDynamicRecommendation(activeDiagnosisReport);
     }
   }
-  // Also always re-render recent diagnoses list on home
+  if (typeof window.renderSelfReliantGuidanceHub === 'function') {
+    window.renderSelfReliantGuidanceHub();
+  }
+  if (typeof window.render22LanguageGrid === 'function') {
+    window.render22LanguageGrid();
+  }
+  // Always re-render recent diagnoses list on home & translate dynamic cards
   renderRecentDiagnosesList();
+  if (typeof window.translateVisibleDynamicCards === 'function') {
+    setTimeout(() => window.translateVisibleDynamicCards(), 50);
+  }
 }
 
 function applyLanguageStrings(langCode) {
@@ -2995,8 +3019,43 @@ function applyLanguageStrings(langCode) {
   currentLanguage = langCode;
   window.currentLanguage = langCode;
 
+  // 22-Language RTL, Accessibility & Non-Commercial Guidance Bindings
+  if (typeof window.hydrate22Localizations === 'function') {
+    window.hydrate22Localizations();
+  }
+  const langMeta = (window.KRISHI_SUPPORTED_LANGUAGES || []).find(x => x.code === langCode);
+  document.documentElement.lang = langCode;
+  document.documentElement.dir = (langMeta && langMeta.rtl) ? 'rtl' : 'ltr';
+
+  if (typeof gp === 'function') {
+    setText('zeroSellPledgeText', gp('zeroSellPledge'));
+    setText('headerListenBtnText', gp('listenBtn'));
+    setText('floatingVoiceLabel', gp('speakAskBtn'));
+    setText('tabClimateRescueText', gp('tabClimateRescue'));
+    setText('btnClinicTabProductsText', gp('tabDiyBio'));
+    setText('btnClinicTabRxText', gp('tabPurityTest'));
+    setText('btnClinicTabKhataText', gp('tabFarmDiary'));
+    setText('btnClinicTabConsultText', gp('tabFreeHelpline'));
+    setText('clinicScreenTitle', gp('guideTitle'));
+    setText('homeTileClinic', gp('tileClinicTitle'));
+    setText('homeTileClinicSub', gp('tileClinicSub'));
+    setText('homeTileKvk', gp('tileKvkTitle'));
+    setText('homeTileKvkSub', gp('tileKvkSub'));
+    setText('logoutBtnText', gp('profileBtn'));
+    setText('authHeadingText', gp('profileScreenTitle'));
+    setText('authSubText', gp('profileScreenSub'));
+    setText('authBtnText', gp('saveProfileBtn'));
+    setText('gradKitBadgeText', gp('rxNoSellBadge'));
+    setText('gradKitTitleText', gp('rxDiyCtaTitle'));
+    setText('gradKitDescText', gp('rxDiyCtaDesc'));
+    setText('gradKitOrderBtnText', gp('rxDiyCtaBtn'));
+    setText('rxOrderBtnText', gp('rxFreeKvkBtn'));
+    const unitKey = (window.KRISHI_UNIT_FACTORS && window.KRISHI_UNIT_FACTORS[window.KRISHI_LAND_UNIT || 'ACRE'])?.key || 'unitAcre';
+    setText('landUnitBtnLabel', gp(unitKey));
+  }
+
   // Header & App Brand
-  setText('phoneCurrentLangText', l.langName);
+  setText('phoneCurrentLangText', (langMeta && langMeta.native) || l.langName);
   setText('screenTitle', l.appName);
   setText('offlineBannerText', l.offlineBanner);
   setText('langSheetTitle', l.langModalTitle);
@@ -4032,7 +4091,7 @@ async function submitQuestionnaire() {
 function updateAcreage(val) {
   currentAcreage = parseFloat(val);
   const acreageValLabel = document.getElementById('acreageValue');
-  if (acreageValLabel) acreageValLabel.innerText = `${currentAcreage.toFixed(1)} एकड़`;
+  if (acreageValLabel) acreageValLabel.innerText = (typeof window.formatLandArea === 'function') ? window.formatLandArea(currentAcreage) : `${currentAcreage.toFixed(1)} एकड़`;
   
   const calcSum = document.getElementById('calcSummary');
   const step1Dose = document.getElementById('step1Dose');
@@ -4061,7 +4120,7 @@ function updateAcreage(val) {
     const totalZinc = Math.round(currentAcreage * 500);
     const totalZsb = (currentAcreage * 1.0).toFixed(1);
     if (calcSum) {
-      calcSum.innerHTML = `कुल पानी: <strong>${totalWater} लीटर</strong> | कुल जिंक सल्फेट: <strong>${totalZinc} ग्राम</strong>`;
+      calcSum.innerHTML = `प्रति 15L पंप: <strong>38g जिंक + 19g चूना</strong> | कुल पानी: <strong>${totalWater}L</strong> | कुल जिंक: <strong>${totalZinc}g</strong>`;
     }
     if (step1Dose) step1Dose.innerText = `${totalZinc}g / ${totalWater}L पानी`;
     if (step2Dose) step2Dose.innerText = `${totalZsb} किग्रा ZSB`;
@@ -4579,7 +4638,7 @@ function renderMandiCards(records, bestMandi) {
             <strong class="text-green">₹${Number(netRealization).toLocaleString('en-IN')}</strong>
           </div>
         </div>
-        <div class="mandi-signal-banner ${signalClass}">
+        <div class="mandi-signal-banner ${signalClass}" data-translatable="true">
           <i class="fa-solid ${isSell ? 'fa-circle-check' : 'fa-clock'}"></i>
           <div><strong>${signalLabel}:</strong> ${adviceText}</div>
         </div>
@@ -4741,7 +4800,7 @@ function renderNpkAndCalendar(data) {
       return `
         <div class="cal-stage-item ${isCurrent ? 'current-stage' : ''}">
           <span class="cal-das-badge">${s.dasRange}</span>
-          <div class="cal-stage-title">${stageTitle}</div>
+          <div class="cal-stage-title" data-translatable="true">${stageTitle}</div>
           ${tasksHtml}
         </div>
       `;
@@ -4830,7 +4889,7 @@ function renderGovernmentSchemes(data) {
             </div>
             <span class="scheme-benefit-badge">${badge}</span>
           </div>
-          <p class="scheme-desc">${desc}</p>
+          <p class="scheme-desc" data-translatable="true">${desc}</p>
           <div class="scheme-footer-row">
             <span class="scheme-docs">📄 आधार, खसरा बी-1, बैंक पासबुक</span>
             <button class="btn-scheme-apply" onclick="applyForScheme('${code}', '${title}', ${benefit})">
@@ -5070,14 +5129,10 @@ function startMitraVoiceRecognition() {
 }
 
 function speakVoiceText(text, lang = currentLanguage) {
-  if (!('speechSynthesis' in window) || !text) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = LANG_VOICE_MAP[lang] || 'hi-IN';
-    utterance.rate = 0.95;
-    window.speechSynthesis.speak(utterance);
-  } catch (e) {}
+  if (typeof window.speakInFarmerLanguage === 'function') {
+    window.speakInFarmerLanguage(text, lang);
+    return;
+  }
 }
 const speakHindiText = speakVoiceText;
 
@@ -5228,7 +5283,7 @@ function renderStateChallengeMatrix(st, bookings) {
 
     <div class="tech-resolution-card">
       <h5><i class="fa-solid fa-microchip text-green"></i> तकनीकी समाधान: ${st.tech_solution_title_hi}</h5>
-      ${steps.map(step => `<div class="tech-step-row">${step}</div>`).join('')}
+      ${steps.map(step => `<div class="tech-step-row" data-translatable="true">${step}</div>`).join('')}
       <div style="margin-top:8px; font-size:11px; color:#166534; font-weight:700;">
         💰 किसान आर्थिक लाभ (ROI): <strong>₹${Number(st.estimated_roi_per_acre_inr).toLocaleString('en-IN')}/एकड़</strong> (3.5 एकड़ कुल बचत: <strong>₹${Number(totalRoi).toLocaleString('en-IN')}</strong>)
       </div>
@@ -5418,30 +5473,9 @@ const OFFLINE_LICENSED_PRODUCTS = [
 
 // 19.1 Load Agri Graduate Hub Main Entry Point
 async function loadAgriGraduateClinicHub() {
-  try {
-    const res = await fetch(`${API_BASE}/v1/graduate/profile`);
-    const data = await res.json();
-    currentAgriGraduateProfile = data;
-    renderGraduateProfileBanner(data);
-  } catch (err) {
-    // Offline fallback profile
-    const fallbackProfile = {
-      graduate: {
-        graduate_name: 'Vikas Chaturvedi, B.Sc. (Hons) Agriculture',
-        qualification: 'B.Sc. (Hons) Agriculture, M.Sc. Agronomy & Seed Technology',
-        university: 'Jawaharlal Nehru Krishi Vishwa Vidyalaya (JNKVV), Jabalpur',
-        clinic_name_hi: 'विकास कृषि क्लिनिक एवं अधिकृत बीज-समाधान केंद्र'
-      }
-    };
-    currentAgriGraduateProfile = fallbackProfile;
-    renderGraduateProfileBanner(fallbackProfile);
+  if (typeof window.renderSelfReliantGuidanceHub === 'function') {
+    window.renderSelfReliantGuidanceHub();
   }
-
-  // Load active tab data
-  loadClinicProducts(currentClinicProductCategory);
-  lookupAgriGraduateRx('9876543210');
-  loadFarmerKhataLedger('9876543210');
-  loadRecentConsultationBookings();
 }
 
 function renderGraduateProfileBanner(profileData) {
@@ -5669,70 +5703,10 @@ async function lookupAgriGraduateRx(mobileOrRxNo) {
 
 // 19.7 Convert Active Diagnosis to Written Agri-Rx and Prefilled Cart (1-Click Auto-Converter)
 async function convertActiveDiagnosisToRxAndCart() {
-  const diagnosisName = currentDiagnosisResponse?.primaryDiagnosis?.diseaseNameLocalized || 'सोयाबीन पीला मोजेक वायरस (YMV) एवं तीव्र जिंक-आयरन कमी';
-  const cropCode = selectedCropCode || 'SOYBEAN';
-  const acreage = 3.5;
-
-  try {
-    const res = await fetch(`${API_BASE}/v1/graduate/rx-to-cart`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        diagnosisId: 'diag-demo-01',
-        diseaseName: diagnosisName,
-        cropName: cropCode,
-        acreage: acreage,
-        farmerName: 'रमेश पटेल (Ramesh Patel)',
-        mobileNumber: '9876543210',
-        village: 'मुल्लापुरा, बड़नगर, उज्जैन'
-      })
-    });
-    const data = await res.json();
-    if (data && data.prescription) {
-      lastActivePrescriptionData = data.prescription;
-      alert(`🌿 अधिकृत कृषि स्नातक डॉक्टर पर्चा तैयार!\n\nपर्चा नं: ${data.prescription.prescription_no}\nरोग: ${diagnosisName}\n\nआपको अधिकृत क्लिनिक एवं बिलिंग स्क्रीन पर ले जाया जा रहा है...`);
-      switchNav('viewClinic', null);
-      switchClinicSubTab('rx');
-      lookupAgriGraduateRx();
-      return;
-    }
-  } catch (err) {
-    // Offline simulated conversion
+  switchView('viewClinic');
+  if (typeof window.renderSelfReliantGuidanceHub === 'function') {
+    window.renderSelfReliantGuidanceHub();
   }
-
-  lastActivePrescriptionData = {
-    prescription_no: `AGRI-RX-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-    farmer_name: 'रमेश पटेल (Ramesh Patel)',
-    mobile_number: '9876543210',
-    village: 'मुल्लापुरा, बड़नगर, उज्जैन',
-    crop_name: cropCode,
-    acreage: acreage,
-    primary_diagnosis_hi: diagnosisName,
-    doctor_notes_hi: 'दिन की तेज धूप में छिड़काव न करें। सुबह 07:00 से 10:00 बजे के बीच सिलिकॉन स्प्रेडर के साथ स्प्रे करें। 7 दिन बाद क्लिनिक में फॉलो-अप रिपोर्ट दें।',
-    graduate_reg_no: 'MANAGE/ACABC/MP-UJ/2022/9481',
-    digital_signature_stamp: 'DIGI-STAMP-JNKVV-AGRI-GRAD-7749',
-    rx_items_json: [
-      {
-        product_code: 'KIT-SOY-YMV-01',
-        product_name: 'सोयाबीन पीला मोजेक डॉक्टर किट (3-इन-1 क्लीनिकल पैक)',
-        quantity: Math.ceil(acreage),
-        dosage_instructions: '1 किट प्रति एकड़ (150-200 लीटर पानी में घोलकर सुबह स्प्रे करें)',
-        rate_inr: 850
-      },
-      {
-        product_code: 'NUT-ZN-BORON-01',
-        product_name: 'चिलेटेड जिंक 12% + बोरॉन 20% कॉम्बो पैक',
-        quantity: 2,
-        dosage_instructions: '500 ग्राम प्रति 200 लीटर पानी (फली भराई से पहले)',
-        rate_inr: 450
-      }
-    ]
-  };
-
-  alert(`🌿 अधिकृत कृषि स्नातक डॉक्टर पर्चा तैयार!\n\nपर्चा नं: ${lastActivePrescriptionData.prescription_no}\nरोग: ${diagnosisName}\n\nआपको अधिकृत क्लिनिक एवं बिलिंग स्क्रीन पर ले जाया जा रहा है...`);
-  switchNav('viewClinic', null);
-  switchClinicSubTab('rx');
-  lookupAgriGraduateRx();
 }
 
 // 19.8 Dispense and Bill Rx Order (Pay-After-Harvest Credit vs. UPI)

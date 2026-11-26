@@ -1,0 +1,23 @@
+# Google Cloud Build -> Cloud Run Always-Free Tier Deployment (us-central1)
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/krishi-free/krishi-sahayak-api:$COMMIT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/krishi-free/krishi-sahayak-api:$COMMIT_SHA']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'krishi-sahayak-api'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/krishi-free/krishi-sahayak-api:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--max-instances=2'
+      - '--cpu=1'
+      - '--memory=512Mi'
+      - '--set-env-vars=GOOGLE_CLOUD_PROJECT=$PROJECT_ID,CLOUD_RUN_REGION=us-central1'
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/krishi-free/krishi-sahayak-api:$COMMIT_SHA'

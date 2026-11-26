@@ -9,6 +9,7 @@ import { DatabaseSeeder } from '../db/seeder';
 import { InventoryRepository, AuditRepository, FarmerActivityLogRepository, DiagnosisRepository } from '../db/repositories';
 import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
 import { LicensedAgriGraduateService } from '../services/agri-graduate/licensedAgriGraduateService';
+import { GoogleFreeServices } from '../services/google-cloud/googleFreeServices';
 import fs from 'fs';
 import path from 'path';
 
@@ -656,19 +657,82 @@ router.post('/community/outbreaks', (req: Request, res: Response) => {
   }
 });
 
-router.post('/assistant/ask', (req: Request, res: Response) => {
+router.post('/assistant/ask', async (req: Request, res: Response) => {
   try {
-    const result = FarmerEcosystemService.askKisanEMitra({
-      query: String(req.body.query || ''),
-      language: req.body.language ? String(req.body.language) : 'hi',
-      crop: req.body.crop ? String(req.body.crop) : undefined,
-      state: req.body.state ? String(req.body.state) : undefined,
-      acreage: req.body.acreage ? Number(req.body.acreage) : undefined
+    const query = String(req.body.query || '');
+    const language = req.body.language ? String(req.body.language) : 'hi';
+    const crop = req.body.crop ? String(req.body.crop) : undefined;
+    const state = req.body.state ? String(req.body.state) : undefined;
+    const acreage = req.body.acreage ? Number(req.body.acreage) : Number(req.body.acres || 3.5);
+
+    const baseResult = FarmerEcosystemService.askKisanEMitra({
+      query,
+      language,
+      crop,
+      state,
+      acreage
     });
-    return res.json(result);
+
+    const langShort = language.split('-')[0].toLowerCase();
+    const fallbackText = langShort === 'en' ? (baseResult.answerEn || baseResult.answerHi) : baseResult.answerHi;
+    const enhanced = await GoogleFreeServices.generateFarmerGuidance({
+      query,
+      language: langShort,
+      crop,
+      state,
+      acreage,
+      fallbackText
+    });
+
+    return res.json({
+      ...baseResult,
+      answerHi: enhanced.answer,
+      answerEn: langShort === 'en' ? enhanced.answer : baseResult.answerEn,
+      ttsSpeechTextHi: enhanced.answer,
+      provider: enhanced.provider,
+      zeroSellingPolicy: true
+    });
   } catch (err: any) {
     return res.status(500).json({ errorCode: 'ASSISTANT_ERROR', message: err.message });
   }
+});
+
+// 8.5b Google Cloud Always-Free Status, Firestore Sync, 22-Lang Translation & Gemini Multimodal Guidance
+router.get('/google-free/status', (_req: Request, res: Response) => {
+  return res.json(GoogleFreeServices.getStatus());
+});
+
+router.post('/google-free/sync-profile', async (req: Request, res: Response) => {
+  const result = await GoogleFreeServices.syncFarmerProfile(req.body || {});
+  return res.json(result);
+});
+
+router.post('/google-free/sync-diary', async (req: Request, res: Response) => {
+  const result = await GoogleFreeServices.syncPrivateDiary(req.body?.uid, req.body?.entries || []);
+  return res.json(result);
+});
+
+router.post('/translate', async (req: Request, res: Response) => {
+  const result = await GoogleFreeServices.translateAgronomicText({
+    text: String(req.body?.text || ''),
+    targetLanguage: String(req.body?.targetLanguage || 'hi'),
+    targetLanguageName: req.body?.targetLanguageName ? String(req.body.targetLanguageName) : undefined
+  });
+  return res.json(result);
+});
+
+router.post('/gemini/guidance', async (req: Request, res: Response) => {
+  const result = await GoogleFreeServices.generateFarmerGuidance({
+    query: String(req.body?.query || ''),
+    language: String(req.body?.language || 'hi'),
+    crop: req.body?.crop,
+    state: req.body?.state,
+    acreage: req.body?.acreage ? Number(req.body.acreage) : undefined,
+    imageBase64: req.body?.imageBase64,
+    mimeType: req.body?.mimeType,
+    fallbackText: String(req.body?.fallbackText || 'संतुलित पोषण एवं घरेलू नीमास्त्र/जीवामृत का प्रयोग करें। नि:शुल्क मदद हेतु 1800-180-1551 पर कॉल करें।')
+  });
+  return res.json(result);
 });
 
 // 8.6 State-Wise Agro-Climatic Challenges & CHC/Drone Tech Intervention Booking
