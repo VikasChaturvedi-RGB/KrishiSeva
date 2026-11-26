@@ -99,7 +99,16 @@ export class GoogleFreeServices {
       region: process.env.CLOUD_RUN_REGION || 'asia-south1',
       services: {
         cloudRun: { tier: 'ALWAYS_FREE_TIER_1_INDIA (asia-south1 Mumbai, 2M req/mo, min-instances=0)', active: true },
-        firebaseHosting: { tier: 'SPARK_ALWAYS_FREE (10GB storage, 10GB/mo CDN)', active: true },
+        firebaseHosting: {
+          tier: 'SPARK_ALWAYS_FREE (10GB storage, 10GB/mo CDN, free .web.app SSL domain)',
+          defaultFreeDomain: `https://${projectId || 'krishi-sahayak-india-free'}.web.app`,
+          active: true
+        },
+        googleAnalytics: {
+          tier: 'GA4_AND_FIREBASE_ANALYTICS_ALWAYS_FREE_UNLIMITED',
+          measurementId: process.env.GA4_MEASUREMENT_ID || null,
+          privacyMode: 'ANONYMIZED_IP_ZERO_PII_ZERO_ADS'
+        },
         firestore: {
           tier: 'ALWAYS_FREE (1 GiB, 50k reads/day, 20k writes/day)',
           firestoreEnabled: Boolean(projectId),

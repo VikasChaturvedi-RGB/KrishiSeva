@@ -71,6 +71,7 @@ jobs:
         env:
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'krishi-sahayak-india-free' }}
           GEMINI_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GA4_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
         run: |
           gcloud run deploy "${CLOUD_RUN_SERVICE}" \
             --source . \
@@ -82,7 +83,7 @@ jobs:
             --max-instances=2 \
             --cpu=1 \
             --memory=512Mi \
-            --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},CLOUD_RUN_REGION=${GCP_REGION},GEMINI_API_KEY=${GEMINI_KEY}"
+            --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},CLOUD_RUN_REGION=${GCP_REGION},GEMINI_API_KEY=${GEMINI_KEY},GA4_MEASUREMENT_ID=${GA4_ID}"
 
       - name: Deploy B2C PWA & Hardened Firestore Rules to Firebase Hosting (Spark Always Free)
         if: steps.check_creds.outputs.configured == 'true'

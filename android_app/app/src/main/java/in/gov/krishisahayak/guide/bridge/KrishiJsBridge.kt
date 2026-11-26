@@ -3,9 +3,13 @@ package `in`.gov.krishisahayak.guide.bridge
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.webkit.JavascriptInterface
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
 import `in`.gov.krishisahayak.guide.mlkit.OnDeviceTranslatorManager
+import org.json.JSONObject
 import java.util.Locale
 
 /**
@@ -68,6 +72,24 @@ class KrishiJsBridge(
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(dialIntent)
+    }
+
+    @JavascriptInterface
+    fun logAnalyticsEvent(eventName: String, paramsJson: String) {
+        try {
+            if (FirebaseApp.getApps(context).isEmpty()) return
+            val bundle = Bundle()
+            val obj = JSONObject(paramsJson)
+            val keys = obj.keys()
+            while (keys.hasNext()) {
+                val k = keys.next()
+                bundle.putString(k, obj.optString(k, ""))
+            }
+            FirebaseAnalytics.getInstance(context.applicationContext)
+                .logEvent(eventName.take(40), bundle)
+        } catch (_: Exception) {
+            // Safe no-op offline or before google-services.json is attached
+        }
     }
 
     fun shutdown() {

@@ -8,6 +8,7 @@ const STATIC_ASSETS = [
   './guidance-modules.js',
   './google-cloud-client.js',
   './b2c-consumer.js',
+  './ga4-analytics.js',
   './app.js',
   './manifest.json',
   './icons/icon-192.svg',
