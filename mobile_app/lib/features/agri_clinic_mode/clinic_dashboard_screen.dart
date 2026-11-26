@@ -1,270 +1,129 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/localization/app_localizations.dart';
-import '../../core/network/api_client.dart';
 
-class ClinicDashboardScreen extends StatefulWidget {
+/// 100% Non-Commercial B2C Self-Reliant Farming, Input Purity Testing & Free Govt Helpline Screen
+/// Replaces the former retailer/clinic mode with pure farmer guidance (Zero Selling).
+class ClinicDashboardScreen extends StatelessWidget {
   final String currentLanguage;
 
   const ClinicDashboardScreen({Key? key, required this.currentLanguage}) : super(key: key);
 
   @override
-  State<ClinicDashboardScreen> createState() => _ClinicDashboardScreenState();
-}
-
-class _ClinicDashboardScreenState extends State<ClinicDashboardScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  List<dynamic> _farmers = [];
-  List<dynamic> _escalations = [];
-  bool _isLoading = true;
-  String _filterQuery = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadClinicData();
-  }
-
-  Future<void> _loadClinicData() async {
-    setState(() => _isLoading = true);
-    try {
-      final fRes = await ApiClient().dio.get('/profile-farm/clinic/farmers');
-      final eRes = await ApiClient().dio.get('/diagnosis/escalation/queue');
-      setState(() {
-        _farmers = fRes.data['farmers'] ?? [];
-        _escalations = eRes.data['items'] ?? [];
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _farmers = [
-          {
-            'farmerId': '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
-            'fullName': 'Ramesh Patel (रमेश पटेल)',
-            'mobileNumber': '9876543210',
-            'village': 'Tarana',
-            'district': 'Ujjain',
-            'totalAcreage': 5.5,
-            'activeCrop': 'Soybean (JS 20-34)'
-          },
-          {
-            'farmerId': '8a1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb55',
-            'fullName': 'Suresh Dhakad (सुरेश धाकड़)',
-            'mobileNumber': '9826012345',
-            'village': 'Mahidpur',
-            'district': 'Ujjain',
-            'totalAcreage': 8.0,
-            'activeCrop': 'Cotton (Bt-II)'
-          }
-        ];
-        _escalations = [
-          {
-            'escalationId': '9ea85f64-5717-4562-b3fc-2c963f66af99',
-            'farmerName': 'Ramesh Patel',
-            'cropName': 'Soybean',
-            'aiTentativePrediction': 'Zinc Deficiency vs Rust (52% ambiguous)',
-            'slaRemainingMinutes': 105,
-            'status': 'PENDING_ASSIGNMENT'
-          }
-        ];
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final lang = widget.currentLanguage;
-    final filteredFarmers = _farmers.where((f) {
-      final name = (f['fullName'] ?? '').toString().toLowerCase();
-      final mobile = (f['mobileNumber'] ?? '').toString();
-      final village = (f['village'] ?? '').toString().toLowerCase();
-      final q = _filterQuery.toLowerCase();
-      return name.contains(q) || mobile.contains(q) || village.contains(q);
-    }).toList();
+    final isEn = currentLanguage == 'en';
+
+    final diyRemedies = [
+      {
+        'title': isEn ? 'Neemastra (Home Pest Shield)' : 'नीमास्त्र (घरेलू कीट रक्षक घोल)',
+        'dose': isEn ? '1.5L / 15L Knapsack Pump • Saves ₹1,350/acre' : '1.5 लीटर / 15L पंप • बचत ₹1,350/एकड़',
+        'desc': isEn
+            ? 'Ferment 5kg crushed Neem leaves + 5L cow urine + 1kg cow dung in 100L water in shade for 48h. Strain & spray against whitefly/aphids.'
+            : '5 किलो कुचली नीम पत्ती + 5L गोमूत्र + 1 किलो गोबर को 100L पानी में छाया में 48 घंटे रखकर छानें व सफेद मक्खी पर शाम को छिड़कें।'
+      },
+      {
+        'title': isEn ? 'Jeevamrut (Soil Carbon Booster)' : 'जीवामृत (मृदा जैविक कार्बन वर्धक)',
+        'dose': isEn ? '200L/acre with irrigation • Saves ₹1,800/acre' : '200L/एकड़ सिंचाई के साथ • बचत ₹1,800/एकड़',
+        'desc': isEn
+            ? 'Mix 10kg cow dung, 10L cow urine, 1.5kg jaggery, 1.5kg pulse flour & handful of bund soil in 180L water for 4–5 days.'
+            : '10 किलो गोबर, 10L गोमूत्र, 1.5 किलो गुड़, 1.5 किलो बेसन व एक मुट्ठी मेड़ की मिट्टी 180L पानी में 4–5 दिन छाया में तैयार करें।'
+      },
+    ];
+
+    final purityTests = [
+      {
+        'title': isEn ? 'DAP Purity Test (Statutory MRP: ₹1,350/50kg)' : 'असली डी.ए.पी. पहचान (सरकारी MRP: ₹1,350/50kg)',
+        'desc': isEn
+            ? 'Rub 5 granules with slaked lime on palm: real DAP emits pungent ammonia smell; swells to double size on hot pan.'
+            : 'हथेली पर 5 दाने चूने के साथ रगड़ने पर तेज अमोनिया गंध आती है और गर्म तवे पर दाने फूलकर दोगुने होते हैं।'
+      },
+      {
+        'title': isEn ? 'Zinc Sulphate Test (Catch MgSO4 Fraud)' : 'असली जिंक सल्फेट जांच (मिलावट पकड़ें)',
+        'desc': isEn
+            ? 'Mix clear DAP water solution with Zinc Sulphate solution: real ZnSO4 immediately curdles into a thick white precipitate.'
+            : 'डीएपी के साफ घोल में मिलाने पर असली जिंक सल्फेट तुरंत गाढ़ा सफेद दही जैसा थक्का बनाता है।'
+      },
+    ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.get('clinicTitle', lang)),
-        backgroundColor: AppColors.soilBrown,
+        title: Text(isEn ? 'DIY Bio-Remedies & Input Purity' : 'घरेलू जैविक नुस्खे व असली खाद परख'),
+        backgroundColor: AppColors.primaryGreen,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
-          : RefreshIndicator(
-              onRefresh: _loadClinicData,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Clinic Header Card
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.soilBrown,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.local_hospital, color: Colors.white, size: 36),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  AppLocalizations.get('clinicTitle', lang),
-                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  AppLocalizations.get('clinicSubtitle', lang),
-                                  style: const TextStyle(color: Colors.white70, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Search Bar
-                    TextField(
-                      controller: _searchController,
-                      onChanged: (v) => setState(() => _filterQuery = v),
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.search, color: AppColors.soilBrown),
-                        hintText: AppLocalizations.get('searchFarmer', lang),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: AppColors.divider),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Escalated SLA Queue Card
-                    if (_escalations.isNotEmpty) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppLocalizations.get('escalatedQueue', lang),
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.red),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${_escalations.length} Active',
-                              style: TextStyle(color: Colors.red.shade900, fontSize: 11, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ..._escalations.map((e) => Card(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(color: Colors.red.shade200),
-                            ),
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                child: Icon(Icons.support_agent, size: 20),
-                              ),
-                              title: Text(e['farmerName'] ?? 'Farmer', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text('${e['cropName']} - ${e['aiTentativePrediction']}'),
-                              trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.timer, color: Colors.red, size: 18),
-                                  Text(
-                                    '${e['slaRemainingMinutes']}m',
-                                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 11),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )),
-                      const SizedBox(height: 16),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGreen,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              isEn
+                  ? '🛡️ 100% Free B2C Farmer Guide • We never sell seeds, fertilizers, or pesticides.'
+                  : '🛡️ 100% निःशुल्क किसान मार्गदर्शक • हम कोई खाद, बीज या दवाई नहीं बेचते।',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            isEn ? '🌿 On-Farm Natural Remedies' : '🌿 घरेलू जैविक समाधान विधि',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ...diyRemedies.map((r) => Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(r['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      const SizedBox(height: 4),
+                      Text(r['dose']!, style: const TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 6),
+                      Text(r['desc']!, style: const TextStyle(fontSize: 12.5)),
                     ],
-
-                    // Registered Farmers List
-                    Text(
-                      '${AppLocalizations.get('activeFarmers', lang)} (${filteredFarmers.length})',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
-                    ),
-                    const SizedBox(height: 8),
-
-                    ...filteredFarmers.map((f) => Card(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(14.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      f['fullName'] ?? 'Farmer',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.lightLeafTint,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        '${f['totalAcreage']} ${AppLocalizations.get('farmAreaAcres', lang)}',
-                                        style: const TextStyle(color: AppColors.primaryGreen, fontSize: 11, fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.phone, size: 14, color: AppColors.textSecondary),
-                                    const SizedBox(width: 4),
-                                    Text('+91 ${f['mobileNumber']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                                    const SizedBox(width: 12),
-                                    const Icon(Icons.location_on, size: 14, color: AppColors.textSecondary),
-                                    const SizedBox(width: 4),
-                                    Text('${f['village']}, ${f['district']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    'Active Crop: ${f['activeCrop']}',
-                                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )),
-                  ],
+                  ),
                 ),
+              )),
+          const SizedBox(height: 12),
+          Text(
+            isEn ? '🧪 2-Minute Home Fertilizer Purity Tests' : '🧪 2-मिनट में नकली खाद पहचानें',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          ...purityTests.map((t) => Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(t['title']!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      const SizedBox(height: 6),
+                      Text(t['desc']!, style: const TextStyle(fontSize: 12.5)),
+                    ],
+                  ),
+                ),
+              )),
+          const SizedBox(height: 12),
+          Card(
+            color: Colors.green.shade50,
+            child: ListTile(
+              leading: const Icon(Icons.phone_in_talk, color: AppColors.primaryGreen),
+              title: Text(
+                isEn ? 'Free Govt Kisan Call Centre: 1800-180-1551' : 'निःशुल्क किसान कॉल सेंटर: 1800-180-1551',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
+              ),
+              subtitle: Text(
+                isEn ? '6 AM – 10 PM • All 22 Indian Languages • ₹0 Fee' : 'सुबह 6 – रात 10 बजे • 22 भारतीय भाषाएं • ₹0 शुल्क',
+                style: const TextStyle(fontSize: 12),
               ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }

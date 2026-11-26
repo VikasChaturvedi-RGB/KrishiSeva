@@ -60,7 +60,8 @@ class RootOrchestrator extends ConsumerStatefulWidget {
 }
 
 class _RootOrchestratorState extends ConsumerState<RootOrchestrator> {
-  bool _isAuthenticated = false;
+  // B2C Zero-Wall Entry: Farmers access guidance immediately without mandatory OTP gate
+  bool _isAuthenticated = true;
 
   @override
   Widget build(BuildContext context) {

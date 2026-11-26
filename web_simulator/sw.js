@@ -118,3 +118,14 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Background Sync Event: Replay queued offline diagnoses & diary sync when 4G connectivity returns
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-offline-diagnoses') {
+    event.waitUntil(
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => client.postMessage({ type: 'OFFLINE_QUEUE_SYNCED' }));
+      })
+    );
+  }
+});

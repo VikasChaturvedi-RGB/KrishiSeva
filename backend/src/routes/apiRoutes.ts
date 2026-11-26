@@ -8,7 +8,6 @@ import { AppDatabase } from '../db/database';
 import { DatabaseSeeder } from '../db/seeder';
 import { InventoryRepository, AuditRepository, FarmerActivityLogRepository, DiagnosisRepository } from '../db/repositories';
 import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
-import { LicensedAgriGraduateService } from '../services/agri-graduate/licensedAgriGraduateService';
 import { GoogleFreeServices } from '../services/google-cloud/googleFreeServices';
 import fs from 'fs';
 import path from 'path';
@@ -766,83 +765,22 @@ router.post('/states/tech-intervention-book', (req: Request, res: Response) => {
 });
 
 // -------------------------------------------------------------
-// 9. LICENSED AGRICULTURE GRADUATE STATUTORY COMMERCE & CLINICAL ADVISORY
+// 9. NON-COMMERCIAL SELF-RELIANT FARMING, INPUT PURITY & FREE GOVT HELPLINES
+//    (Replaces commercial product sales with 100% unbiased B2C farmer guidance)
 // -------------------------------------------------------------
-// 9.1 Statutory Accreditation, Licenses & Digital Stamp Vault
-router.get('/graduate/profile', (_req: Request, res: Response) => {
-  try {
-    const profile = LicensedAgriGraduateService.getGraduateProfileAndLicenses();
-    return res.json(profile);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'GRADUATE_PROFILE_ERROR', message: err.message });
-  }
-});
-
-// 9.2 Certified True-to-Type Seeds, Soil-Health Nutrient Blends & Curative Doctor Kits
-router.get('/graduate/products', (req: Request, res: Response) => {
-  try {
-    const category = req.query.category ? String(req.query.category) : undefined;
-    const cropCode = req.query.crop ? String(req.query.crop) : undefined;
-    const products = LicensedAgriGraduateService.getLicensedProducts(category, cropCode);
-    return res.json({
-      totalCount: products.length,
-      categoryFilter: category || 'ALL',
-      cropFilter: cropCode || 'ALL',
-      products
-    });
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'GRADUATE_PRODUCTS_ERROR', message: err.message });
-  }
-});
-
-// 9.3 Issue Official Agronomist Digital Prescription (Agri-Rx)
-router.post('/graduate/prescriptions', (req: Request, res: Response) => {
-  try {
-    const prescription = LicensedAgriGraduateService.createPrescription(req.body);
-    return res.status(201).json(prescription);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'PRESCRIPTION_CREATE_ERROR', message: err.message });
-  }
-});
-
-// 9.4 Innovative "Diagnosis-to-Dispense" (Rx-to-Cart) Auto-Converter
-router.post('/graduate/rx-to-cart', (req: Request, res: Response) => {
-  try {
-    const result = LicensedAgriGraduateService.convertDiagnosisToRxAndOrder(req.body);
-    return res.status(201).json(result);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'RX_TO_CART_ERROR', message: err.message });
-  }
-});
-
-// 9.5 Direct Order Dispatch with Pay-After-Harvest Credit / UPI
-router.post('/graduate/orders', (req: Request, res: Response) => {
-  try {
-    const order = LicensedAgriGraduateService.createFarmerOrder(req.body);
-    return res.status(201).json(order);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'ORDER_CREATE_ERROR', message: err.message });
-  }
-});
-
-// 9.6 Farmer Bahi-Khata Credit Ledger & Settlement Tracker
-router.get('/graduate/khata/:mobileNumber', (req: Request, res: Response) => {
-  try {
-    const khata = LicensedAgriGraduateService.getFarmerKhataLedger(req.params.mobileNumber);
-    return res.json(khata);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'KHATA_FETCH_ERROR', message: err.message });
-  }
-});
-
-// 9.7 Book Tele-Agronomy or Seasonal Crop Surveillance Contract
-router.post('/graduate/consultations', (req: Request, res: Response) => {
-  try {
-    const booking = LicensedAgriGraduateService.bookAgriDoctorConsultation(req.body);
-    return res.status(201).json(booking);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'CONSULTATION_BOOKING_ERROR', message: err.message });
-  }
+router.get('/guidance/self-reliant', (_req: Request, res: Response) => {
+  return res.json({
+    zeroSellingPolicy: true,
+    pledgeHi: '100% निःशुल्क किसान मार्गदर्शक — हम कोई खाद, बीज या दवाई नहीं बेचते।',
+    freeHelplines: [
+      { name: 'Kisan Call Centre (Govt of India)', phone: '1800-180-1551', languages: 22, feeInr: 0 },
+      { name: 'PMFBY National Crop Insurance Helpline', phone: '14447', feeInr: 0 }
+    ],
+    statutoryMrpReference: [
+      { input: 'Neem-Coated Urea (45 kg bag)', maxRetailPriceInr: 266.5 },
+      { input: 'DAP 18:46:0 (50 kg bag)', maxRetailPriceInr: 1350 }
+    ]
+  });
 });
 
 

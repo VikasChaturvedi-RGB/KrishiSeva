@@ -1,8 +1,6 @@
 name: Publish Free B2C PWA Domain on GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

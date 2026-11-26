@@ -32,4 +32,4 @@ COPY --from=builder /workspace/contracts ./contracts
 
 WORKDIR /app/backend
 EXPOSE 8080
-CMD ["node", "dist/server.js"]
+CMD ["node", "--no-warnings", "dist/server.js"]
