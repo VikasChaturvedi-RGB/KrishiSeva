@@ -8,8 +8,8 @@ set -euo pipefail
 #   2. Firebase Hosting (Spark Free Plan: 10 GB CDN, global SSL, PWA + TWA AssetLinks)
 # ==============================================================================
 
-PROJECT_ID="${1:-${GOOGLE_CLOUD_PROJECT:-krishi-sahayak-free}}"
-REGION="us-central1"
+PROJECT_ID="${1:-${GOOGLE_CLOUD_PROJECT:-krishi-sahayak-india-free}}"
+REGION="asia-south1"
 SERVICE_NAME="krishi-sahayak-api"
 
 echo "🌾 Deploying Krishi Sahayak (100% Free Tier Guardrails) to project: ${PROJECT_ID} (${REGION})"

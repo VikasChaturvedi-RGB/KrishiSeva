@@ -33,7 +33,7 @@
         "source": "/v1/**",
         "run": {
           "serviceId": "krishi-sahayak-api",
-          "region": "us-central1"
+          "region": "asia-south1"
         }
       },
       {

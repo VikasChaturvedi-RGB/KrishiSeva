@@ -1,0 +1,87 @@
+name: Build ML Kit Hybrid Android APK & Play Store AAB
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-android-mlkit:
+    name: Build Signed ML Kit Hybrid APK & AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Krishi Sahayak Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 & Sync 22-Language Offline PWA Assets into Android APK
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Bundle Offline PWA into android_app/app/src/main/assets/pwa
+        run: npm run build
+
+      - name: Inject Optional Firebase google-services.json (if configured in Secrets)
+        env:
+          FIREBASE_GOOGLE_SERVICES_JSON: ${{ secrets.FIREBASE_ANDROID_GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$FIREBASE_GOOGLE_SERVICES_JSON" ]; then
+            echo "$FIREBASE_GOOGLE_SERVICES_JSON" > android_app/app/google-services.json
+            echo "Injected Firebase Android google-services.json"
+          else
+            echo "Building standalone offline-first ML Kit Hybrid APK/AAB (Firebase FCM optional)"
+          fi
+
+      - name: Setup Java JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare Release Keystore (From Secret or Auto-Generated Keystore)
+        working-directory: android_app/app
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 --decode > release-keystore.jks
+          else
+            keytool -genkeypair -v \
+              -keystore release-keystore.jks \
+              -alias krishi_b2c_key \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass krishi2026free -keypass krishi2026free \
+              -dname "CN=Krishi Sahayak B2C, OU=AgriGuide, O=KrishiSahayak, L=Mumbai, S=MH, C=IN"
+          fi
+
+      - name: Setup Gradle 8.10.2
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Compile Signed Release APK & Play Store AAB
+        working-directory: android_app
+        env:
+          KRISHI_KEYSTORE_PATH: ${{ github.workspace }}/android_app/app/release-keystore.jks
+          KRISHI_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'krishi2026free' }}
+          KRISHI_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS || 'krishi_b2c_key' }}
+          KRISHI_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD || 'krishi2026free' }}
+        run: gradle assembleRelease bundleRelease --stacktrace
+
+      - name: Collect APK & AAB Artifacts
+        run: |
+          mkdir -p dist_android
+          cp android_app/app/build/outputs/apk/release/*.apk dist_android/krishi-sahayak-mlkit-release.apk
+          cp android_app/app/build/outputs/bundle/release/*.aab dist_android/krishi-sahayak-mlkit-playstore.aab
+          ls -lh dist_android/
+
+      - name: Upload Ready-to-Install APK & Play Store AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: krishi-sahayak-mlkit-hybrid-apk-and-aab
+          path: dist_android/*
+          retention-days: 90

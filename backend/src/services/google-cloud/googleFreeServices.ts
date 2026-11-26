@@ -96,9 +96,9 @@ export class GoogleFreeServices {
       architecture: 'GOOGLE_SERVICES_FIRST_ALWAYS_FREE',
       zeroSellingPolicy: true,
       projectId,
-      region: process.env.CLOUD_RUN_REGION || 'us-central1',
+      region: process.env.CLOUD_RUN_REGION || 'asia-south1',
       services: {
-        cloudRun: { tier: 'ALWAYS_FREE (2M req/mo, min-instances=0)', active: true },
+        cloudRun: { tier: 'ALWAYS_FREE_TIER_1_INDIA (asia-south1 Mumbai, 2M req/mo, min-instances=0)', active: true },
         firebaseHosting: { tier: 'SPARK_ALWAYS_FREE (10GB storage, 10GB/mo CDN)', active: true },
         firestore: {
           tier: 'ALWAYS_FREE (1 GiB, 50k reads/day, 20k writes/day)',
