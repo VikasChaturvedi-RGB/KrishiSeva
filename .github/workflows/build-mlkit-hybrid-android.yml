@@ -80,11 +80,36 @@ jobs:
           KRISHI_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD || 'krishi2026free' }}
         run: gradle assembleRelease bundleRelease --stacktrace
 
-      - name: Collect APK & AAB Artifacts
+      - name: Collect APK, Play Store AAB, R8 Mapping & TWA AssetLinks Fingerprint
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'krishi2026free' }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS || 'krishi_b2c_key' }}
         run: |
           mkdir -p dist_android
           cp android_app/app/build/outputs/apk/release/*.apk dist_android/krishi-sahayak-mlkit-release.apk
           cp android_app/app/build/outputs/bundle/release/*.aab dist_android/krishi-sahayak-mlkit-playstore.aab
+          if [ -f android_app/app/build/outputs/mapping/release/mapping.txt ]; then
+            cp android_app/app/build/outputs/mapping/release/mapping.txt dist_android/proguard-mapping.txt
+          fi
+          SHA256_FP=$(keytool -list -v -keystore android_app/app/release-keystore.jks -alias "$KEY_ALIAS" -storepass "$KS_PASS" | awk '/SHA256:/{fp=$2} END{print fp}')
+          cat > dist_android/assetlinks.json <<EOF
+          [
+            {
+              "relation": ["delegate_permission/common.handle_all_urls"],
+              "target": {
+                "namespace": "android_app",
+                "package_name": "in.gov.krishisahayak.guide",
+                "sha256_cert_fingerprints": ["${SHA256_FP}"]
+              }
+            }
+          ]
+          EOF
+          {
+            echo "### 📱 Krishi Sahayak Production Android Release Ready"
+            echo "- **Signed APK**: \`krishi-sahayak-mlkit-release.apk\`"
+            echo "- **Play Store Bundle**: \`krishi-sahayak-mlkit-playstore.aab\` (R8 Minified + Resource Shrunk)"
+            echo "- **Keystore SHA-256 Fingerprint (for \`.well-known/assetlinks.json\`)**: \`${SHA256_FP}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
           ls -lh dist_android/
 
       - name: Upload Ready-to-Install APK & Play Store AAB

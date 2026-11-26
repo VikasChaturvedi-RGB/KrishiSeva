@@ -1,7 +1,8 @@
 {
+  "id": "/",
   "name": "कृषि सहायक (Krishi Sahayak) — निःशुल्क किसान मार्गदर्शक",
   "short_name": "कृषि सहायक",
-  "description": "100% Free, Non-Commercial Multilingual Crop Health, Soil, Weather, DIY Bio-Remedies & Mandi Guidance App for Indian Farmers (22 Languages, Offline-First)",
+  "description": "100% Free, Non-Commercial Multilingual Crop Health, Soil, Weather, DIY Bio-Remedies, Input Purity & Mandi Guidance App for Indian Farmers (22 Languages, Offline-First)",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -10,19 +11,38 @@
   "theme_color": "#14532d",
   "lang": "hi",
   "dir": "auto",
+  "prefer_related_applications": false,
   "categories": ["agriculture", "education", "utilities"],
   "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "icons/icon-192.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icons/icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "shortcuts": [
@@ -31,28 +51,28 @@
       "short_name": "पत्ती जांच",
       "description": "निःशुल्क AI फसल रोग व पोषण जांच",
       "url": "./index.html#scan",
-      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "घरेलू नुस्खे व खाद परख (DIY & Purity)",
-      "short_name": "घरेलू नुस्खे",
+      "short_name": "घरेलू व परख",
       "description": "जीवामृत/नीमास्त्र विधि एवं नकली डीएपी-यूरिया जांच",
       "url": "./index.html#diy",
-      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "बोलो मित्र (Voice Companion)",
       "short_name": "बोलो मित्र",
       "description": "अपनी भाषा में बोलकर खेती सलाह सुनें",
       "url": "./index.html#mitra",
-      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "मंडी मार्गदर्शन (Mandi & MSP Guide)",
       "short_name": "मंडी भाव",
       "description": "नजदीकी मंडी शुद्ध प्राप्ति व MSP तुलना",
       "url": "./index.html#mandi",
-      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

@@ -194,6 +194,22 @@ window.KrishiB2C = {
     a.click();
   },
 
+  showToast(message) {
+    let toast = document.getElementById('krishiB2cToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'krishiB2cToast';
+      toast.style.cssText = 'position:fixed;left:50%;bottom:84px;transform:translateX(-50%);max-width:90vw;background:#14532d;color:#fff;padding:10px 16px;border-radius:12px;font-size:12.5px;font-weight:600;z-index:1200;box-shadow:0 8px 24px rgba(0,0,0,0.28);transition:opacity 0.25s ease;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      if (toast) toast.style.opacity = '0';
+    }, 3500);
+  },
+
   deleteAllMyLocalData() {
     const isEn = (window.currentLanguage || 'hi') === 'en';
     const ok = confirm(isEn

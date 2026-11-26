@@ -4,16 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>कृषि सहायक (Krishi Sahayak) — निःशुल्क किसान मार्गदर्शक (22 भाषाएं)</title>
-  <meta name="description" content="AI-Native Plant Pathology & Nutrition-First Agronomic Advisory for Indian Farmers">
+  <meta name="description" content="100% निःशुल्क, निष्पक्ष बहुभाषी किसान मार्गदर्शक (22 भारतीय भाषाएं) — फसल रोग जांच, घरेलू जीवामृत/नीमास्त्र, नकली खाद पहचान, मौसम एवं मंडी मार्गदर्शन।">
   
-  <!-- Progressive Web App (PWA) Meta & Links -->
+  <!-- Progressive Web App (PWA) & OpenGraph / WhatsApp Rich Preview Meta -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#15803d">
+  <meta name="theme-color" content="#14532d">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="AgriScan AI">
-  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <meta name="apple-mobile-web-app-title" content="कृषि सहायक">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="कृषि सहायक (Krishi Sahayak) — 100% निःशुल्क किसान मार्गदर्शक">
+  <meta property="og:description" content="22 भारतीय भाषाओं में बोलकर पत्ती जांच, घरेलू जीवामृत विधि, नकली खाद परख एवं मंडी-MSP मार्गदर्शन — कोई बिक्री या विज्ञापन नहीं।">
+  <meta property="og:image" content="icons/icon-512.png">
 
   <!-- Google Fonts: Plus Jakarta Sans, Inter, Noto Sans for Indian Scripts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -141,9 +147,9 @@
           <!-- In-App PWA Install Banner -->
           <div id="inAppPwaPrompt" class="pwa-install-card">
             <div class="pwa-card-left">
-              <img src="icons/icon-192.svg" alt="AgriScan Icon" class="pwa-card-icon">
+              <img src="icons/icon-192.png" alt="Krishi Sahayak Icon" class="pwa-card-icon">
               <div class="pwa-card-text">
-                <h6 id="pwaCardTitle">AgriScan AI - कृषि सहायक</h6>
+                <h6 id="pwaCardTitle">कृषि सहायक (Krishi Sahayak)</h6>
                 <p id="pwaCardSub">ऑफ़लाइन खेत में बिना इंटरनेट काम करता है</p>
               </div>
             </div>
@@ -263,6 +269,11 @@
                   <button type="button" class="btn btn-outline btn-sm" style="flex:1; font-size:11px; color:#dc2626; border-color:#fca5a5;" onclick="window.KrishiB2C.deleteAllMyLocalData()">
                     <i class="fa-solid fa-trash-can"></i> <span data-translatable="true">डेटा हटाएं</span>
                   </button>
+                </div>
+                <div style="margin-top:10px; text-align:center;">
+                  <a href="privacy.html" style="font-size:11.5px; font-weight:700; color:#15803d; text-decoration:underline;">
+                    <i class="fa-solid fa-file-shield"></i> <span data-translatable="true">गोपनीयता नीति एवं डेटा सुरक्षा (Privacy Policy)</span>
+                  </a>
                 </div>
               </div>
             </div>
@@ -443,7 +454,7 @@
                   <i class="fa-solid fa-house"></i> <span id="camHomeBtnText">होम</span>
                 </button>
                 <span class="sub-header-title" id="camTitleText">फसल पत्ती की जांच</span>
-                <button class="btn-help-pill" onclick="alert('📸 सही फोटो व वीडियो सुझाव:\n1. पत्ती को फ्रेम के बीच में रखें\n2. पर्याप्त रोशनी या धूप में फोटो लें\n3. पीले धब्बे व शिराएं स्पष्ट दिखने चाहिए')">
+                <button class="btn-help-pill" onclick="window.KrishiB2C.showToast('📸 पत्ती को फ्रेम के बीच में साफ धूप/रोशनी में रखें ताकि पीलापन व शिराएं स्पष्ट दिखें।')" title="फोटो लेने के सुझाव">
                   <i class="fa-solid fa-circle-question"></i>
                 </button>
               </div>
@@ -920,12 +931,12 @@
               </div>
 
               <div class="esc-actions">
-                <button class="btn btn-outline btn-block" onclick="alert('कृषि विशेषज्ञ से चैट शुरू हो रही है...')">
-                  <i class="fa-solid fa-comments"></i> <span id="escChatBtn">वैज्ञानिक से चैट करें</span>
+                <button class="btn btn-outline btn-block" onclick="openEcosystemView('viewMitra', null)">
+                  <i class="fa-solid fa-comments"></i> <span id="escChatBtn">ई-मित्र वैज्ञानिक सहायक खोलें</span>
                 </button>
-                <button class="btn btn-primary btn-block" onclick="alert('हेल्पलाइन 1800-180-1551 पर कॉल किया जा रहा है...')">
-                  <i class="fa-solid fa-phone"></i> <span id="escCallBtn">सीधे संपर्क करें</span>
-                </button>
+                <a href="tel:18001801551" class="btn btn-primary btn-block" style="text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px;">
+                  <i class="fa-solid fa-phone"></i> <span id="escCallBtn">निःशुल्क कॉल करें (1800-180-1551)</span>
+                </a>
               </div>
             </div>
           </section>

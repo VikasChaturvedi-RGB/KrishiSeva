@@ -9,10 +9,10 @@
   "backgroundColor": "#F0FDF4",
   "enableNotifications": true,
   "startUrl": "/index.html",
-  "iconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
-  "maskableIconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
-  "appVersionName": "2.0.0",
-  "appVersionCode": 2,
+  "iconUrl": "https://krishi-sahayak-india-free.web.app/icons/icon-512.png",
+  "maskableIconUrl": "https://krishi-sahayak-india-free.web.app/icons/icon-maskable-512.png",
+  "appVersionName": "2.0.0-india-b2c",
+  "appVersionCode": 3,
   "shortcuts": [
     {
       "name": "पत्ती जांच (Leaf Scan)",
@@ -21,7 +21,7 @@
     },
     {
       "name": "घरेलू नुस्खे व खाद परख",
-      "shortName": "घरेलू नुस्खे",
+      "shortName": "घरेलू व परख",
       "url": "/index.html#diy"
     },
     {

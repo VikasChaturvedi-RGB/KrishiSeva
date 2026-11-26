@@ -1,8 +1,9 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-b2c-scroll-v3';
+const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-prod-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './privacy.html',
   './style.css',
   './locales22.js',
   './guidance-modules.js',
@@ -11,6 +12,10 @@ const STATIC_ASSETS = [
   './ga4-analytics.js',
   './app.js',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
+  './icons/apple-touch-icon.png',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
 ];

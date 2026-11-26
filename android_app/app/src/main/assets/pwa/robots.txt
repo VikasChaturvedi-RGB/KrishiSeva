@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Allow: /privacy.html
+Allow: /.well-known/assetlinks.json

@@ -18,7 +18,7 @@ android {
         applicationId = "in.gov.krishisahayak.guide"
         minSdk = 26 // Android 8.0+ (covers >98.5% of Indian Android devices + native Adaptive Icons)
         targetSdk = 35
-        versionCode = 2
+        versionCode = 3
         versionName = "2.0.0-india-b2c"
 
         // Firebase Hosting + Cloud Run (Mumbai asia-south1) endpoint; falls back to bundled offline assets/pwa/
@@ -46,8 +46,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             val relSign = signingConfigs.findByName("releaseConfig")
             signingConfig = if (relSign?.storeFile != null) relSign else signingConfigs.getByName("debug")
             proguardFiles(

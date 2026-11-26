@@ -2,14 +2,18 @@ package `in`.gov.krishisahayak.guide
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.PermissionRequest
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -33,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.webkit.WebViewAssetLoader
 import com.google.androidbrowserhelper.trusted.TwaLauncher
 import `in`.gov.krishisahayak.guide.bridge.KrishiJsBridge
 import `in`.gov.krishisahayak.guide.mlkit.OnDeviceTranslatorManager
@@ -86,7 +91,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * Optional helper to launch pure Chrome Trusted Web Activity (TWA) when verified via Digital Asset Links
+     * Launches pure Chrome Trusted Web Activity (TWA) when verified via Digital Asset Links
      */
     fun launchTrustedWebActivity() {
         val launcher = TwaLauncher(this)
@@ -94,6 +99,8 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        webViewRef?.destroy()
+        webViewRef = null
         jsBridge.shutdown()
         super.onDestroy()
     }
@@ -108,9 +115,17 @@ fun KrishiFarmerB2CScreen(
     val context = LocalContext.current
     val pendingFileCallback = remember { mutableStateOf<ValueCallback<Array<Uri>>?>(null) }
 
+    // Google Play Security Best Practice: Serve bundled offline PWA over virtual HTTPS origin
+    // (https://appassets.androidplatform.net/assets/pwa/index.html) instead of file:// URLs
+    val assetLoader = remember {
+        WebViewAssetLoader.Builder()
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+            .build()
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { /* Non-blocking: app still works via gallery/text/offline even if camera or mic denied */ }
+    ) { /* Non-blocking: app works offline/text/samples even if camera or mic denied */ }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -145,7 +160,9 @@ fun KrishiFarmerB2CScreen(
                     domStorageEnabled = true
                     databaseEnabled = true
                     mediaPlaybackRequiresUserGesture = false
-                    allowFileAccess = true
+                    allowFileAccess = false
+                    allowContentAccess = true
+                    mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
                     builtInZoomControls = true
                     displayZoomControls = false
                     useWideViewPort = true
@@ -154,11 +171,88 @@ fun KrishiFarmerB2CScreen(
                 }
 
                 addJavascriptInterface(jsBridge, "AndroidBridge")
-                webViewClient = WebViewClient()
+
+                webViewClient = object : WebViewClient() {
+                    override fun shouldInterceptRequest(
+                        view: WebView?,
+                        request: WebResourceRequest
+                    ): WebResourceResponse? {
+                        return assetLoader.shouldInterceptRequest(request.url)
+                    }
+
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest
+                    ): Boolean {
+                        val uri = request.url ?: return false
+                        val scheme = uri.scheme?.lowercase() ?: ""
+                        val host = uri.host?.lowercase() ?: ""
+
+                        // 1. Toll-Free Kisan Call Centre (1800-180-1551) & PMFBY (14447) tel: links
+                        if (scheme == "tel") {
+                            try {
+                                ctx.startActivity(
+                                    Intent(Intent.ACTION_DIAL, uri).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                )
+                            } catch (_: Exception) {}
+                            return true
+                        }
+
+                        // 2. External WhatsApp Share / Mailto / SMS / Official Portal Links
+                        if (scheme in listOf("whatsapp", "mailto", "sms", "intent") ||
+                            host == "wa.me" || host == "api.whatsapp.com"
+                        ) {
+                            try {
+                                ctx.startActivity(
+                                    Intent(Intent.ACTION_VIEW, uri).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                )
+                            } catch (_: Exception) {}
+                            return true
+                        }
+
+                        // 3. Keep internal virtual HTTPS assets & verified PWA host inside WebView
+                        if (host == "appassets.androidplatform.net" ||
+                            BuildConfig.PWA_HOST_URL.contains(host)
+                        ) {
+                            return false
+                        }
+
+                        // 4. Open third-party external links safely in system browser
+                        if (scheme == "https" || scheme == "http") {
+                            try {
+                                ctx.startActivity(
+                                    Intent(Intent.ACTION_VIEW, uri).apply {
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                )
+                            } catch (_: Exception) {}
+                            return true
+                        }
+
+                        return false
+                    }
+
+                    override fun onRenderProcessGone(
+                        view: WebView?,
+                        detail: RenderProcessGoneDetail?
+                    ): Boolean {
+                        // Prevent app crash on 2GB RAM budget Android phones if OS reclaims WebView renderer
+                        view?.reload()
+                        return true
+                    }
+                }
 
                 webChromeClient = object : WebChromeClient() {
                     override fun onPermissionRequest(request: PermissionRequest) {
-                        request.grant(request.resources)
+                        val allowed = request.resources.filter {
+                            it == PermissionRequest.RESOURCE_VIDEO_CAPTURE ||
+                                it == PermissionRequest.RESOURCE_AUDIO_CAPTURE
+                        }.toTypedArray()
+                        if (allowed.isNotEmpty()) request.grant(allowed) else request.deny()
                     }
 
                     override fun onShowFileChooser(
@@ -175,8 +269,6 @@ fun KrishiFarmerB2CScreen(
                     }
                 }
 
-                // Offline-First Loading: Prefer bundled local assets in assets/pwa/index.html if packaged,
-                // otherwise load Firebase Hosting URL with WebView offline cache
                 val hasBundledOfflinePwa = try {
                     context.assets.list("pwa")?.contains("index.html") == true
                 } catch (_: Exception) {
@@ -184,7 +276,7 @@ fun KrishiFarmerB2CScreen(
                 }
 
                 if (hasBundledOfflinePwa) {
-                    loadUrl("file:///android_asset/pwa/index.html")
+                    loadUrl("https://appassets.androidplatform.net/assets/pwa/index.html")
                 } else {
                     loadUrl(BuildConfig.PWA_HOST_URL)
                 }
