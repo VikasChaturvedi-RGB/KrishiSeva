@@ -4,11 +4,13 @@ Everything in this repository is pre-configured for **₹0/month Always-Free** o
 
 ---
 
-## 1. Your Free Forever Domains (Zero Annual Fees)
+## 1. Your Domains (mridak.com & Free Backup Domains)
 
-Because old free TLD providers like Freenom (`.tk` / `.ml`) shut down permanently and often got blocked on WhatsApp, **Krishi Sahayak** is set up with **trusted, SSL-secured free-forever domains** that never get flagged when farmers share cards on WhatsApp:
+1. **Primary Global Production Domain**:
+   - **`https://mridak.com`** (and `https://www.mridak.com`)
+   - Fully integrated with Firebase Hosting, TWA Digital Asset Links, and automatic Google SSL.
 
-1. **Google's Official Free `.web.app` & `.firebaseapp.com` Domains (Recommended Primary B2C Domain)**:
+2. **Google's Official Free `.web.app` & `.firebaseapp.com` Domains**:
    - **`https://kris-seva.web.app`** (and `https://kris-seva.firebaseapp.com`)
    - **Cost**: ₹0 forever on Firebase Spark Plan, automatic Google SSL certificate, global CDN, and pre-trusted for **Android Trusted Web Activity (TWA)** App Links.
    - *Tip*: Inside Firebase Hosting, you can also add extra short free `.web.app` site names (e.g. `krishi-sahayak-in.web.app`) under **Hosting -> Add another site**.

@@ -76,6 +76,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mridak.com" />
+                <data android:scheme="https" android:host="www.mridak.com" />
                 <data android:scheme="https" android:host="kris-seva.web.app" />
                 <data android:scheme="https" android:host="kris-seva.firebaseapp.com" />
             </intent-filter>

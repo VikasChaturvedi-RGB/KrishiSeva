@@ -21,11 +21,11 @@ android {
         versionCode = 3
         versionName = "2.0.0-india-b2c"
 
-        // Firebase Hosting + Cloud Run (Mumbai asia-south1) endpoint; falls back to bundled offline assets/pwa/
+        // Primary Domain: mridak.com (Firebase kris-seva); falls back to bundled offline assets/pwa/
         buildConfigField(
             "String",
             "PWA_HOST_URL",
-            "\"https://kris-seva.web.app/index.html\""
+            "\"https://mridak.com/index.html\""
         )
         vectorDrawables {
             useSupportLibrary = true

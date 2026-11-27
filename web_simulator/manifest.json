@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "कृषि सहायक (Krishi Sahayak) — निःशुल्क किसान मार्गदर्शक",
-  "short_name": "कृषि सहायक",
+  "name": "मृदक (Mridak) — कृषि सहायक",
+  "short_name": "मृदक (Mridak)",
   "description": "100% Free, Non-Commercial Multilingual Crop Health, Soil, Weather, DIY Bio-Remedies, Input Purity & Mandi Guidance App for Indian Farmers (22 Languages, Offline-First)",
   "start_url": "./index.html",
   "scope": "./",

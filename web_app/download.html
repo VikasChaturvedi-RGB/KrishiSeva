@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>कृषि सहायक Android App (APK) — सीधे अपने फोन में डाउनलोड करें (100% निःशुल्क)</title>
-  <meta name="description" content="कृषि सहायक (Krishi Sahayak) v2.0.0 Android APK सीधे डाउनलोड करें। 22 भारतीय भाषाओं में फसल रोग जांच, नकली खाद पहचान, जैविक नुस्खे और मंडी भाव। 100% निःशुल्क, शून्य विज्ञापन।">
+  <title>मृदक Android App (APK) — mridak.com | सीधे फोन में डाउनलोड करें (100% निःशुल्क)</title>
+  <meta name="description" content="मृदक (mridak.com) v2.0.0 Android APK सीधे डाउनलोड करें। 22 भारतीय भाषाओं में फसल रोग जांच, नकली खाद पहचान, जैविक नुस्खे और मंडी भाव। 100% निःशुल्क, शून्य विज्ञापन।">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#14532d">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -392,8 +392,8 @@
         <i class="fa-solid fa-shield-halved"></i> 100% सुरक्षित • Signed Android APK
       </div>
 
-      <h1>कृषि सहायक (Krishi Sahayak)</h1>
-      <p class="tagline">22 भारतीय भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक जीवामृत एवं मंडी भाव।</p>
+      <h1>मृदक (Mridak) — कृषि सहायक</h1>
+      <p class="tagline">mridak.com • 22 भारतीय भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक जीवामृत एवं मंडी भाव।</p>
 
       <div class="specs-grid">
         <div class="spec-item">
@@ -486,7 +486,7 @@
 
     <!-- Footer -->
     <footer>
-      <p><strong>कृषि सहायक (Krishi Sahayak)</strong> • राष्ट्रीय B2C किसान मार्गदर्शन पहल</p>
+      <p><strong>मृदक (Mridak.com)</strong> • राष्ट्रीय B2C किसान मार्गदर्शन पहल</p>
       <p style="margin-top: 4px;">
         पैकेज ID: <code>in.gov.krishisahayak.guide</code> • 
         <a href="/privacy.html">गोपनीयता नीति (Privacy)</a> • 
@@ -504,12 +504,14 @@
         const canvas = document.getElementById('downloadQrCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        const downloadUrl = window.location.origin + '/download';
+        const downloadUrl = (window.location.origin && !window.location.origin.includes('localhost'))
+          ? (window.location.origin + '/download')
+          : 'https://mridak.com/download';
 
         // Update WhatsApp Share Link dynamically
         const shareBtn = document.getElementById('whatsappShareBtn');
         if (shareBtn) {
-          const shareText = "🌾 भाई! यह 100% निःशुल्क किसान ऐप (कृषि सहायक) है। इसमें 22 भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक नुस्खे और मंडी भाव मिलते हैं। कोई बिक्री या विज्ञापन नहीं।\n\nअपने फोन में सीधे यहाँ से डाउनलोड करें:\n" + downloadUrl;
+          const shareText = "🌾 भाई! यह 100% निःशुल्क किसान ऐप मृदक (Mridak.com) है। इसमें 22 भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक नुस्खे और मंडी भाव मिलते हैं। कोई बिक्री या विज्ञापन नहीं।\n\nअपने फोन में सीधे यहाँ से डाउनलोड करें:\n" + downloadUrl;
           shareBtn.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
         }
 

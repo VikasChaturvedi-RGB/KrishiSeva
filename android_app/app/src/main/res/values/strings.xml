@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">कृषि सहायक (Krishi Sahayak)</string>
+    <string name="app_name">मृदक (Mridak)</string>
     <string name="asset_statements" translatable="false">[{
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+            \"namespace\": \"web\",
+            \"site\": \"https://mridak.com\"
+        }
+    },
+    {
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
         \"target\": {
             \"namespace\": \"web\",
