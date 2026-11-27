@@ -30,6 +30,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        // Ship ARM phone binaries only (cuts ~50MB of unused x86/x86_64 emulator libs for rural 4G downloads)
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     signingConfigs {

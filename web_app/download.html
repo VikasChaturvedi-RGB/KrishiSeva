@@ -401,23 +401,28 @@
           <strong>v2.0.0</strong>
         </div>
         <div class="spec-item">
-          <small>आकार (Size)</small>
-          <strong>~18 MB</strong>
+          <small>ऑफ़लाइन इंजन</small>
+          <strong>ML Kit AI (22 भाषा)</strong>
         </div>
         <div class="spec-item">
           <small>अनुकूलता</small>
-          <strong>Android 7.0+</strong>
+          <strong>Android 8.0+</strong>
         </div>
       </div>
 
       <!-- Primary Download Button -->
-      <a id="apkDownloadLink" href="/krishi-sahayak.apk" download="krishi-sahayak.apk" class="btn-download-apk">
+      <a id="apkDownloadLink" href="/mridak.apk" class="btn-download-apk">
         <div class="btn-top">
           <i class="fa-brands fa-android fa-xl"></i>
           <span>सीधे APK डाउनलोड करें</span>
         </div>
         <div class="btn-sub">बिना Google Play Store • 1-टैप में सीधा इंस्टॉलेशन</div>
       </a>
+
+      <!-- Direct CDN Mirror Link -->
+      <p style="margin-top: 8px; font-size: 12px; color: #475569;">
+        सीधा मिरर लिंक: <a href="https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk" style="color:#15803d; font-weight:700;">GitHub Release CDN से डाउनलोड करें &rarr;</a>
+      </p>
 
       <!-- Secondary Instant PWA Button -->
       <a href="/index.html" class="btn-pwa-instant">
@@ -475,7 +480,8 @@
       <p>अपने साथी किसान के फोन कैमरे से इस QR कोड को स्कैन कराएं या WhatsApp पर लिंक साझा करें:</p>
 
       <div class="qr-canvas-wrap">
-        <canvas id="downloadQrCanvas" width="200" height="200"></canvas>
+        <canvas id="downloadQrCanvas" width="240" height="240"></canvas>
+        <noscript><img src="icons/qr-download.svg" alt="Scan to download Mridak APK" width="176" height="176"></noscript>
       </div>
 
       <a id="whatsappShareBtn" href="#" target="_blank" class="btn-whatsapp-share">
@@ -496,107 +502,188 @@
 
   </div>
 
-  <!-- Lightweight Standalone QR Code Generator for Canvas -->
+  <!-- ISO/IEC 18004 Reed-Solomon Scannable QR Code Generator -->
   <script>
-    // Lightweight QR Code Generator (TypeNumber=4, ErrorCorrectionLevel=M)
     (function () {
+      function encodeQrMatrix(text) {
+        const bytes = Array.from(new TextEncoder().encode(text));
+        // [version, size, alignCenter, dataCodewords, ecCodewords, ecFormatBits]
+        // ecFormatBits: M = 0 (15% ECC), L = 1 (7% ECC)
+        const SPECS = [
+          [3, 29, 22, 44, 26, 0], // up to 42 bytes (ECC M - 15% error correction)
+          [4, 33, 26, 80, 20, 1]  // up to 78 bytes (ECC L)
+        ];
+        const spec = SPECS.find(function (s) { return bytes.length + 2 <= s[3]; }) || SPECS[1];
+        const size = spec[1], alignCenter = spec[2], dataCount = spec[3], ecCount = spec[4], ecLevelBits = spec[5];
+
+        const bits = [];
+        function pushBits(val, len) {
+          for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1);
+        }
+        pushBits(4, 4); // Byte mode (0100)
+        pushBits(bytes.length, 8);
+        for (let i = 0; i < bytes.length; i++) pushBits(bytes[i], 8);
+        const maxBits = dataCount * 8;
+        for (let i = 0; i < 4 && bits.length < maxBits; i++) bits.push(0);
+        while (bits.length % 8 !== 0) bits.push(0);
+
+        const data = [];
+        for (let i = 0; i < bits.length; i += 8) {
+          let b = 0;
+          for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j];
+          data.push(b);
+        }
+        let padIdx = 0;
+        while (data.length < dataCount) {
+          data.push(padIdx % 2 === 0 ? 0xec : 0x11);
+          padIdx++;
+        }
+
+        // GF(256) with primitive polynomial 0x11d & Reed-Solomon ECC
+        const EXP = new Uint8Array(512);
+        const LOG = new Uint8Array(256);
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+          EXP[i] = x;
+          LOG[x] = i;
+          x <<= 1;
+          if (x & 0x100) x ^= 0x11d;
+        }
+        for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+        function gfMul(a, b) { return (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]]; }
+
+        let gen = [1];
+        for (let i = 0; i < ecCount; i++) {
+          const next = new Array(gen.length + 1).fill(0);
+          for (let j = 0; j < gen.length; j++) {
+            next[j] ^= gen[j];
+            next[j + 1] ^= gfMul(gen[j], EXP[i]);
+          }
+          gen = next;
+        }
+
+        const rem = new Uint8Array(ecCount);
+        for (let i = 0; i < data.length; i++) {
+          const factor = data[i] ^ rem[0];
+          rem.copyWithin(0, 1);
+          rem[ecCount - 1] = 0;
+          if (factor !== 0) {
+            for (let j = 0; j < ecCount; j++) rem[j] ^= gfMul(gen[j + 1], factor);
+          }
+        }
+
+        const all = data.concat(Array.from(rem));
+        const codeBits = [];
+        for (let i = 0; i < all.length; i++) {
+          for (let b = 7; b >= 0; b--) codeBits.push((all[i] >>> b) & 1);
+        }
+        for (let i = 0; i < 7; i++) codeBits.push(0);
+
+        const grid = Array.from({ length: size }, function () { return new Uint8Array(size); });
+        const reserved = Array.from({ length: size }, function () { return new Uint8Array(size); });
+        function setModule(r, c, dark) {
+          if (r < 0 || r >= size || c < 0 || c >= size) return;
+          grid[r][c] = dark ? 1 : 0;
+          reserved[r][c] = 1;
+        }
+        function placeFinder(top, left) {
+          for (let r = -1; r <= 7; r++) {
+            for (let c = -1; c <= 7; c++) {
+              const rr = top + r, cc = left + c;
+              if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+              const inOuter = r >= 0 && r <= 6 && c >= 0 && c <= 6;
+              const onBorder = r === 0 || r === 6 || c === 0 || c === 6;
+              const inInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+              setModule(rr, cc, inOuter && (onBorder || inInner));
+            }
+          }
+        }
+        placeFinder(0, 0);
+        placeFinder(0, size - 7);
+        placeFinder(size - 7, 0);
+
+        for (let r = -2; r <= 2; r++) {
+          for (let c = -2; c <= 2; c++) {
+            setModule(alignCenter + r, alignCenter + c, Math.max(Math.abs(r), Math.abs(c)) !== 1);
+          }
+        }
+        for (let i = 8; i < size - 8; i++) {
+          if (!reserved[6][i]) setModule(6, i, i % 2 === 0);
+          if (!reserved[i][6]) setModule(i, 6, i % 2 === 0);
+        }
+        setModule(size - 8, 8, true);
+        for (let i = 0; i < 9; i++) {
+          reserved[8][i] = 1;
+          reserved[i][8] = 1;
+        }
+        for (let i = 0; i < 8; i++) {
+          reserved[8][size - 1 - i] = 1;
+          reserved[size - 1 - i][8] = 1;
+        }
+
+        let bitIdx = 0, upward = true;
+        for (let right = size - 1; right >= 1; right -= 2) {
+          if (right === 6) right = 5;
+          for (let vert = 0; vert < size; vert++) {
+            const r = upward ? size - 1 - vert : vert;
+            for (let j = 0; j < 2; j++) {
+              const c = right - j;
+              if (!reserved[r][c]) {
+                let dark = bitIdx < codeBits.length ? codeBits[bitIdx++] === 1 : false;
+                if ((r + c) % 2 === 0) dark = !dark;
+                grid[r][c] = dark ? 1 : 0;
+              }
+            }
+          }
+          upward = !upward;
+        }
+
+        const fmtData = (ecLevelBits << 3) | 0;
+        let remFmt = fmtData << 10;
+        for (let i = 14; i >= 10; i--) {
+          if ((remFmt >>> i) & 1) remFmt ^= 0x537 << (i - 10);
+        }
+        const fmtBits = ((fmtData << 10) | remFmt) ^ 0x5412;
+        const tlCoords = [
+          [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8],
+          [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8]
+        ];
+        for (let i = 0; i < 15; i++) grid[tlCoords[i][0]][tlCoords[i][1]] = (fmtBits >>> (14 - i)) & 1;
+        for (let i = 0; i < 7; i++) grid[size - 1 - i][8] = (fmtBits >>> (14 - i)) & 1;
+        for (let i = 7; i < 15; i++) grid[8][size - 15 + i] = (fmtBits >>> (14 - i)) & 1;
+        return grid;
+      }
+
       function generateQrCanvas() {
         const canvas = document.getElementById('downloadQrCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        const downloadUrl = (window.location.origin && !window.location.origin.includes('localhost'))
+        const downloadUrl = (window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1'))
           ? (window.location.origin + '/download')
           : 'https://mridak.com/download';
 
-        // Update WhatsApp Share Link dynamically
         const shareBtn = document.getElementById('whatsappShareBtn');
         if (shareBtn) {
           const shareText = "🌾 भाई! यह 100% निःशुल्क किसान ऐप मृदक (Mridak.com) है। इसमें 22 भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक नुस्खे और मंडी भाव मिलते हैं। कोई बिक्री या विज्ञापन नहीं।\n\nअपने फोन में सीधे यहाँ से डाउनलोड करें:\n" + downloadUrl;
           shareBtn.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
         }
 
-        // Draw crisp modern SVG/Canvas QR pattern with center leaf emblem
-        const size = canvas.width;
+        const grid = encodeQrMatrix(downloadUrl);
+        const modules = grid.length;
+        const quiet = 2;
+        const cell = Math.floor(canvas.width / (modules + quiet * 2));
+        const pad = Math.floor((canvas.width - cell * modules) / 2);
+
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, size, size);
-
-        // Pre-calculated QR matrix for https://kris-seva.web.app/download
-        // Using standard QR-Code matrix drawing with position patterns
-        const modules = 29; // Version 3 QR (29x29)
-        const cellSize = size / (modules + 4);
-        const offset = cellSize * 2;
-
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#14532d';
-
-        function drawFinder(r, c) {
-          ctx.fillRect((c) * cellSize + offset, (r) * cellSize + offset, cellSize * 7, cellSize * 7);
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect((c + 1) * cellSize + offset, (r + 1) * cellSize + offset, cellSize * 5, cellSize * 5);
-          ctx.fillStyle = '#14532d';
-          ctx.fillRect((c + 2) * cellSize + offset, (r + 2) * cellSize + offset, cellSize * 3, cellSize * 3);
-        }
-
-        // 3 Corner Finder Patterns
-        drawFinder(0, 0);
-        drawFinder(0, modules - 7);
-        drawFinder(modules - 7, 0);
-
-        // Alignment pattern
-        const ar = 20, ac = 20;
-        ctx.fillRect(ac * cellSize + offset, ar * cellSize + offset, cellSize * 5, cellSize * 5);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect((ac + 1) * cellSize + offset, (ar + 1) * cellSize + offset, cellSize * 3, cellSize * 3);
-        ctx.fillStyle = '#14532d';
-        ctx.fillRect((ac + 2) * cellSize + offset, (ar + 2) * cellSize + offset, cellSize, cellSize);
-
-        // Timing patterns
-        for (let i = 8; i < modules - 8; i += 2) {
-          ctx.fillRect(i * cellSize + offset, 6 * cellSize + offset, cellSize, cellSize);
-          ctx.fillRect(6 * cellSize + offset, i * cellSize + offset, cellSize, cellSize);
-        }
-
-        // Deterministic Pseudo-data Grid from URL hash to make it a fully formed QR
-        let hash = 0;
-        for (let i = 0; i < downloadUrl.length; i++) {
-          hash = ((hash << 5) - hash) + downloadUrl.charCodeAt(i);
-          hash |= 0;
-        }
-
         for (let r = 0; r < modules; r++) {
           for (let c = 0; c < modules; c++) {
-            // Skip finders & timing
-            if ((r < 8 && c < 8) || (r < 8 && c >= modules - 8) || (r >= modules - 8 && c < 8)) continue;
-            if (r >= 18 && r <= 24 && c >= 18 && c <= 24) continue;
-            if (r === 6 || c === 6) continue;
-
-            // Center emblem protect
-            if (r >= 12 && r <= 16 && c >= 12 && c <= 16) continue;
-
-            const bit = Math.abs(Math.sin((r * 31 + c * 17 + hash)) * 10000) % 2 > 1;
-            if (bit) {
-              ctx.fillRect(c * cellSize + offset, r * cellSize + offset, cellSize - 0.5, cellSize - 0.5);
+            if (grid[r][c]) {
+              ctx.fillRect(pad + c * cell, pad + r * cell, cell, cell);
             }
           }
         }
-
-        // Draw central agricultural leaf badge
-        const center = size / 2;
-        const badgeR = cellSize * 2.5;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(center, center, badgeR + 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#16a34a';
-        ctx.beginPath();
-        ctx.arc(center, center, badgeR, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold ' + Math.round(cellSize * 2.2) + 'px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🌾', center, center + 1);
       }
 
       if (document.readyState === 'loading') {

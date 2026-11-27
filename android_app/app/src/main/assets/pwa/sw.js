@@ -1,8 +1,9 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-prod-v4';
+const CACHE_NAME = 'mridak-krishi-sahayak-pwa-v2026.11-prod-v5';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './download.html',
   './privacy.html',
   './style.css',
   './locales22.js',
@@ -16,6 +17,7 @@ const STATIC_ASSETS = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
+  './icons/qr-download.svg',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
 ];
@@ -72,6 +74,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // Let native browser networking handle binary APK downloads & 302 release redirects directly
+  if (url.pathname.endsWith('.apk')) {
+    return;
+  }
 
   if (url.pathname.startsWith('/v1/')) {
     event.respondWith(

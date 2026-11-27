@@ -48,9 +48,26 @@
         "source": "**/*.apk",
         "headers": [
           { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
-          { "key": "Content-Disposition", "value": "attachment; filename=\"krishi-sahayak.apk\"" },
+          { "key": "Content-Disposition", "value": "attachment; filename=\"mridak-krishi-sahayak.apk\"" },
           { "key": "Cache-Control", "value": "public, max-age=86400" }
         ]
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/krishi-sahayak.apk",
+        "destination": "https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk",
+        "type": 302
+      },
+      {
+        "source": "/mridak.apk",
+        "destination": "https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk",
+        "type": 302
+      },
+      {
+        "source": "/downloads/krishi-sahayak.apk",
+        "destination": "https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk",
+        "type": 302
       }
     ],
     "rewrites": [

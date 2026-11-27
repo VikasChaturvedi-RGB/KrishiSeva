@@ -147,7 +147,7 @@ app.get('/download', (_req, res) => {
   res.sendFile(path.join(webRootPath, 'download.html'));
 });
 
-app.get('/krishi-sahayak.apk', (_req, res) => {
+app.get(['/krishi-sahayak.apk', '/mridak.apk'], (_req, res) => {
   const directApk = path.join(webRootPath, 'krishi-sahayak.apk');
   const downloadsApk = path.join(webRootPath, 'downloads', 'krishi-sahayak.apk');
   if (fs.existsSync(directApk)) {
