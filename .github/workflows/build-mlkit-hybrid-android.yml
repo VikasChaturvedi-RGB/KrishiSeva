@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-android-mlkit:
     name: Build Signed ML Kit Hybrid APK & AAB
@@ -39,8 +42,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Configure Preinstalled Android SDK & Accept Licenses
+        run: |
+          SDK_DIR="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_HOME=$SDK_DIR" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK_DIR" >> "$GITHUB_ENV"
+          echo "sdk.dir=$SDK_DIR" > android_app/local.properties
+          SDKMANAGER=$(find "$SDK_DIR" -name sdkmanager -type f 2>/dev/null | head -n 1 || true)
+          if [ -n "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          fi
 
       - name: Prepare Release Keystore (From Secret or Auto-Generated Keystore)
         working-directory: android_app/app
@@ -72,11 +83,36 @@ jobs:
           KRISHI_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD || 'krishi2026free' }}
         run: gradle assembleRelease bundleRelease --stacktrace
 
-      - name: Collect APK & AAB Artifacts
+      - name: Collect APK, Play Store AAB, R8 Mapping & TWA AssetLinks Fingerprint
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD || 'krishi2026free' }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS || 'krishi_b2c_key' }}
         run: |
           mkdir -p dist_android
           cp android_app/app/build/outputs/apk/release/*.apk dist_android/krishi-sahayak-mlkit-release.apk
           cp android_app/app/build/outputs/bundle/release/*.aab dist_android/krishi-sahayak-mlkit-playstore.aab
+          if [ -f android_app/app/build/outputs/mapping/release/mapping.txt ]; then
+            cp android_app/app/build/outputs/mapping/release/mapping.txt dist_android/proguard-mapping.txt
+          fi
+          SHA256_FP=$(keytool -list -v -keystore android_app/app/release-keystore.jks -alias "$KEY_ALIAS" -storepass "$KS_PASS" | awk '/SHA256:/{fp=$2} END{print fp}')
+          cat > dist_android/assetlinks.json <<EOF
+          [
+            {
+              "relation": ["delegate_permission/common.handle_all_urls"],
+              "target": {
+                "namespace": "android_app",
+                "package_name": "in.gov.krishisahayak.guide",
+                "sha256_cert_fingerprints": ["${SHA256_FP}"]
+              }
+            }
+          ]
+          EOF
+          {
+            echo "### 📱 Krishi Sahayak Production Android Release Ready"
+            echo "- **Signed APK**: \`krishi-sahayak-mlkit-release.apk\`"
+            echo "- **Play Store Bundle**: \`krishi-sahayak-mlkit-playstore.aab\` (R8 Minified + Resource Shrunk)"
+            echo "- **Keystore SHA-256 Fingerprint (for \`.well-known/assetlinks.json\`)**: \`${SHA256_FP}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
           ls -lh dist_android/
 
       - name: Upload Ready-to-Install APK & Play Store AAB
@@ -85,3 +121,35 @@ jobs:
           name: krishi-sahayak-mlkit-hybrid-apk-and-aab
           path: dist_android/*
           retention-days: 90
+
+      - name: Create or Update GitHub Release with Direct APK Download
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v2.0.0
+          name: "कृषि सहायक v2.0.0 (Krishi Sahayak B2C Production Release)"
+          body: |
+            ## 📱 कृषि सहायक (Krishi Sahayak) v2.0.0 — Production Android Release
+            100% निःशुल्क किसान मार्गदर्शक (22 भारतीय भाषाएं) — फसल रोग जांच, नकली खाद पहचान, जैविक जीवामृत, मंडी भाव।
+
+            ### 📥 Direct APK Download Link:
+            - **[krishi-sahayak-mlkit-release.apk](https://github.com/${{ github.repository }}/releases/download/v2.0.0/krishi-sahayak-mlkit-release.apk)** (~18 MB, Signed, Android 7.0+)
+            - **Play Store AAB**: `krishi-sahayak-mlkit-playstore.aab`
+          files: |
+            dist_android/krishi-sahayak-mlkit-release.apk
+            dist_android/krishi-sahayak-mlkit-playstore.aab
+            dist_android/assetlinks.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy Direct APK & PWA to Firebase Hosting (if GCP_SA_KEY is configured)
+        if: github.ref == 'refs/heads/main' && env.GCP_SA_KEY != ''
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'kris-seva' }}
+        run: |
+          cp dist_android/assetlinks.json web_app/.well-known/assetlinks.json
+          echo "$GCP_SA_KEY" > /tmp/sa_key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa_key.json
+          npx -y firebase-tools@latest deploy --only hosting --project "$PROJECT_ID"
+          rm -f /tmp/sa_key.json

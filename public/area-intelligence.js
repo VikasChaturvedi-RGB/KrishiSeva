@@ -51,16 +51,33 @@
   }
 
   // ------------------------------------------------------------------ context
+  // The app-wide farmer context uses multi-state region labels such as
+  // "Uttar Pradesh & Bihar" — map that to the first single state we cover.
+  function stateFromRegionLabel(label) {
+    if (!label) return null;
+    var first = String(label).split(/[&,]/)[0].trim();
+    var norm = window.KrishiAreaEngine ? window.KrishiAreaEngine.normaliseStateName(first) : first;
+    var lower = String(norm || '').toLowerCase();
+    for (var i = 0; i < STATES.length; i++) {
+      var k = STATES[i][0].toLowerCase();
+      if (k === lower || (lower && k.indexOf(lower) === 0)) return STATES[i][0];
+    }
+    return 'Other'; // known farmer region we don't cover yet → safe national guidance, not another state's
+  }
+
   function getContext() {
     var profile = readJson('krishi_farmer_profile_v2') || {};
     var ctx = readJson(CTX_KEY) || {};
+    var fc = null;
+    try { fc = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : null; } catch (e) { fc = null; }
     return {
-      state: ctx.state || profile.state || 'Madhya Pradesh',
+      // Explicit choice on the area screens wins, then the farmer's profile/context
+      state: ctx.state || stateFromRegionLabel(fc && fc.state) || stateFromRegionLabel(profile.state) || 'Madhya Pradesh',
       district: ctx.district || '',
       pincode: ctx.pincode || '',
       irrigation: ctx.irrigation || 'LIMITED',
-      crop: ctx.crop || profile.crop || (typeof currentCrop !== 'undefined' ? currentCrop : 'SOYBEAN'),
-      acres: Number(ctx.acres || profile.areaAcres || 1) || 1,
+      crop: ctx.crop || (fc && fc.crop) || profile.crop || (typeof currentCrop !== 'undefined' ? currentCrop : 'SOYBEAN'),
+      acres: Number(ctx.acres || (fc && fc.areaAcres) || profile.areaAcres || 1) || 1,
       month: ctx.month || null
     };
   }

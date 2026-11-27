@@ -879,6 +879,346 @@ export class FarmerActivityLogRepository {
 }
 
 // -------------------------------------------------------------
+// Canonical 8-Zone Indian Agro-Region Resolver (Shared Across Repos & Services)
+// -------------------------------------------------------------
+export interface AgroRegionMeta {
+  stateCode: 'MP' | 'UP_BR' | 'PB_HR' | 'MH' | 'SOUTH' | 'GJ_RJ' | 'EAST' | 'HILLS';
+  uiStateLabelEn: string;
+  uiStateLabelHi: string;
+  memberStates: string[];
+  hubDistrictEn: string;
+  hubDistrictHi: string;
+  hubMandiEn: string;
+  hubMandiHi: string;
+  defaultPinCode: string;
+  defaultCrop: string;
+  soil: {
+    typeHi: string;
+    typeEn: string;
+    ph: number;
+    n: number;
+    p: number;
+    k: number;
+    zn: number;
+  };
+  weatherDefaults: {
+    tempC: number;
+    humidityPct: number;
+    windSpeedKmh: number;
+    rainProbPct: number;
+    soilMoisturePct: number;
+  };
+  stateScheme: {
+    code: string;
+    badge: string;
+    titleHi: string;
+    titleEn: string;
+    annualBenefitInr: number;
+    descHi: string;
+    descEn: string;
+  };
+}
+
+export const AGRO_REGIONS: Record<AgroRegionMeta['stateCode'], AgroRegionMeta> = {
+  MP: {
+    stateCode: 'MP',
+    uiStateLabelEn: 'Madhya Pradesh',
+    uiStateLabelHi: 'मध्य प्रदेश',
+    memberStates: ['madhya pradesh', 'chhattisgarh', 'mp', 'cg'],
+    hubDistrictEn: 'Indore / Ujjain',
+    hubDistrictHi: 'इंदौर / उज्जैन',
+    hubMandiEn: 'Indore Chhavani APMC e-NAM',
+    hubMandiHi: 'इंदौर छावनी APMC मंडी',
+    defaultPinCode: '456001',
+    defaultCrop: 'SOYBEAN',
+    soil: {
+      typeHi: 'काली चिकनी मिट्टी (Deep Black Vertisol)',
+      typeEn: 'Deep Black Vertisol',
+      ph: 7.7,
+      n: 195,
+      p: 22,
+      k: 340,
+      zn: 0.45
+    },
+    weatherDefaults: { tempC: 29, humidityPct: 72, windSpeedKmh: 9.5, rainProbPct: 15, soilMoisturePct: 62 },
+    stateScheme: {
+      code: 'MP_KISAN_KALYAN',
+      badge: 'अतिरिक्त ₹6,000/वर्ष',
+      titleHi: 'मुख्यमंत्री किसान कल्याण योजना (मध्य प्रदेश)',
+      titleEn: 'MP Mukhyamantri Kisan Kalyan Yojana',
+      annualBenefitInr: 6000,
+      descHi: 'मध्य प्रदेश सरकार द्वारा PM-KISAN के अतिरिक्त ₹6,000/वर्ष (कुल ₹12,000/वर्ष DBT) एवं ई-कृषि यंत्र अनुदान।',
+      descEn: 'Additional ₹6,000/year state DBT top-up over PM-KISAN (₹12,000/year total) plus 50% e-Krishi Yantra subsidy.'
+    }
+  },
+  UP_BR: {
+    stateCode: 'UP_BR',
+    uiStateLabelEn: 'Uttar Pradesh & Bihar',
+    uiStateLabelHi: 'उत्तर प्रदेश एवं बिहार',
+    memberStates: ['uttar pradesh & bihar', 'uttar pradesh', 'bihar', 'uttarakhand', 'jharkhand', 'up_br', 'up', 'br', 'u.p.', 'up bihar'],
+    hubDistrictEn: 'Kanpur / Varanasi / Patna',
+    hubDistrictHi: 'कानपुर / वाराणसी / पटना',
+    hubMandiEn: 'Kanpur Chakeri & Patna Musallahpur e-NAM',
+    hubMandiHi: 'कानपुर चकेरी APMC मंडी',
+    defaultPinCode: '226001',
+    defaultCrop: 'WHEAT',
+    soil: {
+      typeHi: 'गंगा-यमुना जलोढ़ दोमट मिट्टी (Gangetic Alluvial Loam)',
+      typeEn: 'Indo-Gangetic Alluvial Loam',
+      ph: 7.3,
+      n: 215,
+      p: 19,
+      k: 265,
+      zn: 0.51
+    },
+    weatherDefaults: { tempC: 28, humidityPct: 68, windSpeedKmh: 8.5, rainProbPct: 12, soilMoisturePct: 65 },
+    stateScheme: {
+      code: 'UP_BR_TUBEWELL_INPUT_SUB',
+      badge: '100% मुफ्त नलकूप बिजली + इनपुट अनुदान',
+      titleHi: 'उ.प्र. निःशुल्क निजी नलकूप बिजली एवं बिहार कृषि इनपुट अनुदान',
+      titleEn: 'UP 100% Free Tubewell Power & Bihar Krishi Input Subsidy',
+      annualBenefitInr: 12000,
+      descHi: 'उ.प्र. में निजी कृषि नलकूपों को 100% निःशुल्क बिजली व पारदर्शी किसान सेवा अनुदान तथा बिहार में कृषि इनपुट सब्सिडी (₹6,800–₹13,500/हेक्टेयर)।',
+      descEn: '100% electricity bill waiver for private farm tubewells in UP plus Bihar Krishi Input Grant (₹6,800–₹13,500/ha).'
+    }
+  },
+  PB_HR: {
+    stateCode: 'PB_HR',
+    uiStateLabelEn: 'Punjab & Haryana',
+    uiStateLabelHi: 'पंजाब एवं हरियाणा',
+    memberStates: ['punjab & haryana', 'punjab', 'haryana', 'delhi', 'chandigarh', 'pb_hr', 'pb', 'hr'],
+    hubDistrictEn: 'Ludhiana / Karnal',
+    hubDistrictHi: 'लुधियाना / करनाल',
+    hubMandiEn: 'Khanna & Karnal Grain Market APMC',
+    hubMandiHi: 'खन्ना एवं करनाल अनाज मंडी',
+    defaultPinCode: '141001',
+    defaultCrop: 'PADDY',
+    soil: {
+      typeHi: 'सिंचित जलोढ़ दोमट मिट्टी (Trans-Gangetic Alluvial)',
+      typeEn: 'Irrigated Alluvial Sandy Loam',
+      ph: 7.9,
+      n: 180,
+      p: 24,
+      k: 290,
+      zn: 0.48
+    },
+    weatherDefaults: { tempC: 27, humidityPct: 64, windSpeedKmh: 10.0, rainProbPct: 10, soilMoisturePct: 68 },
+    stateScheme: {
+      code: 'PB_HR_DSR_MERA_PANI',
+      badge: '₹1,500–₹7,000/एकड़ प्रोत्साहन',
+      titleHi: 'धान सीधी बुवाई (DSR) एवं मेरा पानी-मेरी विरासत प्रोत्साहन',
+      titleEn: 'Punjab DSR ₹1,500/acre & Haryana Mera Pani Meri Virasat',
+      annualBenefitInr: 7000,
+      descHi: 'पंजाब में DSR सीधी बुवाई पर ₹1,500/एकड़, हरियाणा में फसल विविधीकरण पर ₹7,000/एकड़ व पराली प्रबंधन मशीनरी पर 50–80% सब्सिडी।',
+      descEn: '₹1,500/acre DSR incentive in Punjab, ₹7,000/acre crop diversification grant in Haryana, plus 50–80% CRM subsidy.'
+    }
+  },
+  MH: {
+    stateCode: 'MH',
+    uiStateLabelEn: 'Maharashtra',
+    uiStateLabelHi: 'महाराष्ट्र',
+    memberStates: ['maharashtra', 'mh'],
+    hubDistrictEn: 'Akola / Jalgaon / Nashik',
+    hubDistrictHi: 'अकोला / जलगाँव / नाशिक',
+    hubMandiEn: 'Lasalgaon & Akola APMC e-NAM',
+    hubMandiHi: 'अकोला एवं लासलगाँव APMC मंडी',
+    defaultPinCode: '444001',
+    defaultCrop: 'COTTON',
+    soil: {
+      typeHi: 'दक्कन काली बेसाल्ट मिट्टी (Medium-Deep Black Regur)',
+      typeEn: 'Deccan Black Regur Soil',
+      ph: 7.8,
+      n: 190,
+      p: 18,
+      k: 360,
+      zn: 0.46
+    },
+    weatherDefaults: { tempC: 31, humidityPct: 62, windSpeedKmh: 11.0, rainProbPct: 18, soilMoisturePct: 56 },
+    stateScheme: {
+      code: 'MH_NAMO_SHETKARI',
+      badge: 'अतिरिक्त ₹6,000/वर्ष + महाडीबीटी',
+      titleHi: 'नमो शेतकरी महासन्मान निधि एवं मागेल त्याला शेततळे (महाराष्ट्र)',
+      titleEn: 'Maharashtra Namo Shetkari ₹6,000/yr + MahaDBT Drip Subsidy',
+      annualBenefitInr: 6000,
+      descHi: 'महाराष्ट्र सरकार द्वारा PM-KISAN के अतिरिक्त ₹6,000/वर्ष (कुल ₹12,000/वर्ष) तथा ड्रिप व शेततळे (खेत तालाब) पर 80% तक अनुदान।',
+      descEn: 'Additional ₹6,000/year Namo Shetkari DBT plus up to 80% MahaDBT micro-irrigation & farm pond subsidy.'
+    }
+  },
+  SOUTH: {
+    stateCode: 'SOUTH',
+    uiStateLabelEn: 'Andhra, Telangana & Karnataka',
+    uiStateLabelHi: 'आंध्र, तेलंगाना व कर्नाटक',
+    memberStates: ['andhra, telangana & karnataka', 'andhra pradesh', 'telangana', 'karnataka', 'tamil nadu', 'south', 'ap', 'ts', 'ka', 'tn'],
+    hubDistrictEn: 'Guntur / Warangal / Kolar',
+    hubDistrictHi: 'गुंटूर / वारंगल / कोलार',
+    hubMandiEn: 'Guntur & Warangal e-NAM Yard',
+    hubMandiHi: 'गुंटूर एवं वारंगल e-NAM मंडी',
+    defaultPinCode: '522001',
+    defaultCrop: 'CHILLI',
+    soil: {
+      typeHi: 'लाल दोमट एवं काली मिट्टी (Red Alfisol & Vertisol)',
+      typeEn: 'Red Alfisol & Black Cotton Soil',
+      ph: 6.8,
+      n: 210,
+      p: 21,
+      k: 275,
+      zn: 0.52
+    },
+    weatherDefaults: { tempC: 31, humidityPct: 70, windSpeedKmh: 10.5, rainProbPct: 20, soilMoisturePct: 60 },
+    stateScheme: {
+      code: 'SOUTH_RYTHU_BHAROSA',
+      badge: '₹13,500–₹15,000/वर्ष सहायता',
+      titleHi: 'रायथु भरोसा / अन्नदाता सुखीभव एवं कृषि भाग्य योजना',
+      titleEn: 'Rythu Bharosa / Annadata Sukhibhava Investment Support',
+      annualBenefitInr: 13500,
+      descHi: 'आंध्र प्रदेश व तेलंगाना में प्रति वर्ष ₹13,500–₹15,000 कृषि निवेश सहायता एवं कर्नाटक कृषि भाग्य सिंचाई अनुदान।',
+      descEn: '₹13,500–₹15,000/year direct farm investment support in AP/Telangana plus Karnataka Krishi Bhagya irrigation grant.'
+    }
+  },
+  GJ_RJ: {
+    stateCode: 'GJ_RJ',
+    uiStateLabelEn: 'Gujarat & Rajasthan',
+    uiStateLabelHi: 'गुजरात एवं राजस्थान',
+    memberStates: ['gujarat & rajasthan', 'gujarat', 'rajasthan', 'gj_rj', 'gj', 'rj'],
+    hubDistrictEn: 'Rajkot / Unjha / Kota',
+    hubDistrictHi: 'राजकोट / ऊंझा / कोटा',
+    hubMandiEn: 'Rajkot Gondal & Kota Bhamashah APMC',
+    hubMandiHi: 'राजकोट गोंडल एवं कोटा भामाशाह मंडी',
+    defaultPinCode: '360001',
+    defaultCrop: 'COTTON',
+    soil: {
+      typeHi: 'रेतीली दोमट एवं मध्यम काली मिट्टी (Arid Sandy Loam)',
+      typeEn: 'Arid Sandy Loam & Medium Black Soil',
+      ph: 8.0,
+      n: 170,
+      p: 20,
+      k: 310,
+      zn: 0.43
+    },
+    weatherDefaults: { tempC: 32, humidityPct: 52, windSpeedKmh: 11.5, rainProbPct: 10, soilMoisturePct: 50 },
+    stateScheme: {
+      code: 'GJ_RJ_SURYA_TARBANDI',
+      badge: '70% ड्रिप व तारबंदी अनुदान',
+      titleHi: 'किसान सूर्योदय दिन-बिजली (गुजरात) एवं तारबंदी/डिग्गी अनुदान (राजस्थान)',
+      titleEn: 'Gujarat Kisan Suryodaya & Rajasthan Tarbandi/Diggi Subsidy',
+      annualBenefitInr: 15000,
+      descHi: 'गुजरात में दिन में सिंचाई बिजली व GGRC ड्रिप अनुदान तथा राजस्थान में खेत तारबंदी पर ₹48,000 तक सब्सिडी।',
+      descEn: 'Daytime irrigation power & GGRC drip grant in Gujarat plus up to ₹48,000 farm fencing & diggi subsidy in Rajasthan.'
+    }
+  },
+  EAST: {
+    stateCode: 'EAST',
+    uiStateLabelEn: 'West Bengal, Odisha & Assam',
+    uiStateLabelHi: 'बंगाल, ओडिशा व असम',
+    memberStates: ['west bengal, odisha & assam', 'west bengal', 'odisha', 'assam', 'east', 'wb', 'od', 'as'],
+    hubDistrictEn: 'Burdwan / Hooghly / Cuttack',
+    hubDistrictHi: 'बर्दवान / हुगली / कटक',
+    hubMandiEn: 'Burdwan & Cuttack e-NAM Regulated Yard',
+    hubMandiHi: 'बर्दवान एवं कटक e-NAM मंडी',
+    defaultPinCode: '713101',
+    defaultCrop: 'PADDY',
+    soil: {
+      typeHi: 'अम्लीय जलोढ़ एवं लेटराइट मिट्टी (Acidic Alluvial, pH 5.6)',
+      typeEn: 'Humid Acidic Alluvial & Laterite Soil',
+      ph: 5.6,
+      n: 245,
+      p: 15,
+      k: 220,
+      zn: 0.54
+    },
+    weatherDefaults: { tempC: 29, humidityPct: 81, windSpeedKmh: 8.0, rainProbPct: 24, soilMoisturePct: 74 },
+    stateScheme: {
+      code: 'EAST_KRISHAK_KALIA',
+      badge: '₹10,000/वर्ष कृषक बंधु / कालिया',
+      titleHi: 'कृषक बंधु (बंगाल) एवं कालिया / समृद्ध कृषक योजना (ओडिशा)',
+      titleEn: 'Krishak Bandhu (WB) & KALIA / Samrudha Krushak (Odisha)',
+      annualBenefitInr: 10000,
+      descHi: 'पश्चिम बंगाल में ₹10,000/एकड़ वार्षिक सहायता + निःशुल्क शस्य बीमा तथा ओडिशा में धान ₹3,100/क्विंटल बोनस खरीद।',
+      descEn: '₹10,000/acre annual Krishak Bandhu assistance & free crop insurance in WB plus ₹3,100/qtl paddy procurement in Odisha.'
+    }
+  },
+  HILLS: {
+    stateCode: 'HILLS',
+    uiStateLabelEn: 'Kerala & Himachal',
+    uiStateLabelHi: 'केरल एवं हिमाचल प्रदेश',
+    memberStates: ['kerala & himachal', 'kerala', 'himachal pradesh', 'himachal', 'hills', 'kl', 'hp'],
+    hubDistrictEn: 'Shimla / Solan / Wayanad',
+    hubDistrictHi: 'शिमला / सोलन / वायनाड',
+    hubMandiEn: 'Solan Terminal & Thrissur APMC Market',
+    hubMandiHi: 'सोलन एवं त्रिशूर मंडी',
+    defaultPinCode: '173212',
+    defaultCrop: 'TOMATO',
+    soil: {
+      typeHi: 'पर्वतीय ह्यूमस एवं तटीय लेटराइट मिट्टी (Hill Loam & Laterite)',
+      typeEn: 'Mountain Forest Loam & Coastal Laterite',
+      ph: 5.5,
+      n: 280,
+      p: 17,
+      k: 210,
+      zn: 0.56
+    },
+    weatherDefaults: { tempC: 24, humidityPct: 78, windSpeedKmh: 7.5, rainProbPct: 22, soilMoisturePct: 70 },
+    stateScheme: {
+      code: 'HILLS_ANTIHAIL_SUBHIKSHA',
+      badge: '80% एंटी-हेल नेट व बेस प्राइस सुरक्षा',
+      titleHi: 'हिमाचल 80% एंटी-हेल नेट अनुदान एवं केरल सुभिक्षा जैविक मिशन',
+      titleEn: 'Himachal 80% Anti-Hail Net & Kerala Vegetable Base Price Scheme',
+      annualBenefitInr: 18000,
+      descHi: 'हिमाचल में ओलावृष्टि रोधी एंटी-हेल नेट पर 80% सब्सिडी तथा केरल में सब्जियों/केले पर न्यूनतम आधार मूल्य सुरक्षा।',
+      descEn: '80% subsidy on anti-hail nets in Himachal Pradesh plus floor-price protection & organic mission support in Kerala.'
+    }
+  }
+};
+
+export function resolveAgroRegion(stateInput?: string): AgroRegionMeta {
+  if (!stateInput || stateInput === 'ALL') return AGRO_REGIONS.MP;
+  const norm = stateInput.trim().toLowerCase();
+  for (const reg of Object.values(AGRO_REGIONS)) {
+    if (
+      reg.stateCode.toLowerCase() === norm ||
+      reg.uiStateLabelEn.toLowerCase() === norm ||
+      reg.uiStateLabelHi === stateInput.trim() ||
+      reg.memberStates.includes(norm)
+    ) {
+      return reg;
+    }
+  }
+  if (norm.includes('uttar') || norm.includes('bihar') || norm.includes('up') || norm.includes('patna') || norm.includes('lucknow') || norm.includes('kanpur') || norm.includes('varanasi')) {
+    return AGRO_REGIONS.UP_BR;
+  }
+  if (norm.includes('punjab') || norm.includes('haryana')) return AGRO_REGIONS.PB_HR;
+  if (norm.includes('maharashtra')) return AGRO_REGIONS.MH;
+  if (norm.includes('andhra') || norm.includes('telangana') || norm.includes('karnataka') || norm.includes('tamil')) return AGRO_REGIONS.SOUTH;
+  if (norm.includes('gujarat') || norm.includes('rajasthan')) return AGRO_REGIONS.GJ_RJ;
+  if (norm.includes('bengal') || norm.includes('odisha') || norm.includes('assam')) return AGRO_REGIONS.EAST;
+  if (norm.includes('kerala') || norm.includes('himachal')) return AGRO_REGIONS.HILLS;
+  return AGRO_REGIONS.MP;
+}
+
+export function doesRowMatchStateFilter(rowState: string, stateFilter?: string): boolean {
+  if (!stateFilter || stateFilter === 'ALL') return true;
+  const rowNorm = String(rowState || '').trim().toLowerCase();
+  const filterNorm = stateFilter.trim().toLowerCase();
+  if (rowNorm === filterNorm) return true;
+  const reg = resolveAgroRegion(stateFilter);
+  if (
+    reg.stateCode.toLowerCase() === filterNorm ||
+    reg.uiStateLabelEn.toLowerCase() === filterNorm ||
+    reg.memberStates.includes(filterNorm) ||
+    filterNorm.includes('uttar') ||
+    filterNorm.includes('bihar') ||
+    filterNorm.includes('punjab') ||
+    filterNorm.includes('gujarat') ||
+    filterNorm.includes('andhra') ||
+    filterNorm.includes('bengal') ||
+    filterNorm.includes('kerala')
+  ) {
+    return reg.memberStates.includes(rowNorm) || rowNorm === reg.uiStateLabelEn.toLowerCase();
+  }
+  return false;
+}
+
+// -------------------------------------------------------------
 // 7. Mandi Prices, Government Schemes & Community Outbreaks Repositories
 // -------------------------------------------------------------
 export interface MandiPriceRecord {
@@ -906,25 +1246,35 @@ export interface MandiPriceRecord {
 export class MandiPriceRepository {
   static listAll(cropCode?: string, state?: string, search?: string): MandiPriceRecord[] {
     const db = getDb();
-    let sql = 'SELECT * FROM mandi_prices WHERE 1=1';
-    const params: any[] = [];
+    let rows = db.prepare('SELECT * FROM mandi_prices').all() as unknown as MandiPriceRecord[];
 
     if (cropCode && cropCode !== 'ALL') {
-      const normalized = cropCode.replace(/^CROP_/, '').toUpperCase();
-      sql += ' AND (UPPER(crop_code) = ? OR UPPER(crop_code) = ?)';
-      params.push(normalized, `CROP_${normalized}`);
+      const normalized = cropCode.replace(/^CROP_/, '').trim().toUpperCase();
+      rows = rows.filter((r) => {
+        const rc = String(r.crop_code || '').replace(/^CROP_/, '').toUpperCase();
+        return rc === normalized;
+      });
     }
     if (state && state !== 'ALL') {
-      sql += ' AND LOWER(state) = LOWER(?)';
-      params.push(state);
+      rows = rows.filter((r) => doesRowMatchStateFilter(r.state, state));
     }
-    if (search) {
-      const q = `%${search}%`;
-      sql += ' AND (mandi_name LIKE ? OR district LIKE ? OR crop_name_en LIKE ? OR crop_name_hi LIKE ?)';
-      params.push(q, q, q, q);
+    if (search && search.trim()) {
+      const q = search.trim().toLowerCase();
+      rows = rows.filter(
+        (r) =>
+          String(r.mandi_name || '').toLowerCase().includes(q) ||
+          String(r.district || '').toLowerCase().includes(q) ||
+          String(r.state || '').toLowerCase().includes(q) ||
+          String(r.crop_name_en || '').toLowerCase().includes(q) ||
+          String(r.crop_name_hi || '').toLowerCase().includes(q)
+      );
     }
-    sql += ' ORDER BY distance_km ASC, modal_price_qtl DESC';
-    return db.prepare(sql).all(...params) as unknown as MandiPriceRecord[];
+
+    return [...rows].sort((a, b) => {
+      const distDiff = Number(a.distance_km || 0) - Number(b.distance_km || 0);
+      if (distDiff !== 0) return distDiff;
+      return Number(b.modal_price_qtl || 0) - Number(a.modal_price_qtl || 0);
+    });
   }
 
   static upsert(record: MandiPriceRecord): void {
@@ -1024,15 +1374,18 @@ export class SchemeApplicationRepository {
   }
 
   static listByMobileOrAll(mobileNumber?: string): SchemeApplicationRecord[] {
-    const db = getDb();
-    if (mobileNumber) {
-      return db.prepare(`
-        SELECT * FROM scheme_applications
-        WHERE mobile_number = ? OR mobile_number = ?
-        ORDER BY created_at DESC
-      `).all(mobileNumber, mobileNumber.replace(/^\+91/, '')) as unknown as SchemeApplicationRecord[];
+    if (!mobileNumber || !mobileNumber.trim()) {
+      return [];
     }
-    return db.prepare('SELECT * FROM scheme_applications ORDER BY created_at DESC LIMIT 50').all() as unknown as SchemeApplicationRecord[];
+    const db = getDb();
+    const clean = mobileNumber.replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+    const allRows = db.prepare('SELECT * FROM scheme_applications').all() as unknown as SchemeApplicationRecord[];
+    return allRows
+      .filter((r) => {
+        const rm = String(r.mobile_number || '').replace(/\D/g, '').replace(/^91(?=\d{10}$)/, '');
+        return rm && rm === clean;
+      })
+      .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
   }
 }
 
@@ -1059,19 +1412,19 @@ export interface CommunityOutbreakRecord {
 export class CommunityOutbreakRepository {
   static listAll(state?: string, cropCode?: string): CommunityOutbreakRecord[] {
     const db = getDb();
-    let sql = 'SELECT * FROM community_outbreaks WHERE 1=1';
-    const params: any[] = [];
+    let rows = db.prepare('SELECT * FROM community_outbreaks').all() as unknown as CommunityOutbreakRecord[];
     if (state && state !== 'ALL') {
-      sql += ' AND LOWER(state) = LOWER(?)';
-      params.push(state);
+      rows = rows.filter((r) => doesRowMatchStateFilter(r.state, state));
     }
     if (cropCode && cropCode !== 'ALL') {
-      const norm = cropCode.replace(/^CROP_/, '').toUpperCase();
-      sql += ' AND (UPPER(crop_code) = ? OR UPPER(crop_code) = ?)';
-      params.push(norm, `CROP_${norm}`);
+      const norm = cropCode.replace(/^CROP_/, '').trim().toUpperCase();
+      rows = rows.filter((r) => String(r.crop_code || '').replace(/^CROP_/, '').toUpperCase() === norm);
     }
-    sql += ' ORDER BY distance_km ASC, affected_farms_count DESC';
-    return db.prepare(sql).all(...params) as unknown as CommunityOutbreakRecord[];
+    return [...rows].sort((a, b) => {
+      const d = Number(a.distance_km || 0) - Number(b.distance_km || 0);
+      if (d !== 0) return d;
+      return Number(b.affected_farms_count || 0) - Number(a.affected_farms_count || 0);
+    });
   }
 
   static upsert(item: CommunityOutbreakRecord): CommunityOutbreakRecord {
@@ -1138,20 +1491,24 @@ export interface StateAgroChallengeRecord {
 export class StateAgroChallengeRepository {
   static listAll(stateCode?: string): StateAgroChallengeRecord[] {
     const db = getDb();
-    let rows: any[] = [];
+    const allRows = db.prepare('SELECT * FROM state_agro_challenges').all() as any[];
+    let rows = allRows;
     if (stateCode && stateCode !== 'ALL') {
-      rows = db
-        .prepare('SELECT * FROM state_agro_challenges WHERE UPPER(state_code) = UPPER(?)')
-        .all(stateCode) as any[];
+      const targetCode = resolveAgroRegion(stateCode).stateCode.toUpperCase();
+      rows = allRows.filter(
+        (r) =>
+          String(r.state_code || '').toUpperCase() === stateCode.toUpperCase() ||
+          String(r.state_code || '').toUpperCase() === targetCode
+      );
+      if (rows.length === 0) rows = allRows;
     }
-    if (rows.length === 0) {
-      rows = db.prepare('SELECT * FROM state_agro_challenges ORDER BY id ASC').all() as any[];
-    }
-    return rows.map((r) => ({
-      ...r,
-      tech_solution_steps_hi: JSON.parse(r.tech_solution_steps_hi || '[]'),
-      tech_solution_steps_en: JSON.parse(r.tech_solution_steps_en || '[]')
-    }));
+    return [...rows]
+      .sort((a, b) => String(a.id || '').localeCompare(String(b.id || '')))
+      .map((r) => ({
+        ...r,
+        tech_solution_steps_hi: typeof r.tech_solution_steps_hi === 'string' ? JSON.parse(r.tech_solution_steps_hi || '[]') : (r.tech_solution_steps_hi || []),
+        tech_solution_steps_en: typeof r.tech_solution_steps_en === 'string' ? JSON.parse(r.tech_solution_steps_en || '[]') : (r.tech_solution_steps_en || [])
+      }));
   }
 
   static upsert(record: StateAgroChallengeRecord): void {

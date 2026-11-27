@@ -8,7 +8,7 @@ on:
 env:
   GCP_REGION: asia-south1
   CLOUD_RUN_SERVICE: krishi-sahayak-api
-  DEFAULT_PROJECT_ID: krishi-sahayak-india-free
+  DEFAULT_PROJECT_ID: kris-seva
 
 jobs:
   deploy-india-always-free:
@@ -39,7 +39,7 @@ jobs:
               echo "Your repository, Dockerfile, Firebase Hosting config, and hardened Firestore Rules are verified and ready."
               echo ""
               echo "To activate automatic deployment to your own Google account, add **1 GitHub Repository Secret** (\`Settings -> Secrets and variables -> Actions -> New repository secret\`):"
-              echo "- **\`GCP_SA_KEY\`**: Paste the JSON key of your Google Cloud Service Account for project **\`krishi-sahayak-india-free\`** (or set \`GCP_PROJECT_ID\` secret if you pick another name)."
+              echo "- **\`GCP_SA_KEY\`**: Paste the JSON key of your Google Cloud Service Account for project **\`kris-seva\`** (or set \`GCP_PROJECT_ID\` secret if you pick another name)."
               echo "- Optional **\`GEMINI_API_KEY\`**: Paste your free key from [aistudio.google.com](https://aistudio.google.com/apikey)."
             } >> "$GITHUB_STEP_SUMMARY"
           else
@@ -59,7 +59,7 @@ jobs:
       - name: Enable Free-Tier APIs & Ensure Single Always-Free Firestore in Mumbai (asia-south1)
         if: steps.check_creds.outputs.configured == 'true'
         env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'krishi-sahayak-india-free' }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'kris-seva' }}
         run: |
           gcloud config set project "$PROJECT_ID"
           gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com firestore.googleapis.com firebase.googleapis.com firebasehosting.googleapis.com
@@ -69,7 +69,7 @@ jobs:
       - name: Deploy Backend Container to Cloud Run Mumbai (asia-south1 Tier-1 Always Free)
         if: steps.check_creds.outputs.configured == 'true'
         env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'krishi-sahayak-india-free' }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'kris-seva' }}
           GEMINI_KEY: ${{ secrets.GEMINI_API_KEY }}
           GA4_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
         run: |
@@ -88,6 +88,6 @@ jobs:
       - name: Deploy B2C PWA & Hardened Firestore Rules to Firebase Hosting (Spark Always Free)
         if: steps.check_creds.outputs.configured == 'true'
         env:
-          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'krishi-sahayak-india-free' }}
+          PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'kris-seva' }}
         run: |
-          npx -y firebase-tools@latest deploy --only hosting,firestore:rules,firestore:indexes --project "${PROJECT_ID}"
+          npx -y firebase-tools@latest deploy --only hosting,auth,firestore:rules,firestore:indexes --project "${PROJECT_ID}"

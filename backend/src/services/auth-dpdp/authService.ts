@@ -1,6 +1,9 @@
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import jwt from 'jsonwebtoken';
-import { UserRepository, ConsentRepository, FarmRepository, AuditRepository, UserRecord } from '../../db/repositories';
+import { UserRepository, ConsentRepository, FarmRepository, AuditRepository, UserRecord, resolveAgroRegion } from '../../db/repositories';
+import { GoogleFreeServices } from '../google-cloud/googleFreeServices';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'agriscan-krishi-secret-key-2026';
 
@@ -442,5 +445,416 @@ export class AuthService {
     } catch {
       throw new Error('AUTH_UNAUTHORIZED');
     }
+  }
+
+  // =====================================================================
+  // Scalable Customer Mobile Number + Date of Birth (DOB) Authentication
+  // Supports 1,000–50,000+ self-registering farmers at ₹0 SMS cost
+  // =====================================================================
+  private static customerVaultLoaded = false;
+  private static customerVault = new Map<string, {
+    uid: string;
+    mobileNumber: string;
+    dobVerifierHash: string;
+    dobSha256: string;
+    fullName: string;
+    state: string;
+    crop: string;
+    crops: string[];
+    areaAcres: number;
+    landUnit: string;
+    preferredLanguage: string;
+    createdAt: string;
+    updatedAt: string;
+  }>();
+  private static dobAttemptBuckets = new Map<string, { fails: number; lockedUntil: number; resetAt: number }>();
+
+  private static getVaultFilePath(): string {
+    const dataDir = path.resolve(__dirname, '../../../data');
+    if (!fs.existsSync(dataDir)) {
+      try { fs.mkdirSync(dataDir, { recursive: true }); } catch {}
+    }
+    return path.join(dataDir, 'mridak_customers.json');
+  }
+
+  private static ensureCustomerVaultLoaded(): void {
+    if (this.customerVaultLoaded) return;
+    this.customerVaultLoaded = true;
+    try {
+      const fp = this.getVaultFilePath();
+      if (fs.existsSync(fp)) {
+        const parsed = JSON.parse(fs.readFileSync(fp, 'utf8'));
+        if (parsed && typeof parsed === 'object') {
+          for (const [mobile, rec] of Object.entries(parsed)) {
+            if (/^[6-9]\d{9}$/.test(mobile) && rec && typeof rec === 'object') {
+              this.customerVault.set(mobile, rec as any);
+            }
+          }
+        }
+      }
+    } catch {
+      // Ignore corrupt/empty initial file
+    }
+  }
+
+  private static persistCustomerVaultToDisk(): void {
+    try {
+      const fp = this.getVaultFilePath();
+      const obj: Record<string, any> = {};
+      for (const [k, v] of this.customerVault.entries()) {
+        obj[k] = v;
+      }
+      fs.writeFileSync(fp, JSON.stringify(obj, null, 2), 'utf8');
+    } catch {
+      // Non-fatal in read-only filesystems (Cloud Run uses Firestore IAM vault)
+    }
+  }
+
+  static normalizeMobile10(rawMobile: string): string {
+    const digits = String(rawMobile || '').replace(/\D/g, '');
+    const clean = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits;
+    if (!/^[6-9][0-9]{9}$/.test(clean)) {
+      throw new Error('INVALID_MOBILE: कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें (6-9 से शुरू)। Please enter a valid 10-digit Indian mobile number.');
+    }
+    return clean;
+  }
+
+  static normalizeAndValidateDob(rawDob: string): string {
+    const trimmed = String(rawDob || '').trim();
+    let year = 0, month = 0, day = 0;
+
+    const isoMatch = trimmed.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+    const dmyMatch = trimmed.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+    const compactMatch = trimmed.match(/^(\d{2})(\d{2})(\d{4})$/);
+
+    if (isoMatch) {
+      year = parseInt(isoMatch[1], 10);
+      month = parseInt(isoMatch[2], 10);
+      day = parseInt(isoMatch[3], 10);
+    } else if (dmyMatch) {
+      day = parseInt(dmyMatch[1], 10);
+      month = parseInt(dmyMatch[2], 10);
+      year = parseInt(dmyMatch[3], 10);
+    } else if (compactMatch) {
+      day = parseInt(compactMatch[1], 10);
+      month = parseInt(compactMatch[2], 10);
+      year = parseInt(compactMatch[3], 10);
+    } else {
+      throw new Error('INVALID_DOB: कृपया सही जन्मतिथि (दिन / महीना / वर्ष) चुनें। Please enter a valid Date of Birth.');
+    }
+
+    const currentYear = new Date().getUTCFullYear();
+    if (year < 1920 || year > currentYear - 10 || month < 1 || month > 12 || day < 1 || day > 31) {
+      throw new Error('INVALID_DOB: कृपया मान्य जन्म वर्ष और तारीख दर्ज करें। Please select a valid birth date.');
+    }
+
+    const checkDate = new Date(Date.UTC(year, month - 1, day));
+    if (
+      checkDate.getUTCFullYear() !== year ||
+      checkDate.getUTCMonth() !== month - 1 ||
+      checkDate.getUTCDate() !== day
+    ) {
+      throw new Error('INVALID_DOB: चुनी गई तारीख कैलेंडर में मान्य नहीं है (जैसे 31 फरवरी)। Invalid calendar date.');
+    }
+
+    return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  }
+
+  private static checkDobRateLimit(key: string, maxFails: number): void {
+    const now = Date.now();
+    const bucket = this.dobAttemptBuckets.get(key);
+    if (!bucket) return;
+    if (bucket.lockedUntil > now) {
+      const mins = Math.max(1, Math.ceil((bucket.lockedUntil - now) / 60000));
+      throw new Error(`TOO_MANY_ATTEMPTS: गलत जन्मतिथि के कई प्रयास हुए हैं। सुरक्षा हेतु कृपया ${mins} मिनट बाद पुनः प्रयास करें।`);
+    }
+    if (now > bucket.resetAt) {
+      this.dobAttemptBuckets.delete(key);
+    }
+  }
+
+  private static recordDobFailure(key: string, maxFails: number): void {
+    const now = Date.now();
+    const windowMs = 15 * 60 * 1000;
+    const cur = this.dobAttemptBuckets.get(key);
+    if (!cur || now > cur.resetAt) {
+      this.dobAttemptBuckets.set(key, { fails: 1, lockedUntil: 0, resetAt: now + windowMs });
+      return;
+    }
+    cur.fails += 1;
+    if (cur.fails >= maxFails) {
+      cur.lockedUntil = now + windowMs;
+    }
+  }
+
+  static async customerMobileDobLogin(params: {
+    mobileNumber: string;
+    dob: string;
+    fullName?: string;
+    state?: string;
+    crop?: string;
+    crops?: string[];
+    areaAcres?: number;
+    landUnit?: string;
+    preferredLanguage?: string;
+    clientIp?: string;
+  }) {
+    this.ensureCustomerVaultLoaded();
+    const cleanMobile = this.normalizeMobile10(params.mobileNumber);
+    const normalizedDob = this.normalizeAndValidateDob(params.dob);
+
+    const mobileLockKey = `mob:${cleanMobile}`;
+    const ipLockKey = `ip:${params.clientIp || 'local'}`;
+    this.checkDobRateLimit(mobileLockKey, 5);
+    this.checkDobRateLimit(ipLockKey, 15);
+
+    // Check in-memory/disk vault first, then Cloud Firestore IAM vault (for Cloud Run scale-to-zero)
+    let existing = this.customerVault.get(cleanMobile) || null;
+    if (!existing) {
+      const remoteRec = await GoogleFreeServices.loadCustomerAuthVault(cleanMobile);
+      if (remoteRec && remoteRec.dobVerifierHash) {
+        existing = {
+          uid: remoteRec.uid,
+          mobileNumber: cleanMobile,
+          dobVerifierHash: remoteRec.dobVerifierHash,
+          dobSha256: remoteRec.dobSha256,
+          fullName: remoteRec.fullName,
+          state: remoteRec.state,
+          crop: remoteRec.crop,
+          crops: Array.isArray(remoteRec.crops) ? remoteRec.crops : [remoteRec.crop || 'SOYBEAN'],
+          areaAcres: Number(remoteRec.areaAcres || 3.5),
+          landUnit: remoteRec.landUnit || 'ACRE',
+          preferredLanguage: remoteRec.preferredLanguage || 'hi',
+          createdAt: remoteRec.createdAt,
+          updatedAt: remoteRec.updatedAt
+        };
+        this.customerVault.set(cleanMobile, existing);
+      }
+    }
+
+    const dobSecretInput = `MRIDAK_DOB_V1:${cleanMobile}:${normalizedDob}`;
+    const nowIso = new Date().toISOString();
+    let isNewUser = false;
+
+    if (!existing) {
+      // Open Self-Registration on First Visit!
+      isNewUser = true;
+      const uid = 'cust-' + crypto.createHmac('sha256', JWT_SECRET).update(cleanMobile).digest('hex').slice(0, 24);
+      const dobVerifierHash = this.hashPassword(dobSecretInput);
+      const dobSha256 = 'sha256:' + crypto.createHash('sha256').update(`mridak-dob:${cleanMobile}:${normalizedDob}`).digest('hex');
+      const chosenName = String(params.fullName || '').trim() || `किसान मित्र (+91-${cleanMobile.slice(-4)})`;
+      const chosenState = String(params.state || '').trim() || 'Madhya Pradesh';
+      const regMeta = resolveAgroRegion(chosenState);
+      const chosenCrop = String(params.crop || '').trim() || regMeta.defaultCrop;
+      const chosenArea = Number(params.areaAcres) > 0 && Number(params.areaAcres) <= 500 ? Number(params.areaAcres) : 3.5;
+      const chosenUnit = ['ACRE', 'BIGHA', 'HECTARE'].includes(String(params.landUnit || '')) ? String(params.landUnit) : 'ACRE';
+      const chosenLang = String(params.preferredLanguage || 'hi').trim() || 'hi';
+
+      existing = {
+        uid,
+        mobileNumber: cleanMobile,
+        dobVerifierHash,
+        dobSha256,
+        fullName: chosenName,
+        state: chosenState,
+        crop: chosenCrop,
+        crops: Array.isArray(params.crops) && params.crops.length > 0 ? params.crops.slice(0, 10) : [chosenCrop],
+        areaAcres: chosenArea,
+        landUnit: chosenUnit,
+        preferredLanguage: chosenLang,
+        createdAt: nowIso,
+        updatedAt: nowIso
+      };
+
+      this.customerVault.set(cleanMobile, existing);
+      this.persistCustomerVaultToDisk();
+
+      // Sync to relational users table & DPDP audit trail
+      try {
+        const dbUser = UserRepository.upsert({
+          id: uid,
+          mobile_number: cleanMobile,
+          password_hash: dobVerifierHash,
+          full_name: chosenName,
+          role: 'FARMER',
+          state: chosenState,
+          district: regMeta.hubDistrictEn,
+          taluka: 'Block',
+          village: 'Village',
+          pin_code: regMeta.defaultPinCode,
+          preferred_language: chosenLang,
+          is_profile_complete: 1
+        });
+        const consentHash = `sha256:${crypto.createHash('sha256').update(`${cleanMobile}:${nowIso}:MOBILE_DOB_SELF_REG`).digest('hex')}`;
+        ConsentRepository.recordConsent(dbUser.id, 'v2026.2', chosenLang, ['AGRONOMIC_GUIDANCE', 'CLOUD_PROFILE_SYNC'], consentHash);
+        AuditRepository.log('CUSTOMER_MOBILE_DOB_REGISTERED', dbUser.id, 'USER', dbUser.id, {
+          mobileMasked: `+91-XXXXXX${cleanMobile.slice(-4)}`
+        });
+      } catch {}
+
+      // Non-blocking sync to Cloud Firestore IAM vault & farmer profile
+      void GoogleFreeServices.saveCustomerAuthVault(cleanMobile, existing);
+      void GoogleFreeServices.syncFarmerProfile({
+        uid: existing.uid,
+        name: existing.fullName,
+        state: existing.state,
+        crop: existing.crop,
+        areaAcres: existing.areaAcres,
+        landUnit: existing.landUnit,
+        language: existing.preferredLanguage
+      });
+    } else {
+      // Returning Customer — Verify DOB with constant-time PBKDF2-SHA512
+      const ok = this.verifyPassword(dobSecretInput, existing.dobVerifierHash);
+      if (!ok) {
+        this.recordDobFailure(mobileLockKey, 5);
+        this.recordDobFailure(ipLockKey, 15);
+        AuditRepository.log('CUSTOMER_MOBILE_DOB_FAILED', existing.uid, 'AUTH', existing.uid, {
+          mobileMasked: `+91-XXXXXX${cleanMobile.slice(-4)}`
+        });
+        throw new Error('AUTH_DOB_MISMATCH: यह मोबाइल नंबर पहले से पंजीकृत है, लेकिन जन्मतिथि (DOB) मेल नहीं खाती। कृपया सही जन्मतिथि दर्ज करें। (Incorrect Date of Birth for this registered mobile number.)');
+      }
+      this.dobAttemptBuckets.delete(mobileLockKey);
+      existing.updatedAt = nowIso;
+      let profileChanged = false;
+      if (params.fullName && String(params.fullName).trim()) {
+        existing.fullName = String(params.fullName).trim().slice(0, 80);
+        profileChanged = true;
+      }
+      if (params.state && String(params.state).trim()) {
+        existing.state = String(params.state).trim().slice(0, 60);
+        profileChanged = true;
+      }
+      if (params.crop && String(params.crop).trim()) {
+        const nextCrop = String(params.crop).trim().slice(0, 60);
+        existing.crop = nextCrop;
+        if (!Array.isArray(existing.crops) || !existing.crops.includes(nextCrop)) {
+          existing.crops = [nextCrop, ...(existing.crops || []).filter((c) => c !== nextCrop)].slice(0, 10);
+        }
+        profileChanged = true;
+      }
+      if (Array.isArray(params.crops) && params.crops.length > 0) {
+        existing.crops = params.crops.slice(0, 10);
+        profileChanged = true;
+      }
+      if (params.preferredLanguage) {
+        existing.preferredLanguage = String(params.preferredLanguage);
+      }
+      this.persistCustomerVaultToDisk();
+      if (profileChanged) {
+        void GoogleFreeServices.saveCustomerAuthVault(cleanMobile, existing);
+        void GoogleFreeServices.syncFarmerProfile({
+          uid: existing.uid,
+          name: existing.fullName,
+          state: existing.state,
+          crop: existing.crop,
+          areaAcres: existing.areaAcres,
+          landUnit: existing.landUnit,
+          language: existing.preferredLanguage
+        });
+      }
+    }
+
+    // Issue long-lived 365-day JWT so once logged in on a phone, they stay signed in automatically
+    const accessToken = jwt.sign(
+      { userId: existing.uid, mobileNumber: existing.mobileNumber, role: 'FARMER' },
+      JWT_SECRET,
+      { expiresIn: '365d' }
+    );
+
+    return {
+      success: true,
+      tokenType: 'Bearer',
+      accessToken,
+      expiresIn: 31536000,
+      isNewUser,
+      totalRegisteredCustomers: this.customerVault.size,
+      user: {
+        uid: existing.uid,
+        userId: existing.uid,
+        mobileNumber: existing.mobileNumber,
+        mobileMasked: `+91-XXXXXX${existing.mobileNumber.slice(-4)}`,
+        dobHash: existing.dobSha256,
+        name: existing.fullName,
+        fullName: existing.fullName,
+        role: 'FARMER',
+        state: existing.state,
+        crop: existing.crop,
+        crops: existing.crops,
+        areaAcres: existing.areaAcres,
+        landUnit: existing.landUnit,
+        preferredLanguage: existing.preferredLanguage,
+        createdAt: existing.createdAt,
+        updatedAt: existing.updatedAt
+      }
+    };
+  }
+
+  static getCustomerByMobile(mobileNumber: string) {
+    this.ensureCustomerVaultLoaded();
+    const rec = this.customerVault.get(mobileNumber);
+    if (!rec) return null;
+    return {
+      uid: rec.uid,
+      userId: rec.uid,
+      mobileNumber: rec.mobileNumber,
+      mobileMasked: `+91-XXXXXX${rec.mobileNumber.slice(-4)}`,
+      name: rec.fullName,
+      fullName: rec.fullName,
+      role: 'FARMER',
+      state: rec.state,
+      crop: rec.crop,
+      crops: rec.crops,
+      areaAcres: rec.areaAcres,
+      landUnit: rec.landUnit,
+      preferredLanguage: rec.preferredLanguage,
+      createdAt: rec.createdAt,
+      updatedAt: rec.updatedAt
+    };
+  }
+
+  static async updateCustomerFarmProfile(mobileNumber: string, updates: {
+    fullName?: string;
+    state?: string;
+    crop?: string;
+    crops?: string[];
+    areaAcres?: number;
+    landUnit?: string;
+    preferredLanguage?: string;
+  }) {
+    this.ensureCustomerVaultLoaded();
+    let rec = this.customerVault.get(mobileNumber) || null;
+    if (!rec) {
+      const remote = await GoogleFreeServices.loadCustomerAuthVault(mobileNumber);
+      if (remote) {
+        rec = remote as any;
+        this.customerVault.set(mobileNumber, rec!);
+      }
+    }
+    if (!rec) {
+      throw new Error('USER_NOT_FOUND: कृपया पुनः लॉगिन करें।');
+    }
+    if (updates.fullName && String(updates.fullName).trim()) rec.fullName = String(updates.fullName).trim().slice(0, 80);
+    if (updates.state && String(updates.state).trim()) rec.state = String(updates.state).trim().slice(0, 60);
+    if (updates.crop && String(updates.crop).trim()) rec.crop = String(updates.crop).trim().slice(0, 60);
+    if (Array.isArray(updates.crops) && updates.crops.length > 0) rec.crops = updates.crops.slice(0, 10);
+    if (Number(updates.areaAcres) > 0 && Number(updates.areaAcres) <= 500) rec.areaAcres = Number(updates.areaAcres);
+    if (updates.landUnit && ['ACRE', 'BIGHA', 'HECTARE'].includes(updates.landUnit)) rec.landUnit = updates.landUnit;
+    if (updates.preferredLanguage) rec.preferredLanguage = String(updates.preferredLanguage).slice(0, 10);
+    rec.updatedAt = new Date().toISOString();
+
+    this.persistCustomerVaultToDisk();
+    void GoogleFreeServices.saveCustomerAuthVault(mobileNumber, rec);
+    void GoogleFreeServices.syncFarmerProfile({
+      uid: rec.uid,
+      name: rec.fullName,
+      state: rec.state,
+      crop: rec.crop,
+      areaAcres: rec.areaAcres,
+      landUnit: rec.landUnit,
+      language: rec.preferredLanguage
+    });
+
+    return this.getCustomerByMobile(mobileNumber);
   }
 }

@@ -1,18 +1,18 @@
 {
   "packageId": "in.gov.krishisahayak.guide",
-  "host": "krishi-sahayak-india-free.web.app",
-  "name": "कृषि सहायक (Krishi Sahayak)",
-  "launcherName": "कृषि सहायक",
+  "host": "mridak.com",
+  "name": "मृदक (Mridak) — कृषि सहायक",
+  "launcherName": "मृदक (Mridak)",
   "display": "standalone",
-  "themeColor": "#14532D",
-  "navigationColor": "#14532D",
+  "themeColor": "#14532d",
+  "navigationColor": "#14532d",
   "backgroundColor": "#F0FDF4",
   "enableNotifications": true,
   "startUrl": "/index.html",
-  "iconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
-  "maskableIconUrl": "https://krishi-sahayak-free.web.app/icons/icon-512.svg",
-  "appVersionName": "2.0.0",
-  "appVersionCode": 2,
+  "iconUrl": "https://mridak.com/icons/icon-512.png",
+  "maskableIconUrl": "https://mridak.com/icons/icon-maskable-512.png",
+  "appVersionName": "2.0.0-india-b2c",
+  "appVersionCode": 3,
   "shortcuts": [
     {
       "name": "पत्ती जांच (Leaf Scan)",
@@ -21,7 +21,7 @@
     },
     {
       "name": "घरेलू नुस्खे व खाद परख",
-      "shortName": "घरेलू नुस्खे",
+      "shortName": "घरेलू व परख",
       "url": "/index.html#diy"
     },
     {

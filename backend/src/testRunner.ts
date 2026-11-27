@@ -18,6 +18,7 @@ import { AuthService } from './services/auth-dpdp/authService';
 import { FarmService } from './services/profile-farm/farmService';
 import { NutritionRuleEngine } from './services/nutrition-rules/nutritionRuleEngine';
 import { DiagnosisService, DiagnosisRecord } from './services/diagnosis-ml/diagnosisService';
+import { GoogleFreeServices } from './services/google-cloud/googleFreeServices';
 
 function assert(condition: boolean, message: string) {
   if (!condition) {
@@ -430,6 +431,37 @@ async function runAllVerificationTests() {
   assert(swContent.includes("addEventListener('sync'"), 'PWA: SW implements background sync event for offline diagnoses');
 
   assert(fs.existsSync(iconPath), 'PWA: High-res SVG App Icon is present');
+
+  // --- 11. Google Cloud Always-Free India (asia-south1), Zero-Selling B2C & 22-Language Engine ---
+  console.log('\n--- 11. Google Cloud Always-Free India, GA4 Privacy & 22-Language B2C Verification ---');
+  const gStatus = GoogleFreeServices.getStatus();
+  assert(gStatus.zeroSellingPolicy === true, 'B2C Policy: Strict Zero-Selling policy active');
+  assert(gStatus.region === 'asia-south1', 'Cloud Run Region: Mumbai India (asia-south1 Tier-1 Always Free)');
+  assert(gStatus.services.translation.supportedIndianLanguages === 22, 'Language Engine: 22 Indian languages supported');
+  assert(gStatus.services.googleAnalytics.privacyMode === 'ANONYMIZED_IP_ZERO_PII_ZERO_ADS', 'GA4: Privacy-safe zero-ads mode active');
+
+  const trMr = await GoogleFreeServices.translateAgronomicText({
+    text: 'सोयाबीन और गेहूँ में छिड़काव के लिए उत्तम समय',
+    targetLanguage: 'mr'
+  });
+  assert(trMr.translatedText.includes('गहू') && trMr.translatedText.includes('फवारणीसाठी उत्तम वेळ'), 'Offline Translation: Marathi agro terms translated accurately');
+
+  const trTe = await GoogleFreeServices.translateAgronomicText({
+    text: 'धान व मिर्च में छिड़काव के लिए उत्तम समय',
+    targetLanguage: 'te'
+  });
+  assert(trTe.translatedText.includes('వరి') && trTe.translatedText.includes('మిర్చి'), 'Offline Translation: Telugu agro terms translated accurately');
+
+  const syncRes = await GoogleFreeServices.syncFarmerProfile({
+    uid: 'b2c-test-farmer-01',
+    name: 'Test Farmer',
+    state: 'Madhya Pradesh',
+    crop: 'SOYBEAN',
+    areaAcres: 2.5,
+    landUnit: 'BIGHA',
+    language: 'bho'
+  });
+  assert(syncRes.synced === true, 'Cloud/Edge Sync: Farmer B2C profile synced within Always-Free guardrails');
 
   console.log('\n======================================================');
   console.log('🎉 ALL BOTANICAL, ML LEAF, BANANA SIGATOKA, CIB&RC, DB, AUTH & ONBOARDING TESTS PASSED!');

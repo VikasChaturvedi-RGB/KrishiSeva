@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>मृदक Android App (APK) — mridak.com | सीधे फोन में डाउनलोड करें (100% निःशुल्क)</title>
+  <meta name="description" content="मृदक (mridak.com) v2.0.0 Android APK सीधे डाउनलोड करें। 22 भारतीय भाषाओं में फसल रोग जांच, नकली खाद पहचान, जैविक नुस्खे और मंडी भाव। 100% निःशुल्क, शून्य विज्ञापन।">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#14532d">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #14532d;
+      --primary-light: #16a34a;
+      --primary-hover: #15803d;
+      --bg-light: #f0fdf4;
+      --surface: #ffffff;
+      --text-dark: #0f172a;
+      --text-muted: #475569;
+      --accent-orange: #d97706;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(20, 83, 45, 0.12), 0 8px 10px -6px rgba(20, 83, 45, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', 'Inter', -apple-system, sans-serif;
+      background: linear-gradient(180deg, #ecfdf5 0%, #f0fdf4 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Top Trust Header */
+    .top-trust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 12px;
+      background: #ffffff;
+      border: 1px solid #bbf7d0;
+      border-radius: 9999px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .top-trust-bar a {
+      color: var(--primary-light);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+
+    /* Hero Card */
+    .download-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid #dcfce7;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .app-icon-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 16px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 12px 20px -8px rgba(22, 163, 74, 0.4);
+      background: #ffffff;
+    }
+    .app-icon-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .app-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dcfce7;
+      color: #14532d;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Specs Grid */
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .spec-item small {
+      display: block;
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .spec-item strong {
+      font-size: 13px;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    /* Primary Download Action Button */
+    .btn-download-apk {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      box-shadow: 0 10px 20px -5px rgba(22, 163, 74, 0.45);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-download-apk:hover, .btn-download-apk:active {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px -6px rgba(22, 163, 74, 0.55);
+    }
+    .btn-download-apk .btn-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-download-apk .btn-sub {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.92;
+      margin-top: 4px;
+    }
+
+    /* Secondary PWA Button */
+    .btn-pwa-instant {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #ffffff;
+      color: var(--primary);
+      text-decoration: none;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border: 2px solid #bbf7d0;
+      margin-top: 12px;
+      transition: all 0.2s ease;
+    }
+    .btn-pwa-instant:hover {
+      background: #f0fdf4;
+    }
+
+    /* Trust Guarantee Badges */
+    .trust-guarantee-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #047857;
+    }
+    .trust-guarantee-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Step-by-Step Installation Guide */
+    .guide-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .guide-card h2 {
+      font-size: 18px;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .install-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .install-step:last-child {
+      margin-bottom: 0;
+    }
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 3px;
+    }
+    .step-content p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .android-notice-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: #92400e;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+    }
+
+    /* QR Code Sharing Box */
+    .qr-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .qr-card h2 {
+      font-size: 17px;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .qr-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .qr-canvas-wrap {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 16px;
+      padding: 12px;
+      background: #ffffff;
+      border: 2px solid #bbf7d0;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #downloadQrCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .btn-whatsapp-share {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      background: #25d366;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+    .btn-whatsapp-share:hover {
+      background: #1eb956;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #64748b;
+      padding: 16px 0 24px;
+      width: 100%;
+    }
+    footer a {
+      color: var(--primary-light);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Top Navigation / Back to Portal -->
+    <div class="top-trust-bar">
+      <span>🌾 100% निःशुल्क किसान मार्गदर्शक</span>
+      <a href="/index.html"><i class="fa-solid fa-arrow-left"></i> वेब पोर्टल पर जाएं</a>
+    </div>
+
+    <!-- Main APK Download Card -->
+    <div class="download-card">
+      <div class="app-icon-wrap">
+        <img src="icons/icon-512.png" alt="कृषि सहायक App Icon" onerror="this.src='icons/icon-192.png'">
+      </div>
+
+      <div class="app-badge-pill">
+        <i class="fa-solid fa-shield-halved"></i> 100% सुरक्षित • Signed Android APK
+      </div>
+
+      <h1>मृदक (Mridak) — कृषि सहायक</h1>
+      <p class="tagline">mridak.com • 22 भारतीय भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक जीवामृत एवं मंडी भाव।</p>
+
+      <div class="specs-grid">
+        <div class="spec-item">
+          <small>संस्करण (Version)</small>
+          <strong>v2.0.0</strong>
+        </div>
+        <div class="spec-item">
+          <small>ऑफ़लाइन इंजन</small>
+          <strong>ML Kit AI (22 भाषा)</strong>
+        </div>
+        <div class="spec-item">
+          <small>अनुकूलता</small>
+          <strong>Android 8.0+</strong>
+        </div>
+      </div>
+
+      <!-- Primary Download Button -->
+      <a id="apkDownloadLink" href="/mridak.apk" class="btn-download-apk">
+        <div class="btn-top">
+          <i class="fa-brands fa-android fa-xl"></i>
+          <span>सीधे APK डाउनलोड करें</span>
+        </div>
+        <div class="btn-sub">बिना Google Play Store • 1-टैप में सीधा इंस्टॉलेशन</div>
+      </a>
+
+      <!-- Direct CDN Mirror Link -->
+      <p style="margin-top: 8px; font-size: 12px; color: #475569;">
+        सीधा मिरर लिंक: <a href="https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk" style="color:#15803d; font-weight:700;">GitHub Release CDN से डाउनलोड करें &rarr;</a>
+      </p>
+
+      <!-- Secondary Instant PWA Button -->
+      <a href="/index.html" class="btn-pwa-instant">
+        <i class="fa-solid fa-bolt text-harvest"></i>
+        <span>बिना डाउनलोड तुरंत चलाएं (वेब ऐप / PWA)</span>
+      </a>
+
+      <!-- Trust Row -->
+      <div class="trust-guarantee-row">
+        <span><i class="fa-solid fa-ban text-red"></i> 0% विज्ञापन (No Ads)</span>
+        <span><i class="fa-solid fa-hand-holding-heart"></i> कोई खाद बिक्री नहीं</span>
+        <span><i class="fa-solid fa-lock"></i> 100% सुरक्षित डेटा</span>
+      </div>
+    </div>
+
+    <!-- 3-Step Simple Install Guide -->
+    <div class="guide-card">
+      <h2><i class="fa-solid fa-circle-question text-green"></i> 3 आसान चरणों में फोन में लगाएं</h2>
+
+      <div class="install-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>APK डाउनलोड करें (Download)</h3>
+          <p>ऊपर हरे <strong>"सीधे APK डाउनलोड करें"</strong> बटन पर टैप करें। फाइल डाउनलोड शुरू हो जाएगी।</p>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>फाइल खोलें (Open File)</h3>
+          <p>डाउनलोड पूरा होने पर फोन की स्क्रीन पर ऊपर से नोटिफिकेशन बार खींचें और <code>krishi-sahayak.apk</code> पर टैप करें (या अपने फोन के <em>Files / Downloads</em> फोल्डर में खोलें)।</p>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>अनुमति दें एवं इंस्टॉल करें (Install)</h3>
+          <p>यदि फोन पूछे, तो <strong>"Settings &rarr; Allow from this source" (इस स्रोत से अनुमति दें)</strong> को चालू करें, फिर <strong>"Install"</strong> बटन दबाएं। ऐप तुरंत चालू हो जाएगा!</p>
+        </div>
+      </div>
+
+      <div class="android-notice-box">
+        <i class="fa-solid fa-circle-info fa-lg" style="margin-top:2px;"></i>
+        <div>
+          <strong>Android सुरक्षा सूचना:</strong> गूगल प्ले स्टोर के बाहर किसी भी ऐप को डाउनलोड करने पर फोन <em>"File might be harmful"</em> दिखा सकता है। <strong>"Download anyway" (डाउनलोड जारी रखें)</strong> चुनें। यह ऐप पूरी तरह डिजिटल हस्ताक्षरित एवं सुरक्षित है।
+        </div>
+      </div>
+    </div>
+
+    <!-- QR Code & Village Sharing -->
+    <div class="qr-card">
+      <h2><i class="fa-solid fa-qrcode text-green"></i> साथी किसान को सीधे स्कैन करवाएं</h2>
+      <p>अपने साथी किसान के फोन कैमरे से इस QR कोड को स्कैन कराएं या WhatsApp पर लिंक साझा करें:</p>
+
+      <div class="qr-canvas-wrap">
+        <canvas id="downloadQrCanvas" width="240" height="240"></canvas>
+        <noscript><img src="icons/qr-download.svg" alt="Scan to download Mridak APK" width="176" height="176"></noscript>
+      </div>
+
+      <a id="whatsappShareBtn" href="#" target="_blank" class="btn-whatsapp-share">
+        <i class="fa-brands fa-whatsapp fa-lg"></i>
+        <span>WhatsApp पर साथी किसान को भेजें</span>
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p><strong>मृदक (Mridak.com)</strong> • राष्ट्रीय B2C किसान मार्गदर्शन पहल</p>
+      <p style="margin-top: 4px;">
+        पैकेज ID: <code>in.gov.krishisahayak.guide</code> • 
+        <a href="/privacy.html">गोपनीयता नीति (Privacy)</a> • 
+        <a href="/index.html">मुख्य ऐप (Web App)</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- ISO/IEC 18004 Reed-Solomon Scannable QR Code Generator -->
+  <script>
+    (function () {
+      function encodeQrMatrix(text) {
+        const bytes = Array.from(new TextEncoder().encode(text));
+        // [version, size, alignCenter, dataCodewords, ecCodewords, ecFormatBits]
+        // ecFormatBits: M = 0 (15% ECC), L = 1 (7% ECC)
+        const SPECS = [
+          [3, 29, 22, 44, 26, 0], // up to 42 bytes (ECC M - 15% error correction)
+          [4, 33, 26, 80, 20, 1]  // up to 78 bytes (ECC L)
+        ];
+        const spec = SPECS.find(function (s) { return bytes.length + 2 <= s[3]; }) || SPECS[1];
+        const size = spec[1], alignCenter = spec[2], dataCount = spec[3], ecCount = spec[4], ecLevelBits = spec[5];
+
+        const bits = [];
+        function pushBits(val, len) {
+          for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1);
+        }
+        pushBits(4, 4); // Byte mode (0100)
+        pushBits(bytes.length, 8);
+        for (let i = 0; i < bytes.length; i++) pushBits(bytes[i], 8);
+        const maxBits = dataCount * 8;
+        for (let i = 0; i < 4 && bits.length < maxBits; i++) bits.push(0);
+        while (bits.length % 8 !== 0) bits.push(0);
+
+        const data = [];
+        for (let i = 0; i < bits.length; i += 8) {
+          let b = 0;
+          for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j];
+          data.push(b);
+        }
+        let padIdx = 0;
+        while (data.length < dataCount) {
+          data.push(padIdx % 2 === 0 ? 0xec : 0x11);
+          padIdx++;
+        }
+
+        // GF(256) with primitive polynomial 0x11d & Reed-Solomon ECC
+        const EXP = new Uint8Array(512);
+        const LOG = new Uint8Array(256);
+        let x = 1;
+        for (let i = 0; i < 255; i++) {
+          EXP[i] = x;
+          LOG[x] = i;
+          x <<= 1;
+          if (x & 0x100) x ^= 0x11d;
+        }
+        for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+        function gfMul(a, b) { return (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]]; }
+
+        let gen = [1];
+        for (let i = 0; i < ecCount; i++) {
+          const next = new Array(gen.length + 1).fill(0);
+          for (let j = 0; j < gen.length; j++) {
+            next[j] ^= gen[j];
+            next[j + 1] ^= gfMul(gen[j], EXP[i]);
+          }
+          gen = next;
+        }
+
+        const rem = new Uint8Array(ecCount);
+        for (let i = 0; i < data.length; i++) {
+          const factor = data[i] ^ rem[0];
+          rem.copyWithin(0, 1);
+          rem[ecCount - 1] = 0;
+          if (factor !== 0) {
+            for (let j = 0; j < ecCount; j++) rem[j] ^= gfMul(gen[j + 1], factor);
+          }
+        }
+
+        const all = data.concat(Array.from(rem));
+        const codeBits = [];
+        for (let i = 0; i < all.length; i++) {
+          for (let b = 7; b >= 0; b--) codeBits.push((all[i] >>> b) & 1);
+        }
+        for (let i = 0; i < 7; i++) codeBits.push(0);
+
+        const grid = Array.from({ length: size }, function () { return new Uint8Array(size); });
+        const reserved = Array.from({ length: size }, function () { return new Uint8Array(size); });
+        function setModule(r, c, dark) {
+          if (r < 0 || r >= size || c < 0 || c >= size) return;
+          grid[r][c] = dark ? 1 : 0;
+          reserved[r][c] = 1;
+        }
+        function placeFinder(top, left) {
+          for (let r = -1; r <= 7; r++) {
+            for (let c = -1; c <= 7; c++) {
+              const rr = top + r, cc = left + c;
+              if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
+              const inOuter = r >= 0 && r <= 6 && c >= 0 && c <= 6;
+              const onBorder = r === 0 || r === 6 || c === 0 || c === 6;
+              const inInner = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+              setModule(rr, cc, inOuter && (onBorder || inInner));
+            }
+          }
+        }
+        placeFinder(0, 0);
+        placeFinder(0, size - 7);
+        placeFinder(size - 7, 0);
+
+        for (let r = -2; r <= 2; r++) {
+          for (let c = -2; c <= 2; c++) {
+            setModule(alignCenter + r, alignCenter + c, Math.max(Math.abs(r), Math.abs(c)) !== 1);
+          }
+        }
+        for (let i = 8; i < size - 8; i++) {
+          if (!reserved[6][i]) setModule(6, i, i % 2 === 0);
+          if (!reserved[i][6]) setModule(i, 6, i % 2 === 0);
+        }
+        setModule(size - 8, 8, true);
+        for (let i = 0; i < 9; i++) {
+          reserved[8][i] = 1;
+          reserved[i][8] = 1;
+        }
+        for (let i = 0; i < 8; i++) {
+          reserved[8][size - 1 - i] = 1;
+          reserved[size - 1 - i][8] = 1;
+        }
+
+        let bitIdx = 0, upward = true;
+        for (let right = size - 1; right >= 1; right -= 2) {
+          if (right === 6) right = 5;
+          for (let vert = 0; vert < size; vert++) {
+            const r = upward ? size - 1 - vert : vert;
+            for (let j = 0; j < 2; j++) {
+              const c = right - j;
+              if (!reserved[r][c]) {
+                let dark = bitIdx < codeBits.length ? codeBits[bitIdx++] === 1 : false;
+                if ((r + c) % 2 === 0) dark = !dark;
+                grid[r][c] = dark ? 1 : 0;
+              }
+            }
+          }
+          upward = !upward;
+        }
+
+        const fmtData = (ecLevelBits << 3) | 0;
+        let remFmt = fmtData << 10;
+        for (let i = 14; i >= 10; i--) {
+          if ((remFmt >>> i) & 1) remFmt ^= 0x537 << (i - 10);
+        }
+        const fmtBits = ((fmtData << 10) | remFmt) ^ 0x5412;
+        const tlCoords = [
+          [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8],
+          [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8]
+        ];
+        for (let i = 0; i < 15; i++) grid[tlCoords[i][0]][tlCoords[i][1]] = (fmtBits >>> (14 - i)) & 1;
+        for (let i = 0; i < 7; i++) grid[size - 1 - i][8] = (fmtBits >>> (14 - i)) & 1;
+        for (let i = 7; i < 15; i++) grid[8][size - 15 + i] = (fmtBits >>> (14 - i)) & 1;
+        return grid;
+      }
+
+      function generateQrCanvas() {
+        const canvas = document.getElementById('downloadQrCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const downloadUrl = (window.location.origin && !window.location.origin.includes('localhost') && !window.location.origin.includes('127.0.0.1'))
+          ? (window.location.origin + '/download')
+          : 'https://mridak.com/download';
+
+        const shareBtn = document.getElementById('whatsappShareBtn');
+        if (shareBtn) {
+          const shareText = "🌾 भाई! यह 100% निःशुल्क किसान ऐप मृदक (Mridak.com) है। इसमें 22 भाषाओं में बोलकर फसल रोग जांच, नकली खाद परख, जैविक नुस्खे और मंडी भाव मिलते हैं। कोई बिक्री या विज्ञापन नहीं।\n\nअपने फोन में सीधे यहाँ से डाउनलोड करें:\n" + downloadUrl;
+          shareBtn.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
+        }
+
+        const grid = encodeQrMatrix(downloadUrl);
+        const modules = grid.length;
+        const quiet = 2;
+        const cell = Math.floor(canvas.width / (modules + quiet * 2));
+        const pad = Math.floor((canvas.width - cell * modules) / 2);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#14532d';
+        for (let r = 0; r < modules; r++) {
+          for (let c = 0; c < modules; c++) {
+            if (grid[r][c]) {
+              ctx.fillRect(pad + c * cell, pad + r * cell, cell, cell);
+            }
+          }
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', generateQrCanvas);
+      } else {
+        generateQrCanvas();
+      }
+    })();
+  </script>
+</body>
+</html>

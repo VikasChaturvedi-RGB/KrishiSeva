@@ -8,7 +8,6 @@ import { AppDatabase } from '../db/database';
 import { DatabaseSeeder } from '../db/seeder';
 import { InventoryRepository, AuditRepository, FarmerActivityLogRepository, DiagnosisRepository } from '../db/repositories';
 import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
-import { LicensedAgriGraduateService } from '../services/agri-graduate/licensedAgriGraduateService';
 import { GoogleFreeServices } from '../services/google-cloud/googleFreeServices';
 import { CropVarietyAdvisorService } from '../services/area-intelligence/cropVarietyAdvisorService';
 import { SoilAtlasService } from '../services/area-intelligence/soilAtlasService';
@@ -63,6 +62,78 @@ function requireAdmin(req: Request, res: Response, next: () => void) {
 // -------------------------------------------------------------
 // 1. AUTH, ONBOARDING & DPDP CONSENT SERVICE
 // -------------------------------------------------------------
+router.post('/auth/mobile-dob', async (req: Request, res: Response) => {
+  const { mobileNumber, dob, fullName, state, crop, crops, areaAcres, landUnit, preferredLanguage } = req.body || {};
+  try {
+    const result = await AuthService.customerMobileDobLogin({
+      mobileNumber: String(mobileNumber || ''),
+      dob: String(dob || ''),
+      fullName: fullName ? String(fullName) : undefined,
+      state: state ? String(state) : undefined,
+      crop: crop ? String(crop) : undefined,
+      crops: Array.isArray(crops) ? crops : undefined,
+      areaAcres: areaAcres !== undefined ? Number(areaAcres) : undefined,
+      landUnit: landUnit ? String(landUnit) : undefined,
+      preferredLanguage: preferredLanguage ? String(preferredLanguage) : undefined,
+      clientIp: req.ip || req.socket.remoteAddress || 'anon'
+    });
+    return res.json(result);
+  } catch (err: any) {
+    const msg = String(err?.message || 'Authentication failed');
+    if (msg.startsWith('TOO_MANY_ATTEMPTS')) {
+      return res.status(429).json({ errorCode: 'TOO_MANY_ATTEMPTS', message: msg.replace(/^TOO_MANY_ATTEMPTS:\s*/, '') });
+    }
+    if (msg.startsWith('INVALID_MOBILE') || msg.startsWith('INVALID_DOB')) {
+      const code = msg.split(':')[0];
+      return res.status(400).json({ errorCode: code, message: msg.replace(/^[A-Z_]+:\s*/, '') });
+    }
+    return res.status(401).json({
+      errorCode: 'AUTH_DOB_MISMATCH',
+      message: msg.replace(/^AUTH_DOB_MISMATCH:\s*/, '')
+    });
+  }
+});
+
+router.get('/auth/me', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ errorCode: 'UNAUTHORIZED', message: 'Bearer token required' });
+  }
+  try {
+    const decoded = AuthService.verifyToken(authHeader.split(' ')[1]);
+    const profile = AuthService.getCustomerByMobile(decoded.mobileNumber);
+    if (!profile) {
+      return res.json({
+        authenticated: true,
+        user: {
+          uid: decoded.userId,
+          userId: decoded.userId,
+          mobileNumber: decoded.mobileNumber,
+          mobileMasked: `+91-XXXXXX${String(decoded.mobileNumber || '').slice(-4)}`,
+          role: decoded.role
+        }
+      });
+    }
+    return res.json({ authenticated: true, user: profile });
+  } catch {
+    return res.status(401).json({ errorCode: 'INVALID_TOKEN', message: 'Session expired or invalid' });
+  }
+});
+
+router.put('/auth/profile', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ errorCode: 'UNAUTHORIZED', message: 'Bearer token required' });
+  }
+  try {
+    const decoded = AuthService.verifyToken(authHeader.split(' ')[1]);
+    const updated = await AuthService.updateCustomerFarmProfile(decoded.mobileNumber, req.body || {});
+    return res.json({ success: true, user: updated });
+  } catch (err: any) {
+    return res.status(400).json({ errorCode: 'PROFILE_UPDATE_FAILED', message: err?.message || 'Update failed' });
+  }
+});
+
 router.post('/auth/admin/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   try {
@@ -625,6 +696,7 @@ router.get('/weather/spray-advisory', (req: Request, res: Response) => {
 router.get('/advisory/crop-calendar', (req: Request, res: Response) => {
   try {
     const result = FarmerEcosystemService.getCropCalendarAndNpkCalculator({
+      state: req.query.state ? String(req.query.state) : undefined,
       crop: req.query.crop ? String(req.query.crop) : undefined,
       acreage: req.query.acreage ? Number(req.query.acreage) : undefined,
       sowingDate: req.query.sowingDate ? String(req.query.sowingDate) : undefined,
@@ -861,84 +933,22 @@ router.post('/states/tech-intervention-book', (req: Request, res: Response) => {
 });
 
 // -------------------------------------------------------------
-// 9. LICENSED AGRICULTURE GRADUATE STATUTORY COMMERCE & CLINICAL ADVISORY
+// 9. NON-COMMERCIAL SELF-RELIANT FARMING, INPUT PURITY & FREE GOVT HELPLINES
+//    (Replaces commercial product sales with 100% unbiased B2C farmer guidance)
 // -------------------------------------------------------------
-// 9.1 Statutory Accreditation, Licenses & Digital Stamp Vault
-router.get('/graduate/profile', (_req: Request, res: Response) => {
-  try {
-    const profile = LicensedAgriGraduateService.getGraduateProfileAndLicenses();
-    return res.json(profile);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'GRADUATE_PROFILE_ERROR', message: err.message });
-  }
-});
-
-// 9.2 Certified True-to-Type Seeds, Soil-Health Nutrient Blends & Curative Doctor Kits
-router.get('/graduate/products', (req: Request, res: Response) => {
-  try {
-    const category = req.query.category ? String(req.query.category) : undefined;
-    const cropCode = req.query.crop ? String(req.query.crop) : undefined;
-    const result = LicensedAgriGraduateService.getLicensedProducts({ category, cropCode });
-    const products = result.products;
-    return res.json({
-      totalCount: result.count,
-      categoryFilter: category || 'ALL',
-      cropFilter: cropCode || 'ALL',
-      products
-    });
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'GRADUATE_PRODUCTS_ERROR', message: err.message });
-  }
-});
-
-// 9.3 Issue Official Agronomist Digital Prescription (Agri-Rx)
-router.post('/graduate/prescriptions', (req: Request, res: Response) => {
-  try {
-    const prescription = LicensedAgriGraduateService.createPrescription(req.body);
-    return res.status(201).json(prescription);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'PRESCRIPTION_CREATE_ERROR', message: err.message });
-  }
-});
-
-// 9.4 Innovative "Diagnosis-to-Dispense" (Rx-to-Cart) Auto-Converter
-router.post('/graduate/rx-to-cart', (req: Request, res: Response) => {
-  try {
-    const result = LicensedAgriGraduateService.convertDiagnosisToRxAndOrder(req.body);
-    return res.status(201).json(result);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'RX_TO_CART_ERROR', message: err.message });
-  }
-});
-
-// 9.5 Direct Order Dispatch with Pay-After-Harvest Credit / UPI
-router.post('/graduate/orders', (req: Request, res: Response) => {
-  try {
-    const order = LicensedAgriGraduateService.createFarmerOrder(req.body);
-    return res.status(201).json(order);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'ORDER_CREATE_ERROR', message: err.message });
-  }
-});
-
-// 9.6 Farmer Bahi-Khata Credit Ledger & Settlement Tracker
-router.get('/graduate/khata/:mobileNumber', (req: Request, res: Response) => {
-  try {
-    const khata = LicensedAgriGraduateService.getFarmerKhataLedger(String(req.params.mobileNumber));
-    return res.json(khata);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'KHATA_FETCH_ERROR', message: err.message });
-  }
-});
-
-// 9.7 Book Tele-Agronomy or Seasonal Crop Surveillance Contract
-router.post('/graduate/consultations', (req: Request, res: Response) => {
-  try {
-    const booking = LicensedAgriGraduateService.bookAgriDoctorConsultation(req.body);
-    return res.status(201).json(booking);
-  } catch (err: any) {
-    return res.status(500).json({ errorCode: 'CONSULTATION_BOOKING_ERROR', message: err.message });
-  }
+router.get('/guidance/self-reliant', (_req: Request, res: Response) => {
+  return res.json({
+    zeroSellingPolicy: true,
+    pledgeHi: '100% निःशुल्क किसान मार्गदर्शक — हम कोई खाद, बीज या दवाई नहीं बेचते।',
+    freeHelplines: [
+      { name: 'Kisan Call Centre (Govt of India)', phone: '1800-180-1551', languages: 22, feeInr: 0 },
+      { name: 'PMFBY National Crop Insurance Helpline', phone: '14447', feeInr: 0 }
+    ],
+    statutoryMrpReference: [
+      { input: 'Neem-Coated Urea (45 kg bag)', maxRetailPriceInr: 266.5 },
+      { input: 'DAP 18:46:0 (50 kg bag)', maxRetailPriceInr: 1350 }
+    ]
+  });
 });
 
 

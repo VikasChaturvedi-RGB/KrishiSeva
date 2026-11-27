@@ -1,6 +1,6 @@
 # ==============================================================================
-# Google Cloud Run — Always-Free Tier Container (Stateless, Scale-to-Zero)
-# Deploy in us-central1: 2M requests/mo, 360k vCPU-sec, 180k GiB-sec FREE
+# Google Cloud Run — Always-Free Tier Production Container (asia-south1 Mumbai)
+# Stateless, Scale-to-Zero (min-instances=0), Non-Root User, Healthcheck Ready
 # ==============================================================================
 FROM node:22-slim AS builder
 
@@ -12,24 +12,25 @@ COPY backend/package*.json ./backend/
 RUN cd backend && npm ci
 
 COPY backend ./backend
-RUN cd backend && npm run build
-RUN node -e "const fs=require('fs'); ['public','web_app'].forEach(d => fs.cpSync('web_simulator', d, {recursive:true}));"
+RUN npm run build && cd backend && npm run build
 
 FROM node:22-slim AS runner
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV CLOUD_RUN_REGION=asia-south1
 WORKDIR /app
 
 COPY --from=builder /workspace/backend/package*.json ./backend/
-RUN cd backend && npm ci --omit=dev && npm cache clean --force
+RUN cd backend && npm ci --omit=dev && npm cache clean --force && mkdir -p /app/backend/data && chown -R node:node /app
 
-COPY --from=builder /workspace/backend/dist ./backend/dist
-COPY --from=builder /workspace/backend/src/db/schema.sql ./backend/dist/db/schema.sql
-COPY --from=builder /workspace/backend/src/data ./backend/dist/data
-COPY --from=builder /workspace/web_simulator ./web_simulator
-COPY --from=builder /workspace/web_app ./web_app
-COPY --from=builder /workspace/contracts ./contracts
+COPY --chown=node:node --from=builder /workspace/backend/dist ./backend/dist
+COPY --chown=node:node --from=builder /workspace/backend/src/db/schema.sql ./backend/dist/db/schema.sql
+COPY --chown=node:node --from=builder /workspace/backend/src/data ./backend/dist/data
+COPY --chown=node:node --from=builder /workspace/web_simulator ./web_simulator
+COPY --chown=node:node --from=builder /workspace/web_app ./web_app
+COPY --chown=node:node --from=builder /workspace/contracts ./contracts
 
+USER node
 WORKDIR /app/backend
 EXPOSE 8080
-CMD ["node", "dist/server.js"]
+CMD ["node", "--no-warnings", "dist/server.js"]

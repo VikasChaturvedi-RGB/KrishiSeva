@@ -232,7 +232,7 @@ window.KRISHI_SUPPORTED_LANGUAGES = [
 
 window.KRISHI_GUIDANCE_PACKS = {
   "hi": {
-    "appName": "कृषि सहायक",
+    "appName": "मृदक (Mridak)",
     "zeroSellPledge": "100% निःशुल्क किसान मार्गदर्शक • कोई बिक्री नहीं • निष्पक्ष सलाह",
     "home": "होम",
     "cropDoctor": "पत्ती जांच",
@@ -276,7 +276,7 @@ window.KRISHI_GUIDANCE_PACKS = {
     "welcome": "नमस्ते किसान मित्र! कृषि सहायक पूर्णतः निःशुल्क मार्गदर्शक है।"
   },
   "en": {
-    "appName": "Krishi Sahayak",
+    "appName": "Mridak — Krishi Sahayak",
     "zeroSellPledge": "100% Free Farmer Guide • No Selling • No Ads",
     "home": "Home",
     "cropDoctor": "Leaf Scan",

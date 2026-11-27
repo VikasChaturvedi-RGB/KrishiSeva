@@ -18,17 +18,21 @@ android {
         applicationId = "in.gov.krishisahayak.guide"
         minSdk = 26 // Android 8.0+ (covers >98.5% of Indian Android devices + native Adaptive Icons)
         targetSdk = 35
-        versionCode = 2
+        versionCode = 3
         versionName = "2.0.0-india-b2c"
 
-        // Firebase Hosting + Cloud Run (Mumbai asia-south1) endpoint; falls back to bundled offline assets/pwa/
+        // Primary Domain: mridak.com (Firebase kris-seva); falls back to bundled offline assets/pwa/
         buildConfigField(
             "String",
             "PWA_HOST_URL",
-            "\"https://krishi-sahayak-india-free.web.app/index.html\""
+            "\"https://mridak.com/index.html\""
         )
         vectorDrawables {
             useSupportLibrary = true
+        }
+        // Ship ARM phone binaries only (cuts ~50MB of unused x86/x86_64 emulator libs for rural 4G downloads)
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
         }
     }
 
@@ -57,6 +61,11 @@ android {
         }
     }
 
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -73,6 +82,7 @@ android {
 dependencies {
     // 1. AndroidX Core & Jetpack Compose Material 3 (Sunlight-Readable B2C Shell)
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-ktx:1.9.3")
     val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
     implementation(composeBom)
     implementation("androidx.activity:activity-compose:1.9.3")
@@ -89,14 +99,17 @@ dependencies {
     implementation("com.google.android.gms:play-services-tasks:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    // 4. Firebase Spark Always-Free B2C Stack (FCM Push, Analytics, Crashlytics, Auth, Firestore)
+    // 4. Firebase Spark Always-Free B2C Stack (FCM Push, Analytics, Auth, Firestore; Crashlytics when configured)
     val firebaseBom = platform("com.google.firebase:firebase-bom:33.6.0")
     implementation(firebaseBom)
+    implementation("com.google.firebase:firebase-common")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    if (file("google-services.json").exists()) {
+        implementation("com.google.firebase:firebase-crashlytics")
+    }
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

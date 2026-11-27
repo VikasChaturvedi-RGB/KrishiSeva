@@ -1,11 +1,163 @@
-import { DatabaseSync } from 'node:sqlite';
 import fs from 'fs';
 import path from 'path';
 
+interface SqlStatementLike {
+  run: (...params: any[]) => { changes: number; lastInsertRowid: number };
+  get: (...params: any[]) => any;
+  all: (...params: any[]) => any[];
+}
+
+interface SqlDatabaseLike {
+  exec: (sql: string) => void;
+  prepare: (sql: string) => SqlStatementLike;
+  close: () => void;
+}
+
+class InMemorySqliteFallback implements SqlDatabaseLike {
+  private tables: Map<string, any[]> = new Map();
+
+  public exec(_sql: string): void {
+    // No-op DDL/transaction shim for Node < 22 environments lacking node:sqlite
+  }
+
+  public prepare(sql: string): SqlStatementLike {
+    const normalized = sql.trim();
+    const upper = normalized.toUpperCase();
+    const tables = this.tables;
+
+    return {
+      run: (...params: any[]) => {
+        const insertMatch = normalized.match(/INSERT\s+(?:OR\s+(\w+)\s+)?INTO\s+([a-zA-Z0-9_]+)\s*\(([^)]+)\)/i);
+        if (insertMatch) {
+          const conflictMode = (insertMatch[1] || '').toUpperCase();
+          const tableName = insertMatch[2];
+          const cols = insertMatch[3].split(',').map((c) => c.trim());
+          const row: Record<string, any> = {};
+          cols.forEach((col, idx) => {
+            row[col] = idx < params.length ? params[idx] : null;
+          });
+          if (!tables.has(tableName)) tables.set(tableName, []);
+          const list = tables.get(tableName)!;
+          if (row.id !== undefined && row.id !== null) {
+            const existingIdx = list.findIndex((r) => r.id === row.id);
+            if (existingIdx >= 0) {
+              if (conflictMode === 'IGNORE') {
+                return { changes: 0, lastInsertRowid: existingIdx + 1 };
+              }
+              list[existingIdx] = row;
+              return { changes: 1, lastInsertRowid: existingIdx + 1 };
+            }
+          }
+          list.push(row);
+          return { changes: 1, lastInsertRowid: list.length };
+        }
+        const updateMatch = normalized.match(/UPDATE\s+([a-zA-Z0-9_]+)\s+SET\s+([\s\S]+?)\s+WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+        if (updateMatch) {
+          const tableName = updateMatch[1];
+          const setClause = updateMatch[2];
+          const whereCol = updateMatch[3];
+          const whereVal = params[params.length - 1];
+          const rows = tables.get(tableName) || [];
+          const assignments = setClause.split(',').map((s) => s.trim());
+          let changed = 0;
+          for (const row of rows) {
+            if (row[whereCol] === whereVal) {
+              let pIdx = 0;
+              for (const assign of assignments) {
+                const colMatch = assign.match(/^([a-zA-Z0-9_]+)\s*=\s*(.+)$/i);
+                if (!colMatch) continue;
+                const col = colMatch[1];
+                const expr = colMatch[2].trim();
+                if (/^COALESCE\(\?,/i.test(expr)) {
+                  const val = params[pIdx++];
+                  if (val !== null && val !== undefined) row[col] = val;
+                } else if (expr === '?') {
+                  row[col] = params[pIdx++];
+                }
+              }
+              changed++;
+            }
+          }
+          return { changes: changed, lastInsertRowid: 0 };
+        }
+        return { changes: 1, lastInsertRowid: 1 };
+      },
+      get: (...params: any[]) => {
+        if (upper.startsWith('PRAGMA JOURNAL_MODE')) {
+          return { journal_mode: 'memory-fallback' };
+        }
+        const countMatch = normalized.match(/SELECT\s+COUNT\(\*\)\s+as\s+count\s+FROM\s+([a-zA-Z0-9_]+)/i);
+        if (countMatch) {
+          const rows = tables.get(countMatch[1]) || [];
+          return { count: rows.length };
+        }
+        const selectMatch = normalized.match(/FROM\s+([a-zA-Z0-9_]+)/i);
+        if (selectMatch) {
+          const rows = tables.get(selectMatch[1]) || [];
+          const lowerOrMatch = normalized.match(/WHERE\s+LOWER\(([a-zA-Z0-9_]+)\)\s*=\s*LOWER\(\?\)\s+OR\s+LOWER\(([a-zA-Z0-9_]+)\)\s*=\s*LOWER\(\?\)/i);
+          if (lowerOrMatch && params.length >= 2) {
+            const c1 = lowerOrMatch[1], c2 = lowerOrMatch[2];
+            const v1 = String(params[0] ?? '').toLowerCase(), v2 = String(params[1] ?? '').toLowerCase();
+            return rows.find((r) => String(r[c1] ?? '').toLowerCase() === v1 || String(r[c2] ?? '').toLowerCase() === v2);
+          }
+          const eqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+          if (eqMatch && params.length >= 1) {
+            const col = eqMatch[1];
+            return rows.find((r) => r[col] === params[0]);
+          }
+          return rows[0] || undefined;
+        }
+        return undefined;
+      },
+      all: (...params: any[]) => {
+        const selectMatch = normalized.match(/FROM\s+([a-zA-Z0-9_]+)/i);
+        if (selectMatch) {
+          const rows = tables.get(selectMatch[1]) || [];
+          const eqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*'([^']+)'/i);
+          if (eqMatch && params.length === 0) {
+            const col = eqMatch[1], val = eqMatch[2];
+            return rows.filter((r) => r[col] === val);
+          }
+          const paramEqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+          if (paramEqMatch && params.length >= 1) {
+            return rows.filter((r) => r[paramEqMatch[1]] === params[0]);
+          }
+          return [...rows];
+        }
+        return [];
+      }
+    };
+  }
+
+  public close(): void {
+    this.tables.clear();
+  }
+}
+
+function createDatabaseEngine(dbPath: string): { db: SqlDatabaseLike; engineName: string } {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const sqliteMod = require('node:sqlite');
+    if (sqliteMod && sqliteMod.DatabaseSync) {
+      return {
+        db: new sqliteMod.DatabaseSync(dbPath),
+        engineName: 'node:sqlite (Embedded Production Engine)'
+      };
+    }
+  } catch (_err) {
+    console.info('ℹ️ node:sqlite unavailable on current Node runtime (< v22); using local in-memory guidance store.');
+  }
+  return {
+    db: new InMemorySqliteFallback(),
+    engineName: 'in-memory-local-fallback (Node 20 Compatible)'
+  };
+}
+
 export class AppDatabase {
   private static instance: AppDatabase | null = null;
-  private db: DatabaseSync;
+  private db: SqlDatabaseLike;
   private dbPath: string;
+  private engineName: string;
 
   private constructor() {
     // Resolve database storage directory
@@ -15,8 +167,10 @@ export class AppDatabase {
     }
     this.dbPath = path.join(dataDir, 'agriscan_production.db');
 
-    // Initialize native SQLite database
-    this.db = new DatabaseSync(this.dbPath);
+    // Initialize native SQLite database (or Node 20 in-memory fallback)
+    const created = createDatabaseEngine(this.dbPath);
+    this.db = created.db;
+    this.engineName = created.engineName;
 
     // Enable high-performance Write-Ahead Logging (WAL) and foreign key enforcement
     this.db.exec('PRAGMA journal_mode = WAL;');
@@ -54,11 +208,11 @@ export class AppDatabase {
     return AppDatabase.getInstance();
   }
 
-  public getRawDb(): DatabaseSync {
+  public getRawDb(): SqlDatabaseLike {
     return this.db;
   }
 
-  public getDb(): DatabaseSync {
+  public getDb(): SqlDatabaseLike {
     return this.db;
   }
 
@@ -181,7 +335,7 @@ export class AppDatabase {
     const journalModeRow: any = this.db.prepare('PRAGMA journal_mode;').get();
 
     return {
-      databaseEngine: 'node:sqlite (Embedded Production Engine)',
+      databaseEngine: this.engineName,
       databaseFile: this.dbPath,
       fileSizeBytes: fileSize,
       fileSizeFormatted: `${(fileSize / (1024 * 1024)).toFixed(2)} MB`,

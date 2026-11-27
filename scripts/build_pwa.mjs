@@ -50,7 +50,7 @@ for (const rel of assetList.sort()) {
   hash.update(rel).update(fs.readFileSync(full));
 }
 const stamp = hash.digest('hex').slice(0, 10);
-const cacheName = `krishi-sahayak-pwa-${stamp}`;
+const cacheName = `mridak-krishi-sahayak-pwa-${stamp}`;
 sw = sw.replace(/const CACHE_NAME = '[^']*';/, `const CACHE_NAME = '${cacheName}';`);
 fs.writeFileSync(swPath, sw);
 console.log(`✓ sw.js CACHE_NAME = ${cacheName} (${assetList.length} precached assets)`);

@@ -30,8 +30,11 @@ window.KrishiB2C = {
     this.updatePersonalizedDailyBrief();
     this.syncAlertCheckboxes();
 
-    // Show friendly 15-second B2C setup sheet ONLY once on very first visit (skippable anytime)
-    if (!localStorage.getItem('krishi_b2c_onboarded_v1')) {
+    // Show quick crop picker ONLY after customer is logged in (never over top of the Mobile+DOB login gate)
+    const isLoggedIn = window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.isCustomerLoggedIn === 'function'
+      ? window.KrishiGoogleCloud.isCustomerLoggedIn()
+      : false;
+    if (isLoggedIn && !localStorage.getItem('krishi_b2c_onboarded_v1')) {
       const modal = document.getElementById('b2cOnboardingModal');
       if (modal) modal.classList.remove('hidden');
     }
@@ -67,7 +70,8 @@ window.KrishiB2C = {
   completeQuickOnboarding() {
     const stateSel = document.getElementById('b2cOnboardState');
     const chosenState = stateSel ? stateSel.value : 'Madhya Pradesh';
-    const primaryCrop = this.selectedCrops[0] || 'SOYBEAN';
+    const primaryCrop = this.selectedCrops[0] || (window.resolveMridakRegion ? window.resolveMridakRegion(chosenState).defaultCrop : 'WHEAT');
+    const nowIso = new Date().toISOString();
 
     const existing = JSON.parse(localStorage.getItem('krishi_farmer_profile_v2') || '{}');
     const updated = Object.assign({
@@ -79,18 +83,64 @@ window.KrishiB2C = {
       crop: primaryCrop,
       crops: this.selectedCrops,
       language: window.currentLanguage || 'hi',
-      updatedAt: new Date().toISOString()
+      updatedAt: nowIso
     });
 
     localStorage.setItem('krishi_farmer_profile_v2', JSON.stringify(updated));
     localStorage.setItem('krishi_b2c_onboarded_v1', 'true');
 
+    // Keep customerSession & deviceVault in sync so hydrateSavedFarmProfile never reverts state!
+    if (window.KrishiGoogleCloud && window.KrishiGoogleCloud.customerSession?.user) {
+      window.KrishiGoogleCloud.customerSession.user = Object.assign(
+        {},
+        window.KrishiGoogleCloud.customerSession.user,
+        {
+          state: chosenState,
+          crop: primaryCrop,
+          crops: this.selectedCrops,
+          updatedAt: nowIso
+        }
+      );
+      localStorage.setItem('mridak_customer_session_v1', JSON.stringify(window.KrishiGoogleCloud.customerSession));
+      const mob = window.KrishiGoogleCloud.customerSession.user.mobileNumber;
+      if (mob) {
+        const dv = JSON.parse(localStorage.getItem('mridak_device_accounts_v1') || '{}');
+        if (dv[mob]) {
+          dv[mob].user = window.KrishiGoogleCloud.customerSession.user;
+          localStorage.setItem('mridak_device_accounts_v1', JSON.stringify(dv));
+        }
+      }
+      const apiBase = typeof API_BASE !== 'undefined' ? API_BASE : '/v1';
+      if (window.KrishiGoogleCloud.customerSession.token && !window.KrishiGoogleCloud.customerSession.firebaseIdToken) {
+        fetch(`${apiBase}/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${window.KrishiGoogleCloud.customerSession.token}`
+          },
+          body: JSON.stringify({ state: chosenState, crop: primaryCrop, crops: this.selectedCrops })
+        }).catch(() => {});
+      }
+    }
+
+    const mitraAns = document.getElementById('mitraAnswerText');
+    if (mitraAns) delete mitraAns.dataset.liveAnswered;
+    const mitraIn = document.getElementById('mitraQueryInput');
+    if (mitraIn) delete mitraIn.dataset.userEdited;
+
     if (typeof currentCrop !== 'undefined') currentCrop = primaryCrop;
-    if (window.KrishiGoogleCloud) window.KrishiGoogleCloud.hydrateSavedFarmProfile();
+    if (typeof window.syncAllModulesToFarmerContext === 'function') {
+      window.syncAllModulesToFarmerContext();
+    } else if (window.KrishiGoogleCloud) {
+      window.KrishiGoogleCloud.hydrateSavedFarmProfile();
+    }
     this.updatePersonalizedDailyBrief();
 
     const modal = document.getElementById('b2cOnboardingModal');
     if (modal) modal.classList.add('hidden');
+    if (typeof reRenderActiveScreen === 'function') reRenderActiveScreen();
+    if (typeof loadDiagnosisHistory === 'function') loadDiagnosisHistory();
+    this.showToast(`✅ क्षेत्र व फसल अपडेट: ${window.getFarmerContext ? window.getFarmerContext().stateLabelHi : chosenState}`);
   },
 
   dismissOnboarding() {
@@ -113,24 +163,26 @@ window.KrishiB2C = {
   // 1-Tap B2C Viral Sharing (Web Share API -> Android Native Bridge -> WhatsApp Deep Link)
   async shareGuidanceCard(contextType) {
     const isEn = (window.currentLanguage || 'hi') === 'en';
-    let title = '🌾 कृषि सहायक — निःशुल्क किसान मार्गदर्शन';
+    let title = '🌾 मृदक (Mridak.com) — निःशुल्क किसान मार्गदर्शन';
     let body = '';
 
     if (contextType === 'rx') {
       const dTitle = document.getElementById('rxDiseaseTitle')?.innerText || 'फसल पोषण सलाह';
       const s1 = document.getElementById('step1ActionText')?.innerText || '';
       const s2 = document.getElementById('step2ActionText')?.innerText || '';
-      body = `🌿 *${dTitle}*\n✅ उपाय 1: ${s1}\n🌱 उपाय 2: ${s2}\n\n(कृषि सहायक ऐप — 100% निःशुल्क, कोई बिक्री नहीं • 22 भारतीय भाषाएं)`;
+      body = `🌿 *${dTitle}*\n✅ उपाय 1: ${s1}\n🌱 उपाय 2: ${s2}\n\n(मृदक Mridak.com — 100% निःशुल्क, कोई बिक्री नहीं • 22 भारतीय भाषाएं)`;
     } else if (contextType === 'mandi') {
       const banner = document.getElementById('mandiBestNetBanner')?.innerText || 'आज का मंडी भाव';
-      body = `📊 *मंडी व MSP मार्गदर्शन*\n${banner}\n\n(कृषि सहायक — निःशुल्क किसान ऐप)`;
+      body = `📊 *मंडी व MSP मार्गदर्शन*\n${banner}\n\n(मृदक Mridak.com — निःशुल्क किसान ऐप)`;
     } else {
       body = isEn
-        ? '🌾 Try Krishi Sahayak — 100% Free, Ad-Free Farmer Guide in 22 Indian Languages (Leaf Scan, DIY Jeevamrut, Fake Fertilizer Test & Mandi Guide):'
-        : '🌾 किसान मित्रों के लिए 100% निःशुल्क "कृषि सहायक" ऐप — 22 भाषाओं में बोलकर पत्ती जांच, जीवामृत विधि, नकली खाद पहचान व मंडी मार्गदर्शन पाएं:';
+        ? '🌾 Try Mridak (mridak.com) — 100% Free, Ad-Free Farmer Guide in 22 Indian Languages (Leaf Scan, DIY Jeevamrut, Fake Fertilizer Test & Mandi Guide):'
+        : '🌾 किसान मित्रों के लिए 100% निःशुल्क "मृदक (Mridak.com)" ऐप — 22 भाषाओं में बोलकर पत्ती जांच, जीवामृत विधि, नकली खाद पहचान व मंडी मार्गदर्शन पाएं:';
     }
 
-    const shareUrl = window.location.origin || 'https://github.com/VikasChaturvedi-RGB/KisanSwasthyaSahayak';
+    const shareUrl = (window.location.origin && !window.location.origin.includes('localhost'))
+      ? window.location.origin
+      : 'https://mridak.com';
 
     if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
       window.AndroidBridge.shareText(`${body}\n${shareUrl}`);
@@ -194,6 +246,22 @@ window.KrishiB2C = {
     a.click();
   },
 
+  showToast(message) {
+    let toast = document.getElementById('krishiB2cToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'krishiB2cToast';
+      toast.style.cssText = 'position:fixed;left:50%;bottom:84px;transform:translateX(-50%);max-width:90vw;background:#14532d;color:#fff;padding:10px 16px;border-radius:12px;font-size:12.5px;font-weight:600;z-index:1200;box-shadow:0 8px 24px rgba(0,0,0,0.28);transition:opacity 0.25s ease;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      if (toast) toast.style.opacity = '0';
+    }, 3500);
+  },
+
   deleteAllMyLocalData() {
     const isEn = (window.currentLanguage || 'hi') === 'en';
     const ok = confirm(isEn
@@ -201,6 +269,8 @@ window.KrishiB2C = {
       : 'क्या आप इस फोन से अपना सहेजा गया खेत विवरण, जांच इतिहास और डायरी डेटा हटाना चाहते हैं?');
     if (!ok) return;
     [
+      'mridak_customer_session_v1',
+      'mridak_device_accounts_v1',
       'krishi_farmer_profile_v2',
       'krishi_private_farm_diary_v1',
       'agriscan_search_history',

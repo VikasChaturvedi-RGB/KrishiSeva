@@ -219,21 +219,27 @@ const FREE_PUBLIC_HELPLINES = [
 
 const DIARY_STORAGE_KEY = 'krishi_private_farm_diary_v1';
 
+function getDiaryStorageKey() {
+  const uid = (typeof window.getFarmerContext === 'function' && window.getFarmerContext()?.uid) || 'default';
+  return `${DIARY_STORAGE_KEY}_${uid}`;
+}
+
 function getPrivateFarmDiary() {
   try {
-    const raw = localStorage.getItem(DIARY_STORAGE_KEY);
+    const raw = localStorage.getItem(getDiaryStorageKey());
     if (raw) return JSON.parse(raw);
   } catch (e) {}
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { cropLabelHi: 'फसल', stateLabelHi: 'खेत' };
   return [
-    { id: 'd1', date: '2026-10-12', type: 'EXPENSE', categoryHi: 'बीज एवं बुवाई (Seed & Sowing)', amountInr: 4200, noteHi: 'सोयाबीन JS 20-34 बुवाई व ट्रैक्टर' },
-    { id: 'd2', date: '2026-10-28', type: 'EXPENSE', categoryHi: 'संतुलित खाद (DAP + ZSB)', amountInr: 2845, noteHi: 'मृदा कार्ड अनुसार संतुलित मात्रा' },
-    { id: 'd3', date: '2026-11-08', type: 'SAVING', categoryHi: 'घरेलू नीमास्त्र व अनावश्यक स्प्रे बचत', amountInr: 2200, noteHi: 'गलत YMV कीटनाशक न खरीदकर शुद्ध बचत!' }
+    { id: 'd1', date: '2026-10-12', type: 'EXPENSE', categoryHi: 'बीज एवं बुवाई (Seed & Sowing)', amountInr: 4200, noteHi: `${ctx.cropLabelHi} प्रमाणित बीज व बुवाई तैयारी` },
+    { id: 'd2', date: '2026-10-28', type: 'EXPENSE', categoryHi: 'संतुलित खाद (DAP + ZSB)', amountInr: 2845, noteHi: `${ctx.stateLabelHi} मृदा कार्ड अनुसार संतुलित मात्रा` },
+    { id: 'd3', date: '2026-11-08', type: 'SAVING', categoryHi: 'घरेलू नीमास्त्र व अनावश्यक स्प्रे बचत', amountInr: 2200, noteHi: 'अनावश्यक रसायन न खरीदकर शुद्ध बचत!' }
   ];
 }
 
 function savePrivateFarmDiary(entries) {
   try {
-    localStorage.setItem(DIARY_STORAGE_KEY, JSON.stringify(entries));
+    localStorage.setItem(getDiaryStorageKey(), JSON.stringify(entries));
   } catch (e) {}
   if (window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.syncDiaryToFirestoreFree === 'function') {
     window.KrishiGoogleCloud.syncDiaryToFirestoreFree(entries);

@@ -1,10 +1,12 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
 // CACHE_NAME is re-stamped by scripts/build_pwa.mjs with a content hash on every
 // build, so installed apps pick up new code and the monthly datasets automatically.
-const CACHE_NAME = 'krishi-sahayak-pwa-139938449b';
+const CACHE_NAME = 'mridak-krishi-sahayak-pwa-d20a45730d';
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './download.html',
+  './privacy.html',
   './style.css',
   './locales22.js',
   './guidance-modules.js',
@@ -21,6 +23,11 @@ const STATIC_ASSETS = [
   './data/crop-variety-almanac.js',
   './data/soil-zone-atlas.js',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
+  './icons/apple-touch-icon.png',
+  './icons/qr-download.svg',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
 ];
@@ -46,6 +53,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
+
+  // Let native browser networking handle binary APK downloads, Firebase init & auth POST calls directly
+  if (url.pathname.endsWith('.apk') || url.pathname.startsWith('/__/firebase/') || url.pathname.startsWith('/v1/auth/')) {
+    return;
+  }
 
   if (url.pathname.startsWith('/v1/')) {
     event.respondWith(
@@ -91,33 +103,37 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request)
-        .then((networkRes) => {
-          if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
-            const copy = networkRes.clone();
-            caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
-          }
-          return networkRes;
-        })
-        .catch(() => {
+    fetch(event.request)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200 && networkRes.type === 'basic') {
+          const copy = networkRes.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
+        }
+        return networkRes;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
-          return cached;
-        });
-      return cached || fetchPromise;
-    })
+          return undefined;
+        })
+      )
   );
 });
 
 // Background Sync: when connectivity returns, ask open app windows to upload the
-// diagnoses that were completed on-device while offline (queue lives in the page).
+// diagnoses (and diary entries) completed on-device while offline (queue lives in the page).
+// 'sync-offline-diagnoses' is the tag used by earlier releases — still honoured.
 self.addEventListener('sync', (event) => {
-  if (event.tag !== 'krishi-diagnosis-sync') return;
+  if (event.tag !== 'krishi-diagnosis-sync' && event.tag !== 'sync-offline-diagnoses') return;
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
-      clients.forEach((c) => c.postMessage({ type: 'KRISHI_SYNC_DIAGNOSES' }));
+      clients.forEach((c) => {
+        c.postMessage({ type: 'KRISHI_SYNC_DIAGNOSES' });
+        c.postMessage({ type: 'OFFLINE_QUEUE_SYNCED' });
+      });
     })
   );
 });
