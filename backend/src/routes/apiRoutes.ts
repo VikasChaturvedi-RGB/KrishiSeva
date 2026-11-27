@@ -59,6 +59,78 @@ function requireAdmin(req: Request, res: Response, next: () => void) {
 // -------------------------------------------------------------
 // 1. AUTH, ONBOARDING & DPDP CONSENT SERVICE
 // -------------------------------------------------------------
+router.post('/auth/mobile-dob', async (req: Request, res: Response) => {
+  const { mobileNumber, dob, fullName, state, crop, crops, areaAcres, landUnit, preferredLanguage } = req.body || {};
+  try {
+    const result = await AuthService.customerMobileDobLogin({
+      mobileNumber: String(mobileNumber || ''),
+      dob: String(dob || ''),
+      fullName: fullName ? String(fullName) : undefined,
+      state: state ? String(state) : undefined,
+      crop: crop ? String(crop) : undefined,
+      crops: Array.isArray(crops) ? crops : undefined,
+      areaAcres: areaAcres !== undefined ? Number(areaAcres) : undefined,
+      landUnit: landUnit ? String(landUnit) : undefined,
+      preferredLanguage: preferredLanguage ? String(preferredLanguage) : undefined,
+      clientIp: req.ip || req.socket.remoteAddress || 'anon'
+    });
+    return res.json(result);
+  } catch (err: any) {
+    const msg = String(err?.message || 'Authentication failed');
+    if (msg.startsWith('TOO_MANY_ATTEMPTS')) {
+      return res.status(429).json({ errorCode: 'TOO_MANY_ATTEMPTS', message: msg.replace(/^TOO_MANY_ATTEMPTS:\s*/, '') });
+    }
+    if (msg.startsWith('INVALID_MOBILE') || msg.startsWith('INVALID_DOB')) {
+      const code = msg.split(':')[0];
+      return res.status(400).json({ errorCode: code, message: msg.replace(/^[A-Z_]+:\s*/, '') });
+    }
+    return res.status(401).json({
+      errorCode: 'AUTH_DOB_MISMATCH',
+      message: msg.replace(/^AUTH_DOB_MISMATCH:\s*/, '')
+    });
+  }
+});
+
+router.get('/auth/me', (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ errorCode: 'UNAUTHORIZED', message: 'Bearer token required' });
+  }
+  try {
+    const decoded = AuthService.verifyToken(authHeader.split(' ')[1]);
+    const profile = AuthService.getCustomerByMobile(decoded.mobileNumber);
+    if (!profile) {
+      return res.json({
+        authenticated: true,
+        user: {
+          uid: decoded.userId,
+          userId: decoded.userId,
+          mobileNumber: decoded.mobileNumber,
+          mobileMasked: `+91-XXXXXX${String(decoded.mobileNumber || '').slice(-4)}`,
+          role: decoded.role
+        }
+      });
+    }
+    return res.json({ authenticated: true, user: profile });
+  } catch {
+    return res.status(401).json({ errorCode: 'INVALID_TOKEN', message: 'Session expired or invalid' });
+  }
+});
+
+router.put('/auth/profile', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ errorCode: 'UNAUTHORIZED', message: 'Bearer token required' });
+  }
+  try {
+    const decoded = AuthService.verifyToken(authHeader.split(' ')[1]);
+    const updated = await AuthService.updateCustomerFarmProfile(decoded.mobileNumber, req.body || {});
+    return res.json({ success: true, user: updated });
+  } catch (err: any) {
+    return res.status(400).json({ errorCode: 'PROFILE_UPDATE_FAILED', message: err?.message || 'Update failed' });
+  }
+});
+
 router.post('/auth/admin/login', (req: Request, res: Response) => {
   const { username, password } = req.body;
   try {

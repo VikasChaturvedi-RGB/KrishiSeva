@@ -1,5 +1,5 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'mridak-krishi-sahayak-pwa-v2026.11-prod-v6';
+const CACHE_NAME = 'mridak-krishi-sahayak-pwa-v2026.11-prod-v7';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -75,8 +75,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Let native browser networking handle binary APK downloads & 302 release redirects directly
-  if (url.pathname.endsWith('.apk')) {
+  // Let native browser networking handle binary APK downloads, Firebase init & auth POST calls directly
+  if (url.pathname.endsWith('.apk') || url.pathname.startsWith('/__/firebase/') || url.pathname.startsWith('/v1/auth/')) {
     return;
   }
 

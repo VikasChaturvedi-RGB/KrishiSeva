@@ -30,8 +30,11 @@ window.KrishiB2C = {
     this.updatePersonalizedDailyBrief();
     this.syncAlertCheckboxes();
 
-    // Show friendly 15-second B2C setup sheet ONLY once on very first visit (skippable anytime)
-    if (!localStorage.getItem('krishi_b2c_onboarded_v1')) {
+    // Show quick crop picker ONLY after customer is logged in (never over top of the Mobile+DOB login gate)
+    const isLoggedIn = window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.isCustomerLoggedIn === 'function'
+      ? window.KrishiGoogleCloud.isCustomerLoggedIn()
+      : false;
+    if (isLoggedIn && !localStorage.getItem('krishi_b2c_onboarded_v1')) {
       const modal = document.getElementById('b2cOnboardingModal');
       if (modal) modal.classList.remove('hidden');
     }
@@ -219,6 +222,8 @@ window.KrishiB2C = {
       : 'क्या आप इस फोन से अपना सहेजा गया खेत विवरण, जांच इतिहास और डायरी डेटा हटाना चाहते हैं?');
     if (!ok) return;
     [
+      'mridak_customer_session_v1',
+      'mridak_device_accounts_v1',
       'krishi_farmer_profile_v2',
       'krishi_private_farm_diary_v1',
       'agriscan_search_history',

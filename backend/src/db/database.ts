@@ -40,9 +40,38 @@ class InMemorySqliteFallback implements SqlDatabaseLike {
           list.push(row);
           return { changes: 1, lastInsertRowid: list.length };
         }
+        const updateMatch = normalized.match(/UPDATE\s+([a-zA-Z0-9_]+)\s+SET\s+([\s\S]+?)\s+WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+        if (updateMatch) {
+          const tableName = updateMatch[1];
+          const setClause = updateMatch[2];
+          const whereCol = updateMatch[3];
+          const whereVal = params[params.length - 1];
+          const rows = tables.get(tableName) || [];
+          const assignments = setClause.split(',').map((s) => s.trim());
+          let changed = 0;
+          for (const row of rows) {
+            if (row[whereCol] === whereVal) {
+              let pIdx = 0;
+              for (const assign of assignments) {
+                const colMatch = assign.match(/^([a-zA-Z0-9_]+)\s*=\s*(.+)$/i);
+                if (!colMatch) continue;
+                const col = colMatch[1];
+                const expr = colMatch[2].trim();
+                if (/^COALESCE\(\?,/i.test(expr)) {
+                  const val = params[pIdx++];
+                  if (val !== null && val !== undefined) row[col] = val;
+                } else if (expr === '?') {
+                  row[col] = params[pIdx++];
+                }
+              }
+              changed++;
+            }
+          }
+          return { changes: changed, lastInsertRowid: 0 };
+        }
         return { changes: 1, lastInsertRowid: 1 };
       },
-      get: (..._params: any[]) => {
+      get: (...params: any[]) => {
         if (upper.startsWith('PRAGMA JOURNAL_MODE')) {
           return { journal_mode: 'memory-fallback' };
         }
@@ -54,14 +83,35 @@ class InMemorySqliteFallback implements SqlDatabaseLike {
         const selectMatch = normalized.match(/FROM\s+([a-zA-Z0-9_]+)/i);
         if (selectMatch) {
           const rows = tables.get(selectMatch[1]) || [];
+          const lowerOrMatch = normalized.match(/WHERE\s+LOWER\(([a-zA-Z0-9_]+)\)\s*=\s*LOWER\(\?\)\s+OR\s+LOWER\(([a-zA-Z0-9_]+)\)\s*=\s*LOWER\(\?\)/i);
+          if (lowerOrMatch && params.length >= 2) {
+            const c1 = lowerOrMatch[1], c2 = lowerOrMatch[2];
+            const v1 = String(params[0] ?? '').toLowerCase(), v2 = String(params[1] ?? '').toLowerCase();
+            return rows.find((r) => String(r[c1] ?? '').toLowerCase() === v1 || String(r[c2] ?? '').toLowerCase() === v2);
+          }
+          const eqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+          if (eqMatch && params.length >= 1) {
+            const col = eqMatch[1];
+            return rows.find((r) => r[col] === params[0]);
+          }
           return rows[0] || undefined;
         }
         return undefined;
       },
-      all: (..._params: any[]) => {
+      all: (...params: any[]) => {
         const selectMatch = normalized.match(/FROM\s+([a-zA-Z0-9_]+)/i);
         if (selectMatch) {
-          return [...(tables.get(selectMatch[1]) || [])];
+          const rows = tables.get(selectMatch[1]) || [];
+          const eqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*'([^']+)'/i);
+          if (eqMatch && params.length === 0) {
+            const col = eqMatch[1], val = eqMatch[2];
+            return rows.filter((r) => r[col] === val);
+          }
+          const paramEqMatch = normalized.match(/WHERE\s+([a-zA-Z0-9_]+)\s*=\s*\?/i);
+          if (paramEqMatch && params.length >= 1) {
+            return rows.filter((r) => r[paramEqMatch[1]] === params[0]);
+          }
+          return [...rows];
         }
         return [];
       }

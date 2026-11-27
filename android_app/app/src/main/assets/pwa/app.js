@@ -2637,23 +2637,43 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   loadDiagnosisHistory();
 
-  // Support PWA deep-link shortcuts (#scan, #diy, #mitra, #mandi)
-  const hash = (window.location.hash || '').toLowerCase();
-  if (hash === '#scan') switchView('viewCamera');
-  else if (hash === '#diy') switchView('viewClinic');
-  else if (hash === '#mitra') openEcosystemView('viewMitra', document.getElementById('navMitra'));
-  else if (hash === '#mandi') openEcosystemView('viewMandi', document.getElementById('navMandi'));
-  else switchView('viewHome', false);
+  // Support PWA deep-link shortcuts (#scan, #diy, #mitra, #mandi); gated by Mobile+DOB login
+  if (!isUserLoggedIn()) {
+    switchView('viewAuth', false);
+  } else {
+    const hash = (window.location.hash || '').toLowerCase();
+    if (hash === '#scan') switchView('viewCamera');
+    else if (hash === '#diy') switchView('viewClinic');
+    else if (hash === '#mitra') openEcosystemView('viewMitra', document.getElementById('navMitra'));
+    else if (hash === '#mandi') openEcosystemView('viewMandi', document.getElementById('navMandi'));
+    else switchView('viewHome', false);
+  }
 });
 
 // ==========================================
-// 4. Navigation & Screen View Controller (Auth-Gated)
+// 4. Navigation & Screen View Controller (Mobile+DOB Auth-Gated)
 // ==========================================
 function isUserLoggedIn() {
+  if (window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.isCustomerLoggedIn === 'function') {
+    return window.KrishiGoogleCloud.isCustomerLoggedIn();
+  }
   return authToken !== null && currentUser !== null;
 }
 
-const PROTECTED_VIEWS = []; // Zero login wall: 100% open farmer guidance
+const PROTECTED_VIEWS = [
+  'viewHome',
+  'viewCamera',
+  'viewProcessing',
+  'viewRecommendation',
+  'viewFarm',
+  'viewClinic',
+  'viewMandi',
+  'viewCalendar',
+  'viewSchemes',
+  'viewMitra',
+  'viewStateMatrix',
+  'viewHistory'
+];
 
 function getProtectedViewName(viewId) {
   switch (viewId) {
@@ -2701,8 +2721,11 @@ function switchView(viewId, pushHistory = true) {
     });
     viewId = 'viewAuth';
   } else if (viewId === 'viewAuth' && isUserLoggedIn()) {
-    // If already logged in and navigating to auth, default to home
     hideAuthRequiredNotice();
+  }
+
+  if (window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.syncAuthGateUi === 'function') {
+    window.KrishiGoogleCloud.syncAuthGateUi();
   }
 
   if (pushHistory && (viewHistory.length === 0 || viewHistory[viewHistory.length - 1] !== viewId)) {
@@ -3296,6 +3319,9 @@ function applyLanguageStrings(langCode) {
     setText('rxOrderBtnText', gp('rxFreeKvkBtn'));
     const unitKey = (window.KRISHI_UNIT_FACTORS && window.KRISHI_UNIT_FACTORS[window.KRISHI_LAND_UNIT || 'ACRE'])?.key || 'unitAcre';
     setText('landUnitBtnLabel', gp(unitKey));
+  }
+  if (window.KrishiGoogleCloud && typeof window.KrishiGoogleCloud.hydrateSavedFarmProfile === 'function') {
+    window.KrishiGoogleCloud.hydrateSavedFarmProfile();
   }
 }
 

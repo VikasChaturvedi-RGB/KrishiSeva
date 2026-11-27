@@ -90,4 +90,4 @@ jobs:
         env:
           PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || 'kris-seva' }}
         run: |
-          npx -y firebase-tools@latest deploy --only hosting,firestore:rules,firestore:indexes --project "${PROJECT_ID}"
+          npx -y firebase-tools@latest deploy --only hosting,auth,firestore:rules,firestore:indexes --project "${PROJECT_ID}"

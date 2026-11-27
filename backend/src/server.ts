@@ -53,6 +53,7 @@ function freeTierRateGuard(maxPerMinute: number) {
 
 app.use('/v1/translate', freeTierRateGuard(60));
 app.use('/v1/gemini', freeTierRateGuard(30));
+app.use('/v1/auth/mobile-dob', freeTierRateGuard(25));
 
 // Initialize Database & Seed Reference Agronomy Datasets
 try {

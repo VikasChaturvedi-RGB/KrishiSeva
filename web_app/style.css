@@ -4670,3 +4670,174 @@ body.farmer-portal-body {
   background: #dcfce7;
   color: #14532d;
 }
+
+/* ==========================================================================
+   CUSTOMER MOBILE + DATE OF BIRTH (DOB) MANDATORY LOGIN STYLES
+   ========================================================================== */
+.mobile-dob-login-card {
+  border: 1.5px solid #bbf7d0;
+  box-shadow: 0 12px 28px rgba(20, 83, 45, 0.10);
+}
+
+.login-zero-otp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #dcfce7;
+  color: #14532d;
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.login-gate-heading {
+  font-size: 19px;
+  font-weight: 800;
+  color: #14532d;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.login-field-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.mobile-prefix-group {
+  display: flex;
+  align-items: stretch;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mobile-prefix-group:focus-within {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.16);
+}
+
+.country-code-prefix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  background: #f0fdf4;
+  color: #14532d;
+  font-weight: 800;
+  font-size: 14px;
+  border-right: 1px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+.mobile-digits-input {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+  padding: 12px 14px !important;
+}
+
+.dob-select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.45fr 1.05fr;
+  gap: 8px;
+}
+
+.dob-select {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  padding: 11px 8px !important;
+  border-radius: 10px !important;
+  border: 1.5px solid #cbd5e1 !important;
+  background-color: #ffffff;
+}
+
+.new-customer-opt-details {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  border: 1px dashed #94a3b8;
+  border-radius: 12px;
+  padding: 9px 12px;
+  text-align: left;
+}
+
+.new-customer-opt-details summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: #14532d;
+  cursor: pointer;
+  list-style: none;
+}
+
+.opt-details-body {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.mobile-dob-alert {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: left;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.login-submit-btn {
+  padding: 14px 18px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  border-radius: 12px !important;
+  margin-top: 6px;
+}
+
+.login-trust-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.logged-in-account-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.btn-account-logout {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}

@@ -203,6 +203,81 @@ export class GoogleFreeServices {
     }
   }
 
+  /**
+   * Server-only IAM Firestore vault for Mobile+DOB customer accounts (inaccessible to client rules)
+   */
+  static async saveCustomerAuthVault(mobile: string, record: Record<string, any>): Promise<void> {
+    this.resetDailyCountersIfNeeded();
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
+    if (!projectId || this.dailyWrites >= 18000) return;
+    const token = await this.getCloudRunMetadataToken();
+    if (!token) return;
+    try {
+      this.dailyWrites += 1;
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/mridak_auth_vault/${encodeURIComponent(mobile)}`;
+      await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            uid: { stringValue: String(record.uid || '') },
+            mobileNumber: { stringValue: String(mobile) },
+            dobVerifierHash: { stringValue: String(record.dobVerifierHash || '') },
+            dobSha256: { stringValue: String(record.dobSha256 || '') },
+            fullName: { stringValue: String(record.fullName || '') },
+            state: { stringValue: String(record.state || 'Madhya Pradesh') },
+            crop: { stringValue: String(record.crop || 'SOYBEAN') },
+            areaAcres: { doubleValue: Number(record.areaAcres || 3.5) },
+            landUnit: { stringValue: String(record.landUnit || 'ACRE') },
+            preferredLanguage: { stringValue: String(record.preferredLanguage || 'hi') },
+            createdAt: { stringValue: String(record.createdAt || new Date().toISOString()) },
+            updatedAt: { stringValue: new Date().toISOString() }
+          }
+        })
+      });
+    } catch {
+      // Non-fatal fallback to local vault
+    }
+  }
+
+  static async loadCustomerAuthVault(mobile: string): Promise<Record<string, any> | null> {
+    this.resetDailyCountersIfNeeded();
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCLOUD_PROJECT;
+    if (!projectId || this.dailyReads >= 45000) return null;
+    const token = await this.getCloudRunMetadataToken();
+    if (!token) return null;
+    try {
+      this.dailyReads += 1;
+      const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/mridak_auth_vault/${encodeURIComponent(mobile)}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) return null;
+      const doc: any = await res.json();
+      const f = doc?.fields;
+      if (!f || !f.dobVerifierHash?.stringValue) return null;
+      return {
+        uid: f.uid?.stringValue || '',
+        mobileNumber: f.mobileNumber?.stringValue || mobile,
+        dobVerifierHash: f.dobVerifierHash.stringValue,
+        dobSha256: f.dobSha256?.stringValue || '',
+        fullName: f.fullName?.stringValue || `किसान मित्र (+91-${mobile.slice(-4)})`,
+        state: f.state?.stringValue || 'Madhya Pradesh',
+        crop: f.crop?.stringValue || 'SOYBEAN',
+        areaAcres: Number(f.areaAcres?.doubleValue ?? f.areaAcres?.integerValue ?? 3.5),
+        landUnit: f.landUnit?.stringValue || 'ACRE',
+        preferredLanguage: f.preferredLanguage?.stringValue || 'hi',
+        createdAt: f.createdAt?.stringValue || new Date().toISOString(),
+        updatedAt: f.updatedAt?.stringValue || new Date().toISOString()
+      };
+    } catch {
+      return null;
+    }
+  }
+
   static async syncPrivateDiary(uidRaw: string, entries: any[]) {
     this.resetDailyCountersIfNeeded();
     const uid = String(uidRaw || 'anon-default').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64);

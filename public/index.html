@@ -166,23 +166,159 @@
             </div>
           </div>
 
-                    <!-- ================================================================ -->
-          <!-- Screen 1: Optional Farm Profile & Google Free Cloud Backup (NO LOGIN WALL) -->
           <!-- ================================================================ -->
-          <section id="viewAuth" class="screen-view">
-            <div class="auth-card">
+          <!-- Screen 1: Mandatory Mobile + DOB Customer Login & Farm Profile   -->
+          <!-- ================================================================ -->
+          <section id="viewAuth" class="screen-view active">
+            <!-- STATE A: Mandatory Mobile Number + Date of Birth (DOB) Login / Self-Signup -->
+            <div id="authLoginGateBox" class="auth-card mobile-dob-login-card">
+              <div class="auth-icon-circle" style="margin-bottom:10px;">
+                <i class="fa-solid fa-seedling"></i>
+              </div>
+              <div class="login-zero-otp-pill">
+                <i class="fa-solid fa-shield-heart"></i> <span>100% निःशुल्क ग्राहक लॉगिन • कोई OTP प्रतीक्षा नहीं</span>
+              </div>
+              <h3 class="login-gate-heading" id="loginGateTitle">मोबाइल नंबर एवं जन्मतिथि से लॉगिन करें</h3>
+              <p class="auth-sub" id="loginGateSubtitle" style="margin-bottom:14px;">
+                अपना 10-अंकों का मोबाइल नंबर और जन्मतिथि (DOB) चुनें। पहली बार आने पर आपका खाता स्वतः बन जाएगा और इस फोन में हमेशा लॉगिन रहेगा।
+              </p>
+
+              <form id="mobileDobLoginForm" onsubmit="window.KrishiGoogleCloud.submitMobileDobLogin(event)" novalidate>
+                <!-- 1. 10-Digit Mobile Number -->
+                <div class="form-group mb-2" style="text-align:left;">
+                  <label for="loginMobileInput" class="login-field-label">
+                    <i class="fa-solid fa-mobile-screen-button text-green"></i> मोबाइल नंबर (10 अंक) *
+                  </label>
+                  <div class="mobile-prefix-group">
+                    <span class="country-code-prefix">🇮🇳 +91</span>
+                    <input
+                      type="tel"
+                      id="loginMobileInput"
+                      class="form-control mobile-digits-input"
+                      inputmode="numeric"
+                      maxlength="10"
+                      pattern="[6-9][0-9]{9}"
+                      autocomplete="tel-national"
+                      placeholder="98XXXXXXXX"
+                      oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
+                      required
+                    >
+                  </div>
+                </div>
+
+                <!-- 2. Date of Birth (Day / Month / Year — Easy Touch Selectors) -->
+                <div class="form-group mb-2" style="text-align:left; margin-top:12px;">
+                  <label class="login-field-label">
+                    <i class="fa-solid fa-calendar-days text-green"></i> जन्मतिथि (Date of Birth — पासवर्ड) *
+                  </label>
+                  <div class="dob-select-grid">
+                    <select id="loginDobDay" class="form-select dob-select" aria-label="जन्म दिन (Day)" required>
+                      <option value="">दिन (DD)</option>
+                    </select>
+                    <select id="loginDobMonth" class="form-select dob-select" aria-label="जन्म महीना (Month)" required>
+                      <option value="">महीना (MM)</option>
+                      <option value="01">01 - जनवरी (Jan)</option>
+                      <option value="02">02 - फरवरी (Feb)</option>
+                      <option value="03">03 - मार्च (Mar)</option>
+                      <option value="04">04 - अप्रैल (Apr)</option>
+                      <option value="05">05 - मई (May)</option>
+                      <option value="06">06 - जून (Jun)</option>
+                      <option value="07">07 - जुलाई (Jul)</option>
+                      <option value="08">08 - अगस्त (Aug)</option>
+                      <option value="09">09 - सितंबर (Sep)</option>
+                      <option value="10">10 - अक्टूबर (Oct)</option>
+                      <option value="11">11 - नवंबर (Nov)</option>
+                      <option value="12">12 - दिसंबर (Dec)</option>
+                    </select>
+                    <select id="loginDobYear" class="form-select dob-select" aria-label="जन्म वर्ष (Year)" required>
+                      <option value="">वर्ष (YYYY)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 3. Optional First-Time Registration Profile Details -->
+                <details class="new-customer-opt-details">
+                  <summary>
+                    <i class="fa-solid fa-user-plus text-green"></i> नए ग्राहक? अपना नाम, राज्य व फसल जोड़ें (वैकल्पिक)
+                  </summary>
+                  <div class="opt-details-body">
+                    <div class="form-group mb-2">
+                      <label style="font-size:11.5px; font-weight:700; color:#1e293b;">आपका नाम (Full Name):</label>
+                      <input type="text" id="loginNameInput" class="form-control" maxlength="80" placeholder="उदा. रामेश्वर पाटीदार">
+                    </div>
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label style="font-size:11.5px; font-weight:700; color:#1e293b;">राज्य (State):</label>
+                        <select id="loginStateSelect" class="form-select">
+                          <option value="Madhya Pradesh">मध्य प्रदेश</option>
+                          <option value="Uttar Pradesh & Bihar">उ.प्र. एवं बिहार</option>
+                          <option value="Maharashtra">महाराष्ट्र</option>
+                          <option value="Punjab & Haryana">पंजाब एवं हरियाणा</option>
+                          <option value="Gujarat & Rajasthan">गुजरात एवं राजस्थान</option>
+                          <option value="Andhra, Telangana & Karnataka">आंध्र, तेलंगाना व कर्नाटक</option>
+                          <option value="West Bengal, Odisha & Assam">बंगाल, ओडिशा व असम</option>
+                          <option value="Kerala & Himachal">केरल एवं हिमाचल</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label style="font-size:11.5px; font-weight:700; color:#1e293b;">मुख्य फसल:</label>
+                        <select id="loginCropSelect" class="form-select">
+                          <option value="SOYBEAN">सोयाबीन</option>
+                          <option value="WHEAT">गेहूँ</option>
+                          <option value="PADDY">धान</option>
+                          <option value="COTTON">कपास</option>
+                          <option value="CHILLI">मिर्च</option>
+                          <option value="TOMATO">टमाटर</option>
+                          <option value="MAIZE">मक्का</option>
+                          <option value="POTATO">आलू</option>
+                          <option value="SUGARCANE">गन्ना</option>
+                          <option value="BANANA">केला</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Inline Validation / Error Banner -->
+                <div id="mobileDobErrorBox" class="mobile-dob-alert hidden" role="alert"></div>
+
+                <button type="submit" id="mobileDobSubmitBtn" class="btn btn-primary btn-block login-submit-btn">
+                  <i class="fa-solid fa-right-to-bracket"></i> <span>लॉगिन करें / खाता खोलें</span>
+                </button>
+              </form>
+
+              <div class="login-trust-footer">
+                <div><i class="fa-solid fa-lock text-green"></i> आपकी जन्मतिथि एन्क्रिप्टेड (SHA-256 / PBKDF2) रहती है • एक बार लॉगिन के बाद फोन में स्वतः खुला रहेगा।</div>
+                <div style="margin-top:6px;">
+                  <a href="privacy.html" style="color:#15803d; font-weight:700; text-decoration:underline;">गोपनीयता नीति (DPDP Act 2023)</a>
+                  •
+                  <a href="/download" style="color:#15803d; font-weight:700; text-decoration:underline;">Android APK डाउनलोड</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- STATE B: Logged-In Customer Farm Profile & Account Management -->
+            <div id="authProfileManageBox" class="auth-card hidden">
               <div class="view-sub-header" style="margin-bottom:12px;">
                 <button class="btn-back-pill" onclick="navigateToHome()">
                   <i class="fa-solid fa-house"></i> <span>होम</span>
                 </button>
-                <span class="sub-header-title" id="authHeadingText">मेरा खेत प्रोफाइल (लॉगिन आवश्यक नहीं)</span>
+                <span class="sub-header-title" id="authHeadingText">मेरा खाता एवं खेत प्रोफाइल</span>
               </div>
 
-              <div class="auth-icon-circle">
-                <i class="fa-solid fa-tractor"></i>
+              <!-- Verified Mobile Session Strip + 1-Tap Logout -->
+              <div class="logged-in-account-strip">
+                <div>
+                  <small style="display:block; font-size:10.5px; color:#475569; font-weight:600;">सत्यापित ग्राहक मोबाइल</small>
+                  <strong id="loggedInMobileDisplay" style="font-size:13.5px; color:#14532d;">+91-XXXXXX0000</strong>
+                </div>
+                <button type="button" id="customerLogoutBtn" class="btn-account-logout" onclick="window.KrishiGoogleCloud.logoutCustomer()">
+                  <i class="fa-solid fa-right-from-bracket"></i> <span>लॉगआउट</span>
+                </button>
               </div>
+
               <p class="auth-sub" id="authSubText" style="margin-bottom:14px;">
-                बिना किसी पासवर्ड या OTP के सभी सेवाएं 100% निःशुल्क खुली हैं। सटीक सलाह के लिए अपना राज्य, फसल और जमीन माप चुनें:
+                सटीक फसल, खाद मात्रा और मंडी सलाह के लिए अपना राज्य, फसल और जमीन माप चुनें:
               </p>
 
               <div class="form-group mb-2" style="text-align:left;">
@@ -288,9 +424,9 @@
           </section>
 
           <!-- ================================================================ -->
-          <!-- Screen 2: Farmer Home Dashboard (Default Instant Entry) -->
+          <!-- Screen 2: Farmer Home Dashboard (Unlocked After Mobile+DOB Auth) -->
           <!-- ================================================================ -->
-          <section id="viewHome" class="screen-view active">
+          <section id="viewHome" class="screen-view">
             <div class="home-screen-card">
               
               <!-- Farmer Greeting Header with Auth State & Logout -->
@@ -301,9 +437,14 @@
                 <div class="farmer-greeting-info">
                   <div class="farmer-top-row">
                     <span class="greeting-sub" id="homeGreetingSub">शुभ दिन,</span>
-                    <button class="btn-logout-chip" onclick="switchView('viewAuth')" title="मेरा खेत बदलें / Edit Farm">
-                      <i class="fa-solid fa-sliders"></i> <span id="logoutBtnText">मेरा खेत</span>
-                    </button>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                      <button class="btn-logout-chip" onclick="switchView('viewAuth')" title="मेरा खेत बदलें / Edit Farm">
+                        <i class="fa-solid fa-sliders"></i> <span id="logoutBtnText">मेरा खेत</span>
+                      </button>
+                      <button class="btn-logout-chip" style="background:#fef2f2; color:#b91c1c; border-color:#fecaca;" onclick="window.KrishiGoogleCloud.logoutCustomer()" title="लॉगआउट / खाता बदलें">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span>लॉगआउट</span>
+                      </button>
+                    </div>
                   </div>
                   <h3 class="farmer-name" id="homeFarmerName">रामेश्वर पाटीदार</h3>
                   <p class="farmer-farm-meta"><i class="fa-solid fa-location-dot text-green"></i> <span id="homeLocationMeta">ग्राम धरमपुरी, धार (म.प्र.) • <strong>3.5 एकड़</strong></span></p>

@@ -29,9 +29,14 @@ rules_version = '2';
 //
 // 3. Collection: farmers/{farmerUid}
 //    Document ID: farmerUid (must equal request.auth.uid, 1..128 chars)
-//    Access: Strictly isolated to the owning farmer (read, create, update, delete).
-//    Fields:
+//    Access: Strictly isolated to the owning farmer (get, create, update, delete; list denied
+//            so no user can enumerate /farmers). Supports both Anonymous Auth and Mobile + DOB
+//            self-registration (<10-digit-mobile>@auth.mridak.com via emailPassword provider).
+//    Fields (DPDP Act 2023 zero-plaintext-PII compliant):
 //      - uid: string (optional, 1..128 chars, immutable, must equal farmerUid & request.auth.uid)
+//      - mobileMasked: string (optional, 14 chars matching ^\+91-[X*]{6}[0-9]{4}$, immutable once set)
+//      - dobHash: string (optional, 71 chars matching ^sha256:[a-f0-9]{64}$, immutable once set — raw DOB never stored)
+//      - authMethod: string (optional, enum: MOBILE_DOB | ANONYMOUS, immutable once set)
 //      - name: string (optional, 1..80 chars) - Display name / greeting preference
 //      - state: string (required, 2..60 chars) - Farmer's primary state
 //      - district: string (optional, 1..80 chars) - Farmer's district
@@ -132,6 +137,26 @@ service cloud.firestore {
     // Ensure immutable fields cannot be added, modified, or deleted during an update
     function areImmutableFieldsUnchanged(fields) {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // Ensure an optional identity field, once set in resource.data, can never be modified or deleted on update
+    function isImmutableOnceSet(field) {
+      return !(field in resource.data) ||
+             (field in request.resource.data && request.resource.data[field] == resource.data[field]);
+    }
+
+    // Validate DPDP-safe masked Indian mobile number (+91-XXXXXX1234 or +91-******1234, strictly 14 chars)
+    function isValidMaskedMobile(val) {
+      return val is string &&
+             val.size() == 14 &&
+             val.matches("^\\+91-[X*]{6}[0-9]{4}$");
+    }
+
+    // Validate DPDP-safe SHA-256 hex digest of DOB (sha256:<64 hex chars>, strictly 71 chars — blocks plaintext DOB)
+    function isValidDobHash(val) {
+      return val is string &&
+             val.size() == 71 &&
+             val.matches("^sha256:[a-f0-9]{64}$");
     }
 
     // Validate required string field type and character length bounds
@@ -250,12 +275,16 @@ service cloud.firestore {
 
     function isValidFarmerProfile(data, farmerUid) {
       return hasOnlyAllowedFields([
-               'uid', 'name', 'state', 'district', 'crop', 'crops',
+               'uid', 'mobileMasked', 'dobHash', 'authMethod',
+               'name', 'state', 'district', 'crop', 'crops',
                'areaAcres', 'landUnit', 'language', 'alertsEnabled',
                'createdAt', 'updatedAt'
              ]) &&
              hasRequiredFields(['state', 'crop', 'areaAcres', 'language', 'updatedAt']) &&
              (!('uid' in data) || (data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 && data.uid == farmerUid)) &&
+             (!('mobileMasked' in data) || isValidMaskedMobile(data.mobileMasked)) &&
+             (!('dobHash' in data) || isValidDobHash(data.dobHash)) &&
+             (!('authMethod' in data) || (data.authMethod is string && data.authMethod in ['MOBILE_DOB', 'ANONYMOUS'])) &&
              isValidOptionalString('name', 1, 80) &&
              validStringLength('state', 2, 60) &&
              isValidOptionalString('district', 1, 80) &&
@@ -340,7 +369,8 @@ service cloud.firestore {
     //    Subcollections omit parent exists() check intentionally so offline-first farmers
     //    who skip onboarding can sync immediately without consuming extra 50k/day Spark reads.
     match /farmers/{farmerUid} {
-      allow read: if isOwner(farmerUid);
+      allow get: if isOwner(farmerUid);
+      allow list: if false;
       allow create: if isOwner(farmerUid) &&
                        isValidDocId(farmerUid) &&
                        uidUnchanged(farmerUid) &&
@@ -350,6 +380,9 @@ service cloud.firestore {
                        isValidDocId(farmerUid) &&
                        uidNotModified() &&
                        areImmutableFieldsUnchanged(['createdAt']) &&
+                       isImmutableOnceSet('mobileMasked') &&
+                       isImmutableOnceSet('dobHash') &&
+                       isImmutableOnceSet('authMethod') &&
                        isValidFarmerProfile(request.resource.data, farmerUid);
       allow delete: if isOwner(farmerUid);
 
