@@ -4841,3 +4841,11 @@ body.farmer-portal-body {
   align-items: center;
   gap: 5px;
 }
+
+/* Zero-Selling Guard: keep all legacy buy/order/paid-booking controls hidden */
+.btn-buy-prod,
+.prod-bottom-row,
+.chc-booking-cta-box,
+#chcBookingsSectionCard {
+  display: none !important;
+}

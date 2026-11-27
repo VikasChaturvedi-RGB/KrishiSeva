@@ -3167,12 +3167,7 @@ function applyLanguageStrings(langCode) {
   setText('step2Title', l.step2Title);
   setText('step3Badge', l.step3Badge);
   setText('step3Title', l.step3Title);
-  setText('gradKitBadgeText', l.gradKitBadge);
-  setText('gradKitTitleText', l.gradKitTitle);
-  setText('gradKitDescText', l.gradKitDesc);
-  setText('gradKitOrderBtnText', l.gradKitOrderBtn);
   setText('rxBottomRetakeText', l.retakeOther);
-  setText('rxOrderBtnText', l.orderBtn);
   setText('ttsBtnText', l.voiceBtn);
   setText('pdfBtnText', l.pdfBtn);
 
@@ -3196,32 +3191,8 @@ function applyLanguageStrings(langCode) {
   setText('escChatBtn', l.escChatBtn);
   setText('escCallBtn', l.escCallBtn);
 
-  // Screen 8: Agri-Clinic & Seed Store
+  // Screen 8: Self-Reliant Farming & Input Purity Hub (Non-Commercial)
   setText('clinicHomeBtnText', l.home);
-  setText('clinicScreenTitle', l.clinicTitleText);
-  setText('gradVerifiedSealText', l.gradVerifiedSeal);
-  setText('btnClinicTabProductsText', l.tabProducts);
-  setText('btnClinicTabRxText', l.tabRx);
-  setText('btnClinicTabKhataText', l.tabKhata);
-  setText('btnClinicTabConsultText', l.tabConsult);
-  setText('catFilterAll', l.catAll);
-  setText('catFilterSeed', l.catSeed);
-  setText('catFilterMicro', l.catMicro);
-  setText('catFilterKit', l.catKit);
-  setText('catFilterBioFert', l.catBioFert);
-  setText('catFilterBioPest', l.catBioPest);
-  setText('consultTypeLabel', l.consultTypeLabel);
-  setText('consultCropLabel', l.consultCropLabel);
-  setText('consultAcreLabel', l.consultAcreLabel);
-  setText('consultSlotLabel', l.consultSlotLabel);
-  setText('consultDescLabel', l.consultDescLabel);
-  setText('consultFeeSummaryLabel', l.consultFeeSummaryLabel);
-  setText('btnBookConsultText', l.btnBookConsultText);
-  setText('khataLimitLabel', l.khataLimitLabel);
-  setText('khataOutstandingLabel', l.khataDueLabel);
-  setText('khataSettledLabel', l.khataSettledLabel);
-  setText('khataRecentTitle', l.khataRecentTitle);
-  setText('khataRecordPayText', l.khataRecordPayText);
 
   // Screen 9: Soil Health Passport
   setText('farmHomeBtnText', l.home);
@@ -4554,7 +4525,7 @@ async function loadMandiIntelligence() {
   if (!listEl) return;
 
   try {
-    const res = await fetch(`${API_BASE}/v1/market/mandi-prices?crop=${encodeURIComponent(currentMandiCropFilter)}&quantityQtl=${currentMandiLotQuintals}`);
+    const res = await fetch(`${API_BASE}/market/mandi-prices?crop=${encodeURIComponent(currentMandiCropFilter)}&quantityQtl=${currentMandiLotQuintals}`);
     if (!res.ok) throw new Error('Mandi API error');
     const data = await res.json();
     lastMandiPayload = data;
@@ -4709,7 +4680,7 @@ async function loadSprayWeatherAndCalendar() {
 async function fetchSprayAdvisory(presetOverride) {
   const preset = presetOverride || WEATHER_SIM_PRESETS[currentWeatherSimIndex];
   try {
-    const url = `${API_BASE}/v1/weather/spray-advisory?windSpeedKmh=${preset.windKmh}&rainProbPct=${preset.rainProb}&tempC=${preset.tempC}&humidityPct=${preset.humidity}`;
+    const url = `${API_BASE}/weather/spray-advisory?windSpeedKmh=${preset.windKmh}&rainProbPct=${preset.rainProb}&tempC=${preset.tempC}&humidityPct=${preset.humidity}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Weather API error');
     const data = await res.json();
@@ -4795,7 +4766,7 @@ async function refreshCropCalendarAndNpk() {
   const acres = acreSlider ? parseFloat(acreSlider.value) : 2.0;
 
   try {
-    const res = await fetch(`${API_BASE}/v1/advisory/crop-calendar?crop=${encodeURIComponent(cropKey)}&acreage=${acres}&soilZn=0.45`);
+    const res = await fetch(`${API_BASE}/advisory/crop-calendar?crop=${encodeURIComponent(cropKey)}&acreage=${acres}&soilZn=0.45`);
     if (!res.ok) throw new Error('Calendar API error');
     const data = await res.json();
     lastCalendarPayload = data;
@@ -4820,15 +4791,13 @@ function renderNpkAndCalendar(data) {
           <div class="npk-bag-box" ${isZinc ? 'style="border-color:#fca5a5; background:#fef2f2;"' : ''}>
             <span class="bag-title" ${isZinc ? 'style="color:#991b1b;"' : ''}>${item.nameHi}</span>
             <strong class="bag-count" ${isZinc ? 'style="color:#b91c1c;"' : ''}>${isZinc ? `${item.totalKg} kg` : `${item.bags} बोरी`}</strong>
-            <span class="bag-sub">${item.timingHi} • ₹${Number(item.costInr).toLocaleString('en-IN')}</span>
+            <span class="bag-sub">${item.timingHi}</span>
           </div>
         `;
       }).join('');
     }
     if (costSummary) {
-      const totalCost = calc.totalEstimatedCostInr ?? calc.estimatedTotalCostInr ?? 2845;
-      const bioSavings = calc.inmBioSavingsInr ?? calc.bioFertilizerSavingsInr ?? 2300;
-      costSummary.innerHTML = `कुल सरकारी अनुदानित खाद लागत: <strong>₹${Number(totalCost).toLocaleString('en-IN')}</strong> • जैव-उर्वरक (ZSB) से बचत: <strong class="text-green">₹${Number(bioSavings).toLocaleString('en-IN')}</strong>`;
+      costSummary.innerHTML = `मृदा कार्ड आधारित संतुलित मात्रा • जैव-उर्वरक (ZSB / राइजोबियम) के प्रयोग से रासायनिक खाद की आवश्यकता <strong class="text-green">25–30% कम</strong> होती है`;
     }
   }
 
@@ -4868,7 +4837,7 @@ function speakCalendarSummary() {
 // ----------------------------------------------------------------------------
 async function loadGovernmentSchemes() {
   try {
-    const res = await fetch(`${API_BASE}/v1/schemes/eligibility?acreage=3.5&crop=SOYBEAN`);
+    const res = await fetch(`${API_BASE}/schemes/eligibility?acreage=3.5&crop=SOYBEAN`);
     if (!res.ok) throw new Error('Schemes API error');
     const data = await res.json();
     lastSchemesPayload = data;
@@ -4949,7 +4918,7 @@ async function submitInstantPmfbyClaim() {
   const sel = document.getElementById('claimReasonSelect');
   const claimReason = sel ? sel.value : 'अतिवृष्टि एवं जलभराव से सोयाबीन क्षति';
   try {
-    const res = await fetch(`${API_BASE}/v1/schemes/claim`, {
+    const res = await fetch(`${API_BASE}/schemes/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -4977,7 +4946,7 @@ async function submitInstantPmfbyClaim() {
 
 async function applyForScheme(schemeCode, schemeName, estimatedBenefitInr) {
   try {
-    const res = await fetch(`${API_BASE}/v1/schemes/claim`, {
+    const res = await fetch(`${API_BASE}/schemes/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5014,7 +4983,7 @@ async function loadOutbreakRadar() {
   if (!listEl) return;
 
   try {
-    const res = await fetch(`${API_BASE}/v1/community/outbreaks?state=${encodeURIComponent('Madhya Pradesh')}`);
+    const res = await fetch(`${API_BASE}/community/outbreaks?state=${encodeURIComponent('Madhya Pradesh')}`);
     if (!res.ok) throw new Error('Outbreaks API error');
     const data = await res.json();
     renderOutbreakRadar(data.outbreaks || data.alerts || []);
@@ -5057,7 +5026,7 @@ async function reportNewVillageOutbreak() {
   if (!diseaseNameHi) return;
 
   try {
-    const res = await fetch(`${API_BASE}/v1/community/outbreaks`, {
+    const res = await fetch(`${API_BASE}/community/outbreaks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5094,7 +5063,7 @@ async function submitMitraInput() {
   if (ansText) ansText.innerText = 'किसान ई-मित्र सोच रहा है...';
 
   try {
-    const res = await fetch(`${API_BASE}/v1/assistant/ask`, {
+    const res = await fetch(`${API_BASE}/assistant/ask`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -5273,7 +5242,7 @@ async function loadStateChallengeMatrix() {
   if (!detailBox) return;
 
   try {
-    const res = await fetch(`${API_BASE}/v1/states/challenges?state=${encodeURIComponent(currentSelectedStateCode)}&acreage=3.5`);
+    const res = await fetch(`${API_BASE}/states/challenges?state=${encodeURIComponent(currentSelectedStateCode)}&acreage=3.5`);
     if (!res.ok) throw new Error('State Challenges API error');
     const data = await res.json();
     lastStateChallengePayload = data;
@@ -5332,54 +5301,21 @@ function renderStateChallengeMatrix(st, bookings) {
       </div>
     </div>
 
-    <div class="chc-booking-cta-box">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <strong style="font-size:12px; color:#065f46;"><i class="fa-solid fa-helicopter"></i> ${st.chc_equipment_name_hi}</strong>
-        <span class="scheme-benefit-badge">${st.chc_subsidy_pct}% सरकारी अनुदान</span>
-      </div>
-      <p style="font-size:11px; color:#1e293b; margin-bottom:8px;">
-        ${st.state_scheme_highlight_hi}<br>
-        अनुदान के बाद 3.5 एकड़ का शुद्ध किराया: <strong>मात्र ₹${Number(netPayable).toLocaleString('en-IN')}</strong>
+    <div class="tech-resolution-card" style="background:#f0fdf4; border-color:#bbf7d0;">
+      <h5><i class="fa-solid fa-landmark text-green"></i> राज्य सरकारी योजना एवं अनुदान मार्गदर्शन</h5>
+      <p style="font-size:11.5px; color:#1e293b; margin-top:4px;" data-translatable="true">
+        ${st.state_scheme_highlight_hi}
       </p>
-      <button class="btn btn-primary btn-block" onclick="bookStateTechSolution('${st.state_code}')">
-        <i class="fa-solid fa-calendar-plus"></i> अभी CHC मशीनरी / किसान ड्रोन स्लॉट बुक करें
-      </button>
     </div>
   `;
 
-  if (bookingsBox && Array.isArray(bookings)) {
-    bookingsBox.innerHTML = bookings.map(b => `
-      <div class="submitted-app-pill">
-        <div>
-          <strong>${b.equipment_name_hi}</strong>
-          <div style="font-size:0.66rem; color:#475569;">बुकिंग नं: <code>${b.booking_ref}</code> • ${b.state_name_hi} • देय: ₹${Number(b.net_farmer_payable_inr).toLocaleString('en-IN')}</div>
-        </div>
-        <span class="badge-status-valid">${b.status}</span>
-      </div>
-    `).join('');
+  if (bookingsBox) {
+    bookingsBox.innerHTML = '';
   }
 }
 
-async function bookStateTechSolution(stateCode) {
-  try {
-    const res = await fetch(`${API_BASE}/v1/states/tech-intervention-book`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        stateCode: stateCode || currentSelectedStateCode,
-        acreage: 3.5
-      })
-    });
-    const data = await res.json();
-    if (data && data.messageHi) {
-      speakHindiText(data.messageHi);
-      alert(data.messageHi);
-      loadStateChallengeMatrix();
-      updateJsonConsole(data);
-    }
-  } catch (err) {
-    alert('आपकी CHC मशीनरी एवं किसान ड्रोन बुकिंग सफलतापूर्वक दर्ज कर ली गई है!');
-  }
+async function bookStateTechSolution(_stateCode) {
+  openEcosystemView('viewSchemes');
 }
 
 function speakStateChallengeSummary() {
@@ -5570,7 +5506,7 @@ async function loadClinicProducts(category = 'ALL') {
 
   let products = [];
   try {
-    const res = await fetch(`${API_BASE}/v1/graduate/products?category=${encodeURIComponent(category)}`);
+    const res = await fetch(`${API_BASE}/graduate/products?category=${encodeURIComponent(category)}`);
     const data = await res.json();
     products = data.products || [];
   } catch (err) {
@@ -5643,31 +5579,9 @@ async function loadClinicProducts(category = 'ALL') {
   }).join('');
 }
 
-// 19.5 Direct Catalog Order Handler
-async function orderProductDirect(productCode, productName, price) {
-  const confirmOrder = confirm(`क्या आप "${productName}" (मूल्य: ₹${price}) का आर्डर दर्ज करना चाहते हैं?\n\n- अधिकृत कृषि स्नातक द्वारा प्रमाणित लॉट\n- फसल कटाई बाद भुगतान (Pay-After-Harvest) अथवा UPI उपलब्ध`);
-  if (!confirmOrder) return;
-
-  try {
-    const res = await fetch(`${API_BASE}/v1/graduate/orders`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        farmerName: 'रमेश पटेल (Ramesh Patel)',
-        mobileNumber: '9876543210',
-        village: 'मुल्लापुरा, बड़नगर, उज्जैन',
-        items: [{ productCode, productName, quantity: 1, rate: price }],
-        paymentMode: 'PAY_AFTER_HARVEST_CREDIT',
-        harvestCreditDueDate: '2026-11-20 (सोयाबीन विक्रय उपरांत)'
-      })
-    });
-    const data = await res.json();
-    alert(`✅ ऑर्डर सफलतापूर्वक दर्ज किया गया!\n\nआर्डर नं: ${data.order?.order_no || 'ORD-2026-NEW'}\nचालान: ${data.order?.invoice_docket || 'INV-2026-OK'}\nभुगतान मोड: फसल कटाई बाद भुगतान (बही-खाता दर्ज)`);
-    switchClinicSubTab('khata');
-  } catch (err) {
-    alert(`✅ ऑर्डर सफलतापूर्वक दर्ज किया गया!\n\nउत्पाद: ${productName}\nभुगतान मोड: फसल कटाई बाद भुगतान (बही-खाता में दर्ज किया गया)`);
-    switchClinicSubTab('khata');
-  }
+// 19.5 Direct Catalog Order Handler (Disabled — Zero-Selling Mode)
+async function orderProductDirect() {
+  switchView('viewClinic');
 }
 
 // 19.6 Look Up Agri-Rx Digital Prescription
@@ -5783,7 +5697,7 @@ async function dispenseAndBillRxOrder() {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/v1/graduate/orders`, {
+    const res = await fetch(`${API_BASE}/graduate/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderPayload)
@@ -5803,7 +5717,7 @@ async function dispenseAndBillRxOrder() {
 async function loadFarmerKhataLedger(mobileNumber = '9876543210') {
   let khata = null;
   try {
-    const res = await fetch(`${API_BASE}/v1/graduate/khata/${mobileNumber}`);
+    const res = await fetch(`${API_BASE}/graduate/khata/${mobileNumber}`);
     khata = await res.json();
     activeFarmerKhataData = khata;
   } catch (err) {
@@ -5917,7 +5831,7 @@ async function submitGraduateConsultationBooking() {
   };
 
   try {
-    const res = await fetch(`${API_BASE}/v1/graduate/consultations`, {
+    const res = await fetch(`${API_BASE}/graduate/consultations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

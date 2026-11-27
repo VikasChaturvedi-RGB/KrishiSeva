@@ -113,7 +113,7 @@
                 <button class="btn-modal-close" onclick="window.KrishiB2C.dismissOnboarding()" title="बाद में / Skip"><i class="fa-solid fa-xmark"></i></button>
               </div>
               <p style="font-size:11.5px; color:#475569; margin-top:4px;" data-translatable="true">
-                कोई मोबाइल नंबर या पासवर्ड नहीं चाहिए — केवल अपनी भाषा, राज्य और फसल चुनें ताकि रोज सही मौसम व मंडी सलाह मिले:
+                अपनी भाषा, राज्य और मुख्य फसलें चुनें ताकि रोज सटीक मौसम, पोषण व मंडी मार्गदर्शन मिले:
               </p>
             </div>
 
@@ -499,11 +499,11 @@
                 <div class="state-strip-left">
                   <div class="state-map-icon"><i class="fa-solid fa-map-location-dot"></i></div>
                   <div>
-                    <strong id="homeStateMatrixTitle">राज्य-वार कृषि चुनौती एवं तकनीकी समाधान (8 राज्य)</strong>
-                    <p id="homeStateMatrixSub">म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की समस्याओं का AI + ड्रोन/CHC समाधान</p>
+                    <strong id="homeStateMatrixTitle">राज्य-वार कृषि चुनौती एवं वैज्ञानिक समाधान (8 राज्य)</strong>
+                    <p id="homeStateMatrixSub">म.प्र., पंजाब, महाराष्ट्र, उ.प्र., दक्षिण व पूर्व की मिट्टी व रोग समस्याओं का AI समाधान</p>
                   </div>
                 </div>
-                <span class="state-drone-pill"><i class="fa-solid fa-helicopter"></i> ड्रोन/CHC</span>
+                <span class="state-drone-pill"><i class="fa-solid fa-compass"></i> 8 राज्य गाइड</span>
               </div>
 
               <!-- Primary Hero Scan Action Card -->
@@ -1355,7 +1355,7 @@
                 </div>
 
                 <div class="npk-cost-footer" id="npkCostSummary">
-                  कुल सरकारी अनुदानित खाद लागत: <strong>₹2,845</strong> • जैव-उर्वरक (ZSB) से बचत: <strong class="text-green">₹2,300</strong>
+                  मृदा कार्ड आधारित संतुलित मात्रा • जैव-उर्वरक (ZSB / राइजोबियम) के प्रयोग से रासायनिक खाद की आवश्यकता <strong class="text-green">25–30% कम</strong> होती है
                 </div>
               </div>
 
@@ -1548,13 +1548,13 @@
                 <!-- Populated dynamically from /v1/states/challenges -->
               </div>
 
-              <!-- Active CHC Machinery & Kisan Drone Bookings List (SQLite Live) -->
-              <div class="eco-section-card">
+              <!-- CHC Machinery & Drone Bookings Section Hidden (Zero-Selling / Non-Commercial Mode) -->
+              <div class="eco-section-card hidden" id="chcBookingsSectionCard" aria-hidden="true">
                 <div class="eco-card-header">
                   <h5 id="chcBookingsHeading"><i class="fa-solid fa-helicopter text-green"></i> <span id="chcBookingsHeadingText">आपकी बुक की गई मशीनरी / ड्रोन सेवाएं (आपकी बुकिंग सूची)</span></h5>
                 </div>
                 <div id="chcBookingsListContainer">
-                  <!-- Populated dynamically -->
+                  <!-- Hidden in non-commercial mode -->
                 </div>
               </div>
             </div>
