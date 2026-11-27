@@ -59,3 +59,29 @@ GEMINI_API_KEY="your_free_ai_studio_key" ./scripts/deploy_google_free.sh your-gc
 ### 4. Build Android App (`android_app/`)
 - **Android Studio**: Open `android_app/` and click **Run** (bundles offline PWA + ML Kit On-Device Translation + Native TTS + FCM).
 - **Pure Play Store TWA**: `cd android_app && npx @bubblewrap/cli build` using `twa-manifest.json`.
+
+---
+
+## Area Intelligence, Always-On AI Diagnosis & Analytics
+
+### Crop & variety fit for the farmer's area (refreshed monthly)
+- Home → **मेरे क्षेत्र की फसल व किस्म**: ranks crops and public-sector (ICAR / SAU) varieties for the farmer's state, district, soil, water access and the current month. API: `GET /v1/advisory/crop-variety-fit?state=&district=&irrigation=IRRIGATED|LIMITED|RAINFED&month=`.
+- Data: `backend/src/data/crop-variety-almanac.json` (17 states, 19 crops, 90 varieties). `npm run build` publishes it into the PWA (`web_simulator/data/`) so it also works offline.
+- **Monthly refresh:** `.github/workflows/monthly-crop-data-refresh.yml` runs at 06:00 IST on the 1st. It re-stamps the review month, merges curated updates, gates on the tests, commits, and redeploys. Optional inputs (Settings → Secrets and variables → Actions):
+  - `vars.ALMANAC_OVERRIDES_URL`: a JSON feed of agronomist-curated `varietyUpserts`, `varietyRetirements`, `suitabilityUpserts` and `soilDeficiencyUpserts` (schema in `scripts/refresh_crop_variety_almanac.mjs`)
+  - `secrets.DATA_GOV_IN_API_KEY`: a free data.gov.in key for live Agmarknet mandi price signals
+- Freshness check: `GET /v1/area-intelligence/freshness` returns 503 `STALE` if a monthly refresh is missed by more than 5 days.
+
+### Area soil type & nutrient deficiencies
+- Home → **मेरी मिट्टी व पोषक कमी**: dominant soil type for the district or state, endemic deficiencies (ICAR-IISS / Soil Health Card patterns), an acre-scaled correction plan, DIY soil tests and Soil Health Card guidance. API: `GET /v1/soil/area-profile?state=&district=&cropCode=&acres=`.
+- The area's deficiency pattern also feeds the photo diagnosis as a prior.
+
+### Photo / video diagnosis that always answers
+- `web_simulator/leaf-vision-engine.js` analyses the real pixels **on the phone**, so it works without internet. It measures chlorosis pattern, necrosis (interior vs. leaf margin), lesions, halos, rust pustules, purple and powdery tissue, then ranks 16 nutrient and disease conditions with a nutrition-first, 3-step, CIB&RC-only solution.
+- `web_simulator/ai-diagnosis-pipeline.js` reads the photo, video frames, or live frames grabbed during recording. It verifies with the server when online (7 s timeout + 1 retry). A watchdog ensures a result within 15 s, and any failure gives honest "retake" guidance instead of a spinner. Offline results are queued and uploaded when the network returns.
+- Health: the app self-tests on start-up and daily (the camera-screen pill shows the status). Uptime monitors can poll `GET /v1/diagnosis/engine-health` (200 HEALTHY / 503 DEGRADED).
+- Tests: `cd backend && npm run test:area` (runs on any Node; parity, scale and noise checks). `npm test` needs Node 22 for `node:sqlite`. CI runs both: `.github/workflows/ci-tests.yml`.
+
+### Google Tag Manager (GTM-M9S2B335)
+- The container is installed in `web_simulator/index.html` (and the root redirect page) with consent defaults that deny ads storage. Every app event goes to `dataLayer` as `{event: '<name>', ...params}`. No phone numbers or names are sent.
+- **Set up GA4 inside GTM** (in the GTM web UI): add a *Google Tag* with your GA4 Measurement ID, and a *GA4 Event* tag with event name `{{Event}}` on a Custom Event trigger matching `^(b2c_|ai_diagnosis_|crop_fit_|soil_atlas_|area_|screen_view|language_selected|guidance_)`. Direct gtag.js is used only when no GTM container is configured, which avoids double counting.

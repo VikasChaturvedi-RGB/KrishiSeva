@@ -2582,19 +2582,35 @@ function updateOfflineQueueCount(count) {
   }
 }
 
-function syncOfflineDiagnoses() {
-  if (offlineQueue.length > 0) {
-    const count = offlineQueue.length;
-    setTimeout(() => {
-      offlineQueue = [];
-      updateOfflineQueueCount(0);
-      logToConsole('PWA Auto-Sync: Offline Diagnoses Replayed', {
-        syncedItemsCount: count,
-        status: 'SUCCESS_200_OK'
+let isSyncingOfflineQueue = false;
+
+// Uploads diagnoses completed on-device while offline; keeps any that still fail
+async function syncOfflineDiagnoses() {
+  if (isSyncingOfflineQueue || !offlineQueue.length || !navigator.onLine || isSimulatedOffline) return;
+  isSyncingOfflineQueue = true;
+  const remaining = [];
+  let synced = 0;
+  for (const item of offlineQueue) {
+    if (!item.payload) continue; // legacy demo entries carry nothing to upload
+    try {
+      const res = await fetch(`${API_BASE}/diagnosis/diagnose/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept-Language': currentLanguage },
+        body: JSON.stringify(item.payload)
       });
-      alert(`🔄 इंटरनेट बहाल! ${count} ऑफ़लाइन फसल स्कैन स्वतः बैकएंड से सिंक हो गए हैं।`);
-    }, 1000);
+      const data = res.ok ? await res.json() : null;
+      if (data && data.diagnosisId) synced++;
+      else remaining.push(item);
+    } catch (e) {
+      remaining.push(item);
+    }
   }
+  offlineQueue = remaining;
+  persistOfflineQueue();
+  updateOfflineQueueCount(offlineQueue.length);
+  isSyncingOfflineQueue = false;
+  logToConsole('PWA Auto-Sync: Offline Diagnoses Uploaded', { syncedItemsCount: synced, stillQueued: remaining.length });
+  if (synced && window.KrishiAnalytics) window.KrishiAnalytics.trackEvent('ai_diagnosis_offline_synced', { synced_count: synced, still_queued: remaining.length });
 }
 
 // ==========================================
@@ -2771,6 +2787,10 @@ function switchView(viewId, pushHistory = true) {
     loadOutbreakRadar();
   } else if (viewId === 'viewStateMatrix') {
     loadStateChallengeMatrix();
+  } else if (viewId === 'viewCropFit') {
+    if (window.KrishiAreaIntel) window.KrishiAreaIntel.renderCropFit();
+  } else if (viewId === 'viewSoilAtlas') {
+    if (window.KrishiAreaIntel) window.KrishiAreaIntel.renderSoilAtlas();
   }
 }
 
@@ -3426,7 +3446,10 @@ function handlePhotoCapture() {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
     
-    // Save image to preview
+    // Save image to preview (camera capture supersedes any earlier gallery pick)
+    currentUploadedFile = null;
+    currentUploadedFileName = null;
+    if (window.KrishiDiagnosisPipeline) window.KrishiDiagnosisPipeline.clearCapturedFrames();
     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     if (leafImg) {
       leafImg.src = dataUrl;
@@ -3474,6 +3497,14 @@ function startRealVideoRecording() {
     }
   }, 1000);
 
+  currentUploadedFile = null;
+  currentUploadedFileName = null;
+  if (window.KrishiDiagnosisPipeline) {
+    window.KrishiDiagnosisPipeline.clearCapturedFrames();
+    window.KrishiDiagnosisPipeline.startLiveFrameGrab(liveVideo);
+  }
+
+  mediaRecorder = null;
   if (liveCameraStream && window.MediaRecorder) {
     try {
       mediaRecorder = new MediaRecorder(liveCameraStream);
@@ -3483,7 +3514,9 @@ function startRealVideoRecording() {
         }
       };
       mediaRecorder.onstop = () => {
-        const videoBlob = new Blob(recordedVideoChunks, { type: 'video/mp4' });
+        // Use the recorder's real container (WebM on Android Chrome, MP4 on Safari)
+        const videoBlob = new Blob(recordedVideoChunks, { type: (mediaRecorder && mediaRecorder.mimeType) || 'video/webm' });
+        window.__krishiLastVideoBlob = videoBlob;
         const videoUrl = URL.createObjectURL(videoBlob);
         const leafVideo = document.getElementById('leafPreviewVideo');
         if (leafVideo) {
@@ -3509,17 +3542,24 @@ function stopRealVideoRecording() {
   if (recIndicator) recIndicator.classList.add('hidden');
   if (shutterIcon) shutterIcon.className = 'fa-solid fa-video';
 
+  if (window.KrishiDiagnosisPipeline) window.KrishiDiagnosisPipeline.stopLiveFrameGrab();
+
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
     mediaRecorder.stop();
   } else {
-    // Demo fallback video
-    const leafVideo = document.getElementById('leafPreviewVideo');
+    // No MediaRecorder on this phone: frames were grabbed live from the camera,
+    // so analysis still works. Show the latest real frame as the preview.
     const liveVideo = document.getElementById('liveCameraFeed');
-    if (leafVideo) {
-      leafVideo.src = 'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-green-leaf-41484-large.mp4';
-      leafVideo.classList.remove('hidden');
-      leafVideo.play().catch(() => {});
-    }
+    const leafImg = document.getElementById('leafPreviewImg');
+    try {
+      if (liveVideo && liveVideo.videoWidth && leafImg) {
+        const c = document.createElement('canvas');
+        c.width = liveVideo.videoWidth; c.height = liveVideo.videoHeight;
+        c.getContext('2d').drawImage(liveVideo, 0, 0);
+        leafImg.src = c.toDataURL('image/jpeg', 0.9);
+        leafImg.classList.remove('hidden');
+      }
+    } catch (e) {}
     if (liveVideo) liveVideo.classList.add('hidden');
   }
 
@@ -3543,20 +3583,25 @@ function showCapturePreviewControls(mode) {
 
   if (mediaReadyBadge) {
     if (mode === 'video') {
-      mediaReadyBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> 🎥 360° पत्ती वीडियो कैप्चर (1080p) तैयार';
+      mediaReadyBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> 🎥 पत्ती वीडियो तैयार — कई फ्रेम जांचे जाएंगे';
     } else {
-      mediaReadyBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> 📸 फोटो चयनित (1920x1080) - शारीरिक विश्लेषण हेतु तैयार';
+      mediaReadyBadge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> 📸 फोटो की गुणवत्ता जांची जा रही है...';
     }
   }
 
-  logToConsole('Media Ingested on Edge', {
-    mode,
-    crop: currentCrop,
-    resolution: '1080p High-Resolution Frame',
-    lightScore: '92%',
-    focusScore: '88%',
-    tfliteEngine: 'INT8 Quantized Model Loaded'
-  });
+  // Real quick quality gate so the farmer can retake a bad photo before analysis
+  if (mode !== 'video' && window.KrishiDiagnosisPipeline && mediaReadyBadge) {
+    window.KrishiDiagnosisPipeline.previewQualityCheck(mode).then(q => {
+      if (!q) return;
+      const issueHi = { BLURRY: 'धुंधली', TOO_DARK: 'अंधेरा', OVEREXPOSED: 'बहुत तेज रोशनी', GLARE: 'चमक अधिक', NO_LEAF_DETECTED: 'पत्ती नहीं दिखी' };
+      if (q.issues.length) {
+        mediaReadyBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i> फोटो: ${q.issues.map(i => issueHi[i] || i).join(', ')} — दोबारा लेना बेहतर`;
+      } else {
+        mediaReadyBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> 📸 फोटो स्पष्ट • पत्ती ${(q.leafCoverage * 100).toFixed(0)}% भाग में — जांच हेतु तैयार`;
+      }
+      logToConsole('Capture quality (on-device)', q);
+    });
+  }
 }
 
 function resetMediaCapture() {
@@ -3570,6 +3615,10 @@ function resetMediaCapture() {
   if (initialControls) initialControls.classList.remove('hidden');
   if (previewControls) previewControls.classList.add('hidden');
   if (recIndicator) recIndicator.classList.add('hidden');
+  if (window.KrishiDiagnosisPipeline) {
+    window.KrishiDiagnosisPipeline.stopLiveFrameGrab();
+    window.KrishiDiagnosisPipeline.clearCapturedFrames();
+  }
 
   if (leafVideo) {
     leafVideo.pause();
@@ -3645,6 +3694,24 @@ function handleMediaFileSelected(event, mode) {
 
   currentUploadedFile = file;
   currentUploadedFileName = file.name;
+  if (window.KrishiDiagnosisPipeline) window.KrishiDiagnosisPipeline.clearCapturedFrames();
+
+  // Videos: stream via object URL instead of loading the whole file into memory as base64
+  if (file.type.startsWith('video/')) {
+    const previewImg = document.getElementById('leafPreviewImg');
+    const previewVideo = document.getElementById('leafPreviewVideo');
+    const liveVideo = document.getElementById('liveCameraFeed');
+    if (liveVideo) liveVideo.classList.add('hidden');
+    currentMediaMode = 'video';
+    if (previewImg) previewImg.classList.add('hidden');
+    if (previewVideo) {
+      previewVideo.classList.remove('hidden');
+      previewVideo.src = URL.createObjectURL(file);
+      previewVideo.play().catch(() => {});
+    }
+    showCapturePreviewControls('video');
+    return;
+  }
 
   // Botanical Feature & Filename Detection
   const detectedCrop = detectCropFromImageOrFileName(file.name, file);
@@ -3760,319 +3827,318 @@ function flipCameraSimulation() {
 // Flow: Data Uploaded -> Signal Processing -> Feature Analysis -> Predicting
 // ==========================================
 async function startPhysiologicalAnalysis() {
-  if (isSimulatedOffline) {
-    simulateOfflineDiagnosticQueue();
-    switchView('viewRecommendation');
-    return;
-  }
-
   switchView('viewProcessing');
 
   const progressBar = document.getElementById('procProgressBar');
   const pctText = document.getElementById('procPctText');
   const stepLabel = document.getElementById('procStepLabel');
   const logStream = document.getElementById('spectralLogStream');
+  const stages = ['stage1Box', 'stage2Box', 'stage3Box', 'stage4Box'].map(id => document.getElementById(id));
+  stages.forEach(s => { if (s) s.className = 'stepper-stage pending'; });
+  if (stages[0]) stages[0].className = 'stepper-stage active';
 
-  const stage1 = document.getElementById('stage1Box');
-  const stage2 = document.getElementById('stage2Box');
-  const stage3 = document.getElementById('stage3Box');
-  const stage4 = document.getElementById('stage4Box');
+  const t0 = performance.now();
+  const stamp = () => `${((performance.now() - t0) / 1000).toFixed(1)}s`;
+  const log = (color, html) => {
+    if (!logStream) return;
+    logStream.innerHTML += `<div><span style="color:${color};">[${stamp()}]</span> ${html}</div>`;
+    logStream.scrollTop = logStream.scrollHeight;
+  };
+  if (logStream) logStream.innerHTML = '';
+  if (progressBar) progressBar.style.width = '10%';
+  if (pctText) pctText.innerText = '10%';
+  if (stepLabel) stepLabel.innerText = '1. फोटो/वीडियो पढ़ा जा रहा है...';
+  log('#22c55e', `📡 ऑन-डिवाइस AI जांच प्रारंभ (${currentCrop}) • ${currentMediaMode === 'video' ? 'वीडियो' : 'फोटो'}`);
 
-  // Reset Stepper
-  [stage1, stage2, stage3, stage4].forEach(s => {
-    if (s) s.className = 'stepper-stage pending';
-  });
+  const pct = { 1: 30, 2: 60, 3: 85, 4: 100 };
+  const onStage = (n, label, detail) => {
+    stages.forEach((s, i) => { if (s) s.className = 'stepper-stage ' + (i < n - 1 ? 'completed' : i === n - 1 ? 'active' : 'pending'); });
+    if (progressBar) progressBar.style.width = pct[n] + '%';
+    if (pctText) pctText.innerText = pct[n] + '%';
+    if (stepLabel) stepLabel.innerText = `${n}. ${label}`;
+    if (n === 2 && detail && detail.tissue) {
+      const t = detail.tissue, q = detail.quality;
+      log('#38bdf8', `🔬 पत्ती क्षेत्र ${(q.leafCoverage * 100).toFixed(0)}% • हरा ${(t.greenRatio * 100).toFixed(1)}% • पीला ${(t.chlorosisRatio * 100).toFixed(1)}% • सूखा ${(t.necrosisRatio * 100).toFixed(1)}%`);
+      log('#38bdf8', `📊 धब्बे: ${detail.lesions.count} • रतुआ दाने: ${detail.lesions.rustPustuleCount} • स्पष्टता ${(q.blurScore * 100).toFixed(0)}%${q.issues.length ? ' • ⚠️ ' + q.issues.join(', ') : ''}`);
+    } else if (n === 3 && detail) {
+      log('#f59e0b', `🧬 ${detail.nameHi} — विश्वास ${(detail.confidence * 100).toFixed(0)}%`);
+    } else if (n === 4 && detail) {
+      log(detail.ok ? '#22c55e' : '#94a3b8', detail.ok ? '🛡️ सर्वर सत्यापन पूर्ण • पर्चा सुरक्षित' : `📴 सर्वर उपलब्ध नहीं (${detail.reason}) — फोन पर निदान पूर्ण`);
+    } else {
+      log('#22c55e', label);
+    }
+  };
 
-  if (logStream) {
-    logStream.innerHTML = `
-      <div><span style="color:#22c55e;">[0.0s]</span> 📡 AI पादप शारीरिक विश्लेषण इंजन प्रारंभ (${currentCrop})...</div>
-    `;
-  }
-
-  // --- STAGE 1: Data Uploaded (0 - 800ms) ---
-  if (stage1) stage1.className = 'stepper-stage active';
-  if (progressBar) progressBar.style.width = '25%';
-  if (pctText) pctText.innerText = '25%';
-  if (stepLabel) stepLabel.innerText = '1. डेटा अपलोड एवं खेत प्रोफाइल सिंक...';
-
-  // Perform Live Backend API Call concurrently
-  let apiResult = null;
-  const leafImg = document.getElementById('leafPreviewImg');
-  const imageSource = leafImg && !leafImg.classList.contains('hidden') ? leafImg.src : 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600';
-  const effectiveFileName = currentUploadedFileName || `${currentCrop.toLowerCase()}_leaf_scan.jpg`;
-
+  let humidity = null;
   try {
-    const payload = {
-      imageUrl: imageSource,
-      fileName: effectiveFileName,
-      isLeafOnlyScan: true,
-      forcedConfidence: 0.94,
-      context: {
-        cropSpecies: currentCrop,
-        affectedPlantPart: 'LEAF',
-        leafMorphology: currentCrop === 'BANANA' ? 'PENNI_PARALLEL' : (currentCrop === 'COTTON' ? 'PALMATE_LOBED' : 'RETICULATE_TRIFOLIATE'),
-        weatherContext: {
-          relativeHumidityPercent: 78.0,
-          temperatureCelsius: 29.0
-        }
-      }
-    };
+    const hText = (document.getElementById('homeWeatherSub') || {}).innerText || '';
+    const m = hText.match(/(\d{2,3})\s*%/);
+    if (m) humidity = Number(m[1]);
+  } catch (e) {}
 
-    const res = await fetch(`${API_BASE}/diagnosis/diagnose/submit`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept-Language': currentLanguage
-      },
-      body: JSON.stringify(payload)
-    });
+  const savedProfile = (() => { try { return JSON.parse(localStorage.getItem('krishi_farmer_profile_v2') || 'null'); } catch (e) { return null; } })();
 
-    if (res.ok) {
-      apiResult = await res.json();
-      currentDiagnosisData = apiResult;
-    }
-  } catch (err) {
-    console.warn('[AgriScan Web] Live API unreachable, using integrated botanical engine:', err);
+  const result = window.KrishiDiagnosisPipeline
+    ? await window.KrishiDiagnosisPipeline.run({
+        mode: currentMediaMode === 'video' ? 'video' : 'photo',
+        crop: currentCrop,
+        acres: currentAcreage,
+        state: savedProfile?.state,
+        humidity,
+        fileName: currentUploadedFileName || undefined,
+        offline: isSimulatedOffline
+      }, onStage)
+    : null;
+
+  if (!result) {
+    log('#ef4444', '⚠️ AI मॉड्यूल लोड नहीं हुआ — कृपया ऐप रीफ़्रेश करें');
+    return;
   }
 
-  setTimeout(() => {
-    if (logStream) {
-      logStream.innerHTML += `
-        <div><span style="color:#22c55e;">[0.3s]</span> ✓ 1080p मल्टीस्पेक्ट्रल इमेज बफर प्राप्त (${effectiveFileName})</div>
-        <div><span style="color:#22c55e;">[0.6s]</span> ✓ GPS व पादप आकारिकी लिंक: ${currentCrop === 'BANANA' ? 'पन्नी-पैरेलल शिरा संरचना' : 'जालिकावत शिरा संरचना'}</div>
-      `;
-      logStream.scrollTop = logStream.scrollHeight;
-    }
-  }, 350);
+  stages.forEach(s => { if (s) s.className = 'stepper-stage completed'; });
+  currentDiagnosisData = result.server || { diagnosisId: null };
+  window.lastDiagnosisResult = result;
 
-  // --- STAGE 2: Processing Signals (800ms - 1700ms) ---
-  setTimeout(() => {
-    if (stage1) stage1.className = 'stepper-stage completed';
-    if (stage2) stage2.className = 'stepper-stage active';
-    if (progressBar) progressBar.style.width = '55%';
-    if (pctText) pctText.innerText = '55%';
-    if (stepLabel) stepLabel.innerText = '2. ऑप्टिकल एवं स्पेक्ट्रल सिग्नल विश्लेषण...';
+  if (result.source !== 'DEVICE_AI_PLUS_SERVER') queueOfflineDiagnosis(result);
 
-    if (logStream) {
-      logStream.innerHTML += `
-        <div><span style="color:#38bdf8;">[1.0s]</span> 🔬 RGB एवं HSV चैनल पृथक्करण पूर्ण</div>
-        <div><span style="color:#38bdf8;">[1.4s]</span> 📊 पर्णहरित क्लोरोफिल अवशोषण SPAD: ${currentCrop === 'BANANA' ? '38.4' : '31.2'}</div>
-      `;
-      logStream.scrollTop = logStream.scrollHeight;
-    }
-  }, 800);
+  renderDynamicRecommendation(result);
+  persistDiagnosisResult(result, activeDiagnosisReport);
+  switchView('viewRecommendation');
 
-  // --- STAGE 3: Analysing Physiological Features (1700ms - 2600ms) ---
-  setTimeout(() => {
-    if (stage2) stage2.className = 'stepper-stage completed';
-    if (stage3) stage3.className = 'stepper-stage active';
-    if (progressBar) progressBar.style.width = '85%';
-    if (pctText) pctText.innerText = '85%';
-    if (stepLabel) stepLabel.innerText = '3. फसल के शारीरिक एवं पोषण लक्षणों की जांच...';
-
-    if (logStream) {
-      if (currentCrop === 'BANANA') {
-        logStream.innerHTML += `
-          <div><span style="color:#f59e0b;">[1.9s]</span> 🍌 केला (Grand Naine / G9) पन्नी-पैरेलल शिरा व पर्ण धब्बे चिन्हित</div>
-          <div><span style="color:#f59e0b;">[2.3s]</span> 🧬 *Pseudocercospora fijiensis* (ब्लैक सिगाटोका) लक्षण सत्यापित</div>
-        `;
-      } else {
-        logStream.innerHTML += `
-          <div><span style="color:#f59e0b;">[1.9s]</span> 🧬 मध्य शिराओं के बीच पीलापन (Interveinal Chlorosis) चिन्हित</div>
-          <div><span style="color:#f59e0b;">[2.3s]</span> 🌾 ${currentCrop} सूक्ष्म पोषक तत्व विकार सत्यापित</div>
-        `;
-      }
-      logStream.scrollTop = logStream.scrollHeight;
-    }
-  }, 1700);
-
-  // --- STAGE 4: Predicting & CIB&RC Verification (2600ms - 3400ms) ---
-  setTimeout(() => {
-    if (stage3) stage3.className = 'stepper-stage completed';
-    if (stage4) stage4.className = 'stepper-stage active';
-    if (progressBar) progressBar.style.width = '100%';
-    if (pctText) pctText.innerText = '100%';
-    if (stepLabel) stepLabel.innerText = '4. AI रोग भविष्यवाणी एवं CIB&RC सत्यापन...';
-
-    if (logStream) {
-      logStream.innerHTML += `
-        <div><span style="color:#22c55e;">[2.8s]</span> 🛡️ पोषण-प्रथम 3-चरणीय पदानुक्रम पर्चा तैयार</div>
-        <div><span style="color:#22c55e;">[3.1s]</span> 📜 CIB&RC एवं राज्य विनियम जांच: पूर्णतः स्वीकृत</div>
-      `;
-      logStream.scrollTop = logStream.scrollHeight;
-    }
-  }, 2600);
-
-  // --- COMPLETION & ROUTING (3400ms) ---
-  setTimeout(() => {
-    if (stage4) stage4.className = 'stepper-stage completed';
-    
-    // Render dynamic diagnosis data onto UI
-    renderDynamicRecommendation(apiResult);
-    switchView('viewRecommendation');
-
-    logToConsole('Physiological AI Diagnosis Completed & Saved', {
-      crop: currentCrop,
-      diagnosis: activeDiagnosisReport,
-      cibrcCompliant: true,
-      persistedToDb: true,
-      timeElapsedMs: 3400
-    });
-  }, 3400);
+  logToConsole('AI Diagnosis Completed', {
+    crop: currentCrop,
+    code: result.local.code,
+    confidence: result.local.confidence,
+    source: result.source,
+    serverStatus: result.serverStatus,
+    elapsedMs: result.elapsedMs
+  });
 }
 
-// Dynamically Render Recommendation View
-function renderDynamicRecommendation(apiResult) {
-  const rxDiseaseTitle = document.getElementById('rxDiseaseTitle');
-  const rxScientificName = document.getElementById('rxScientificName');
-  const step1Title = document.getElementById('step1Title');
-  const step1Action = document.getElementById('step1ActionText');
-  const step1Dose = document.getElementById('step1Dose');
-  const step2Title = document.getElementById('step2Title');
-  const step2Action = document.getElementById('step2ActionText');
-  const step2Dose = document.getElementById('step2Dose');
-  const step3Title = document.getElementById('step3Title');
-  const step3Action = document.getElementById('step3ActionText');
-  const step3ComplianceTag = document.getElementById('step3ComplianceTag');
+const OFFLINE_QUEUE_KEY = 'krishi_offline_diagnosis_queue_v1';
 
-  let report = {};
+function persistOfflineQueue() {
+  try { localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(offlineQueue.slice(-20))); } catch (e) {}
+}
 
-  if (currentCrop === 'BANANA') {
-    report = {
-      crop: 'केला (Banana Grand Naine / G9)',
-      diseaseTitle: 'केला: ब्लैक सिगाटोका पर्ण धब्बा रोग',
-      scientificName: 'Black Sigatoka (Pseudocercospora fijiensis) • Grand Naine (G9)',
-      confidence: '95.4% AI Confidence',
-      step1: {
-        title: 'पर्णीय फफूंदनाशी एवं खनिज तेल (Foliar Fungicide)',
-        action: 'प्रोपिकोनाजोल 25% EC @ 1 मिली/लीटर अथवा एजोक्सीस्ट्रोबिन + डाइफेनोकोनाजोल @ 1 मिली/लीटर + खनिज तेल (1%) का पर्णीय छिड़काव करें।',
-        dose: `${Math.round(currentAcreage * 200)} मिली / ${Math.round(currentAcreage * 200)}L पानी`
-      },
-      step2: {
-        title: 'जैविक कवकनाशी एवं मृदा जैव उपचार (Soil Biology & Trichoderma)',
-        action: 'ट्राइकोडर्मा विरिडी (Trichoderma viride 1.5% WP) @ 2.5 किग्रा/एकड़ सड़ी हुई गोबर खाद के साथ मिलाकर पौधों की जड़ों के पास दें।',
-        dose: `${(currentAcreage * 2.5).toFixed(1)} किग्रा Trichoderma`
-      },
-      step3: {
-        title: 'CIB&RC पंजीकृत रासायनिक हस्तक्षेप (Registered Fungicides)',
-        action: 'एजोक्सीस्ट्रोबिन 18.2% + डाइफेनोकोनाजोल 11.4% SC @ 1 मिली/लीटर पानी (CIB&RC स्वीकृत)।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
-      }
-    };
-  } else if (currentCrop === 'PADDY') {
-    report = {
-      crop: 'धान (Paddy PB 1121)',
-      diseaseTitle: 'धान: खैरा रोग व पर्ण झुलसा (Khaira Disease)',
-      scientificName: 'Zinc Deficiency & Magnaporthe oryzae • PB 1121',
-      confidence: '93.8% AI Confidence',
-      step1: {
-        title: 'चरण 1: जिंक सल्फेट 21% + यूरिया पर्णीय छिड़काव',
-        action: 'जिंक सल्फेट 5 किग्रा + 2.5 किग्रा बुझा हुआ चूना या 1% यूरिया प्रति 500L पानी छिड़कें।',
-        dose: `${Math.round(currentAcreage * 5)} किग्रा / ${Math.round(currentAcreage * 500)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: स्यूडोमोनास फ्लूरोसेंस जैव उपचार (Pseudomonas)',
-        action: 'स्यूडोमोनास फ्लूरोसेंस 1 किग्रा/एकड़ मृदा में 50 किग्रा FYM के साथ दें।',
-        dose: `${(currentAcreage * 1.0).toFixed(1)} किग्रा बायो-एजेंट`
-      },
-      step3: {
-        title: 'चरण 3: CIB&RC ट्राईसाइक्लाजोल 75% WP',
-        action: 'आवश्यकतानुसार ट्राईसाइक्लाजोल 75% WP @ 120 ग्राम प्रति एकड़ प्रयोग करें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC स्वीकृत'
-      }
-    };
-  } else if (currentCrop === 'COTTON') {
-    report = {
-      crop: 'कपास (Bt Cotton RCH-2)',
-      diseaseTitle: 'कपास: मैग्नीशियम की कमी (लाल पत्ती) व बॉलवर्म',
-      scientificName: 'Magnesium Chlorosis (Lal Patti) • Bt Cotton RCH-2',
-      confidence: '92.6% AI Confidence',
-      step1: {
-        title: 'चरण 1: मैग्नीशियम सल्फेट 1% पर्णीय पोषण',
-        action: 'मैग्नीशियम सल्फेट (MgSO4) 1 किग्रा + डीएपी 2 किग्रा प्रति 100 लीटर पानी का छिड़काव करें।',
-        dose: `${Math.round(currentAcreage * 1000)}g / ${Math.round(currentAcreage * 100)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: नीम तेल 10000 PPM जैव कीटनाशक',
-        action: 'नीम का तेल (Azadirachtin 10000 PPM) @ 2 मिली/लीटर पानी छिड़कें।',
-        dose: `${Math.round(currentAcreage * 400)} मिली नीम तेल`
-      },
-      step3: {
-        title: 'चरण 3: रासायनिक कीटनाशक आवश्यकता आधारित',
-        action: 'ईटीएल स्तर पार होने पर ही अनुशंसित रसायन का छिड़काव करें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC अनुशंसित'
-      }
-    };
-  } else {
-    // Default Soybean / Other
-    report = {
-      crop: 'सोयाबीन (Soybean JS 20-34)',
-      diseaseTitle: 'सोयाबीन: जिंक (जस्ता) की कमी',
-      scientificName: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-      confidence: '94.2% AI Confidence',
-      step1: {
-        title: 'चरण 1: सूक्ष्म पोषक तत्व पर्णीय छिड़काव (Foliar Mineral)',
-        action: 'जिंक सल्फेट 500 ग्राम + 250 ग्राम बुझा हुआ चूना (या 1 किग्रा यूरिया) प्रति 200 लीटर पानी प्रति एकड़ छिड़कें।',
-        dose: `${Math.round(currentAcreage * 500)}g / ${Math.round(currentAcreage * 200)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: जैविक एवं मृदा सुधार (Soil Biology)',
-        action: '1 किग्रा ZSB प्रति एकड़ 50 किग्रा सड़ी हुई गोबर की खाद (FYM) के साथ मिलाकर मृदा में दें।',
-        dose: `${(currentAcreage * 1.0).toFixed(1)} किग्रा ZSB`
-      },
-      step3: {
-        title: 'चरण 3: रासायनिक कीटनाशक हस्तक्षेप (Chemical)',
-        action: 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
-      }
-    };
+function restoreOfflineQueue() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(OFFLINE_QUEUE_KEY) || '[]');
+    if (Array.isArray(saved) && saved.length) {
+      offlineQueue = saved;
+      updateOfflineQueueCount(offlineQueue.length);
+    }
+  } catch (e) {}
+}
+
+function queueOfflineDiagnosis(result) {
+  if (!result || !result.serverPayload) return;
+  offlineQueue.push({
+    id: 'offline-' + Date.now(),
+    crop: currentCrop,
+    timestamp: result.createdAt,
+    provisionalDiagnosis: result.local.backendCode || result.local.code,
+    provisionalConfidence: result.local.confidence,
+    payload: result.serverPayload
+  });
+  offlineQueue = offlineQueue.slice(-20);
+  persistOfflineQueue();
+  updateOfflineQueueCount(offlineQueue.length);
+  // Ask the browser to wake us when connectivity returns (Background Sync API)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => reg.sync && reg.sync.register('krishi-diagnosis-sync')).catch(() => {});
+  }
+}
+
+if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'KRISHI_SYNC_DIAGNOSES') syncOfflineDiagnoses();
+  });
+}
+document.addEventListener('DOMContentLoaded', restoreOfflineQueue);
+
+const CROP_LABEL_HI = {
+  SOYBEAN: 'सोयाबीन', PADDY: 'धान', WHEAT: 'गेहूँ', COTTON: 'कपास', BANANA: 'केला', TOMATO: 'टमाटर', CHILLI: 'मिर्च',
+  MAIZE: 'मक्का', POTATO: 'आलू', SUGARCANE: 'गन्ना', CHICKPEA: 'चना', MUSTARD: 'सरसों', GROUNDNUT: 'मूँगफली', ONION: 'प्याज'
+};
+
+function formatStepDose(dose, acres) {
+  if (!dose) return 'आवश्यकता अनुसार';
+  const a = Math.max(0.1, Number(acres) || 1);
+  const qty = Math.round(dose.qtyPerAcre * a * 10) / 10;
+  if (dose.waterPerAcre) {
+    const water = Math.round(dose.waterPerAcre * a);
+    return `${qty} ${dose.unit} / ${water}L पानी (~${Math.ceil(water / 15)} पंप)`;
+  }
+  return `${qty} ${dose.unit}`;
+}
+
+// Builds the screen model from a pipeline result (pure: no saving / side effects)
+function buildReportFromResult(result) {
+  const L = result.local;
+  const sol = L.solution || {};
+  const cropHi = CROP_LABEL_HI[result.crop] || result.crop || 'फसल';
+  const pctConf = Math.round((L.confidence || 0) * 100);
+  const sourceHi = result.source === 'DEVICE_AI_PLUS_SERVER' ? 'ऑन-डिवाइस AI + सर्वर सत्यापित'
+    : result.source === 'DEVICE_AI_OFFLINE' ? 'ऑन-डिवाइस AI (ऑफ़लाइन)' : 'सुरक्षित वैकल्पिक सलाह';
+  const s1 = sol.step1 || {}, s2 = sol.step2 || {}, s3 = sol.step3 || {};
+  return {
+    _result: result,
+    crop: cropHi,
+    code: L.code,
+    diseaseTitle: `${cropHi}: ${L.nameHi}`,
+    scientificName: `${L.nameEn || ''} • ${sourceHi}`,
+    confidence: `${pctConf}% AI Confidence`,
+    confidencePct: pctConf,
+    step1: { title: s1.titleHi || '', action: s1.actionHi || '', dose: formatStepDose(s1.dose, currentAcreage), doseSpec: s1.dose || null },
+    step2: { title: s2.titleHi || '', action: s2.actionHi || '', dose: formatStepDose(s2.dose, currentAcreage), doseSpec: s2.dose || null },
+    step3: {
+      title: s3.titleHi || '',
+      action: s3.actionHi || '',
+      doseSpec: s3.dose || null,
+      tag: s3.isRecommended
+        ? '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b;"></i> केवल CIB&RC पंजीकृत अणु • लेबल व राज्य प्रतिबंध जांचें'
+        : '<i class="fa-solid fa-circle-check text-green"></i> रसायन की आवश्यकता नहीं (पोषण-प्रथम)'
+    }
+  };
+}
+
+// Dynamically Render Recommendation View from the REAL diagnosis result
+function renderDynamicRecommendation(input) {
+  const result = input && input.__pipeline ? input : (input && input._result) || window.lastDiagnosisResult;
+  if (!result) return;
+  const report = buildReportFromResult(result);
+  activeDiagnosisReport = report;
+  const L = result.local;
+
+  setText('rxDiseaseTitle', report.diseaseTitle);
+  setText('rxScientificName', report.scientificName);
+  setText('step1Title', report.step1.title);
+  setText('step1ActionText', report.step1.action);
+  setText('step1Dose', report.step1.dose);
+  setText('step2Title', report.step2.title);
+  setText('step2ActionText', report.step2.action);
+  setText('step2Dose', report.step2.dose);
+  setText('step3Title', report.step3.title);
+  setText('step3ActionText', report.step3.action);
+  const tag = document.getElementById('step3ComplianceTag');
+  if (tag) tag.innerHTML = report.step3.tag;
+
+  const confPill = document.getElementById('rxConfidencePill');
+  if (confPill) {
+    const band = L.confidenceBand;
+    confPill.className = band === 'HIGH' ? 'confidence-pill-green' : band === 'MEDIUM' ? 'confidence-pill-amber' : 'confidence-pill-red';
+    const bandHi = band === 'HIGH' ? 'उच्च विश्वास' : band === 'MEDIUM' ? 'मध्यम विश्वास — पुष्टि करें' : 'कम विश्वास — दोबारा जांचें';
+    confPill.innerHTML = `<i class="fa-solid ${band === 'HIGH' ? 'fa-circle-check' : 'fa-circle-question'}"></i> ${report.confidencePct}% ${bandHi}`;
+  }
+  const srcPill = document.getElementById('rxSourcePill');
+  if (srcPill) {
+    srcPill.innerHTML = result.source === 'DEVICE_AI_PLUS_SERVER'
+      ? '<i class="fa-solid fa-cloud-arrow-up"></i> सर्वर सत्यापित'
+      : result.source === 'DEVICE_AI_OFFLINE' ? '<i class="fa-solid fa-mobile-screen"></i> ऑफ़लाइन AI' : '<i class="fa-solid fa-life-ring"></i> सुरक्षित सलाह';
   }
 
-  activeDiagnosisReport = report;
+  renderDiagnosisEvidence(result);
+  renderAdaptiveQuestions(result);
+  updateAcreage(currentAcreage);
+}
 
-  if (rxDiseaseTitle) rxDiseaseTitle.innerText = report.diseaseTitle;
-  if (rxScientificName) rxScientificName.innerText = report.scientificName;
-  if (step1Title) step1Title.innerText = report.step1.title;
-  if (step1Action) step1Action.innerText = report.step1.action;
-  if (step1Dose) step1Dose.innerText = report.step1.dose;
-  if (step2Title) step2Title.innerText = report.step2.title;
-  if (step2Action) step2Action.innerText = report.step2.action;
-  if (step2Dose) step2Dose.innerText = report.step2.dose;
-  if (step3Title) step3Title.innerText = report.step3.title;
-  if (step3Action) step3Action.innerText = report.step3.action;
-  if (step3ComplianceTag) step3ComplianceTag.innerHTML = report.step3.tag;
+function renderDiagnosisEvidence(result) {
+  const box = document.getElementById('rxEvidenceCard');
+  if (!box) return;
+  const L = result.local;
+  const q = L.quality || {};
+  const issueHi = { BLURRY: 'फोटो धुंधली है', TOO_DARK: 'रोशनी कम है', OVEREXPOSED: 'रोशनी बहुत तेज है', GLARE: 'चमक (glare) अधिक', NO_LEAF_DETECTED: 'पत्ती पहचान में नहीं आई', READ_FAILED: 'फोटो पढ़ी नहीं जा सकी' };
+  const issues = (q.issues || []).map(i => issueHi[i] || i);
+  const evidence = (L.evidence || []).map(e => `<li><span>${e.labelHi}</span><strong>${e.value}</strong></li>`).join('');
+  const diffs = (L.differentials || []).map(d => `<span class="rx-diff-chip">${d.nameHi} <small>${Math.round(d.score * 100)}</small></span>`).join('');
+  const frames = result.frames ? `<p class="rx-ev-meta"><i class="fa-solid fa-film"></i> वीडियो: ${result.frames.analysed} फ्रेम जांचे, ${result.frames.used} सबसे स्पष्ट फ्रेम उपयोग</p>` : '';
+  box.innerHTML = `
+    <h5><i class="fa-solid fa-microscope"></i> AI ने आपकी फोटो में क्या देखा</h5>
+    <p class="rx-ev-seen">${L.seenHi || ''}</p>
+    ${evidence ? `<ul class="rx-ev-list">${evidence}</ul>` : ''}
+    ${frames}
+    ${diffs ? `<div class="rx-ev-diffs"><small>अन्य संभावनाएं:</small> ${diffs}</div>` : ''}
+    ${issues.length ? `<p class="rx-ev-warn"><i class="fa-solid fa-camera-rotate"></i> ${issues.join(' • ')} — बेहतर परिणाम हेतु सादे कागज/आसमान के सामने, दिन की रोशनी में दोबारा फोटो लें।</p>` : ''}
+    ${L.solution && L.solution.escalateHi ? `<p class="rx-ev-escalate"><i class="fa-solid fa-user-doctor"></i> ${L.solution.escalateHi}</p>` : ''}
+    <p class="rx-ev-meta">इंजन ${L.engineVersion || ''}${result.elapsedMs ? ' • ' + (result.elapsedMs / 1000).toFixed(1) + 's' : ''}${result.pipelineError ? ' • ' + result.pipelineError : ''}</p>`;
+  box.classList.remove('hidden');
+}
 
+function renderAdaptiveQuestions(result) {
+  const box = document.getElementById('rxAdaptiveQuestions');
+  if (!box) return;
+  const L = result.local;
+  if (!L.needsAdaptiveQuestions || !result.features || !(L.adaptiveQuestions || []).length) {
+    box.classList.add('hidden');
+    box.innerHTML = '';
+    return;
+  }
+  const q = L.adaptiveQuestions[0];
+  box.innerHTML = `
+    <h5><i class="fa-solid fa-clipboard-question"></i> सटीक निदान हेतु 1 सवाल</h5>
+    <p>${q.textHi}</p>
+    <div class="rx-aq-options">
+      ${q.options.map(o => `<button type="button" class="acc-pill-btn" onclick="answerDiagnosisQuestion('${q.id}','${o.value}')">${o.labelHi}</button>`).join('')}
+    </div>`;
+  box.classList.remove('hidden');
+}
+
+// Re-score the SAME photo with the farmer's answer — no re-capture needed
+function answerDiagnosisQuestion(questionId, value) {
+  const result = window.lastDiagnosisResult;
+  if (!result || !result.features || !window.KrishiLeafVision) return;
+  const ctx = Object.assign({}, result.answers || {}, { [questionId]: value });
+  const savedProfile = (() => { try { return JSON.parse(localStorage.getItem('krishi_farmer_profile_v2') || 'null'); } catch (e) { return null; } })();
+  const prior = window.KrishiAreaIntel && window.KrishiAreaIntel.getSoilDeficiencyPrior ? window.KrishiAreaIntel.getSoilDeficiencyPrior() : {};
+  const local = window.KrishiLeafVision.diagnose(result.features, { crop: result.crop, leafAge: ctx.leafAge || null, areaPrior: prior, state: savedProfile?.state });
+  local.needsAdaptiveQuestions = false;
+  const updated = Object.assign({}, result, { local, answers: ctx });
+  window.lastDiagnosisResult = updated;
+  renderDynamicRecommendation(updated);
+  persistDiagnosisResult(updated, activeDiagnosisReport, true);
+  if (window.KrishiAnalytics) window.KrishiAnalytics.trackEvent('ai_diagnosis_question_answered', { question: questionId, answer: value, result_code: local.code });
+}
+
+// Save to history & activity log ONCE per diagnosis (not on every re-render / language switch)
+function persistDiagnosisResult(result, report, isUpdate = false) {
+  if (!result || !report) return;
+  const L = result.local;
   if (currentUser) {
     currentUser.crop = report.crop;
     currentUser.healthStatus = report.confidence + ' - ' + report.diseaseTitle;
     currentUser.deficiencies = report.diseaseTitle;
     currentUser.suggestions = `${report.step1.action} | ${report.step2.action}`;
-    recordFarmerDiagnosticActivity({
-      crop: report.crop,
-      healthStatus: report.confidence,
-      deficiencies: report.diseaseTitle,
-      suggestions: report.step1.action,
-      location: 'ग्राम धरमपुरी, धार (म.प्र.) [GPS: 22.7196° N, 75.8577° E]'
-    });
+    if (!isUpdate) {
+      recordFarmerDiagnosticActivity({
+        crop: report.crop,
+        healthStatus: report.confidence,
+        deficiencies: report.diseaseTitle,
+        suggestions: report.step1.action
+      });
+    }
   }
-
-  // Persist into Diagnosis & Crop Search History
   const leafPreview = document.getElementById('leafPreviewImg');
-  saveDiagnosisToHistory({
-    id: `diag-${Date.now()}`,
+  const id = result.historyId || `diag-${Date.now()}`;
+  result.historyId = id;
+  const entry = {
+    id,
     cropSpecies: currentCrop || 'SOYBEAN',
     cropName: report.crop || currentCrop,
     diseaseTitle: report.diseaseTitle || 'फसल जांच',
     scientificName: report.scientificName || '',
-    confidence: report.confidence || '94.0%',
-    accuracyPct: parseFloat(report.confidence) || 94.0,
-    imageUrl: (leafPreview && leafPreview.src) ? leafPreview.src : 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
-    date: new Date().toISOString(),
-    symptoms: report.step1?.action ? (report.step1.action.slice(0, 110) + '...') : 'पत्ती लक्षण जांच पूर्ण',
-    report: report
-  });
-
-  updateAcreage(currentAcreage);
+    confidence: report.confidence,
+    accuracyPct: report.confidencePct,
+    imageUrl: (leafPreview && leafPreview.src && !leafPreview.classList.contains('hidden')) ? leafPreview.src : '',
+    date: result.createdAt || new Date().toISOString(),
+    symptoms: (L.seenHi || '').slice(0, 110),
+    report: Object.assign({}, report, { _result: undefined })
+  };
+  if (isUpdate && Array.isArray(allDiagnosisHistory)) {
+    const idx = allDiagnosisHistory.findIndex(h => h.id === id);
+    if (idx >= 0) { allDiagnosisHistory[idx] = Object.assign(allDiagnosisHistory[idx], entry); renderRecentDiagnosesList(); return; }
+  }
+  saveDiagnosisToHistory(entry);
 }
 
 // Adaptive Questionnaire Submission
@@ -4089,41 +4155,30 @@ async function submitQuestionnaire() {
 
 // Acreage Slider Calculation
 function updateAcreage(val) {
-  currentAcreage = parseFloat(val);
+  currentAcreage = parseFloat(val) || 1;
   const acreageValLabel = document.getElementById('acreageValue');
   if (acreageValLabel) acreageValLabel.innerText = (typeof window.formatLandArea === 'function') ? window.formatLandArea(currentAcreage) : `${currentAcreage.toFixed(1)} एकड़`;
-  
-  const calcSum = document.getElementById('calcSummary');
-  const step1Dose = document.getElementById('step1Dose');
-  const step2Dose = document.getElementById('step2Dose');
 
-  if (currentCrop === 'BANANA') {
-    const totalWater = Math.round(currentAcreage * 200);
-    const totalChemical = Math.round(currentAcreage * 200);
-    const totalTrichoderma = (currentAcreage * 2.5).toFixed(1);
-    if (calcSum) {
-      calcSum.innerHTML = `कुल पानी: <strong>${totalWater} लीटर</strong> | प्रोपिकोनाजोल: <strong>${totalChemical} मिली</strong>`;
+  const calcSum = document.getElementById('calcSummary');
+  const report = activeDiagnosisReport;
+  if (!report || !report.step1) return;
+
+  setText('step1Dose', formatStepDose(report.step1.doseSpec, currentAcreage));
+  setText('step2Dose', formatStepDose(report.step2.doseSpec, currentAcreage));
+  report.step1.dose = formatStepDose(report.step1.doseSpec, currentAcreage);
+  report.step2.dose = formatStepDose(report.step2.doseSpec, currentAcreage);
+
+  if (calcSum) {
+    const spec = report.step1.doseSpec || report.step3.doseSpec;
+    if (spec && spec.waterPerAcre) {
+      const water = Math.round(spec.waterPerAcre * currentAcreage);
+      const qty = Math.round(spec.qtyPerAcre * currentAcreage * 10) / 10;
+      calcSum.innerHTML = `कुल पानी: <strong>${water} लीटर</strong> (~${Math.ceil(water / 15)} पंप × 15L) | कुल ${spec.unit}: <strong>${qty}</strong>`;
+    } else if (spec) {
+      calcSum.innerHTML = `कुल मात्रा: <strong>${formatStepDose(spec, currentAcreage)}</strong>`;
+    } else {
+      calcSum.innerHTML = 'इस निदान में छिड़काव की आवश्यकता नहीं';
     }
-    if (step1Dose) step1Dose.innerText = `${totalChemical} ml / ${totalWater}L पानी`;
-    if (step2Dose) step2Dose.innerText = `${totalTrichoderma} किग्रा Trichoderma`;
-  } else if (currentCrop === 'PADDY') {
-    const totalWater = Math.round(currentAcreage * 500);
-    const totalZinc = Math.round(currentAcreage * 5);
-    const totalBio = (currentAcreage * 1.0).toFixed(1);
-    if (calcSum) {
-      calcSum.innerHTML = `कुल पानी: <strong>${totalWater} लीटर</strong> | जिंक सल्फेट: <strong>${totalZinc} किग्रा</strong>`;
-    }
-    if (step1Dose) step1Dose.innerText = `${totalZinc} kg / ${totalWater}L पानी`;
-    if (step2Dose) step2Dose.innerText = `${totalBio} किग्रा बायो-एजेंट`;
-  } else {
-    const totalWater = Math.round(currentAcreage * 200);
-    const totalZinc = Math.round(currentAcreage * 500);
-    const totalZsb = (currentAcreage * 1.0).toFixed(1);
-    if (calcSum) {
-      calcSum.innerHTML = `प्रति 15L पंप: <strong>38g जिंक + 19g चूना</strong> | कुल पानी: <strong>${totalWater}L</strong> | कुल जिंक: <strong>${totalZinc}g</strong>`;
-    }
-    if (step1Dose) step1Dose.innerText = `${totalZinc}g / ${totalWater}L पानी`;
-    if (step2Dose) step2Dose.innerText = `${totalZsb} किग्रा ZSB`;
   }
 }
 
@@ -4161,7 +4216,7 @@ function switchStateBan(stateName, btnElement) {
     if (activeDiagnosisReport && activeDiagnosisReport.step3) {
       if (step3Title) {
         step3Title.innerText = activeDiagnosisReport.step3.title;
-        step3Title.style.color = '#ffffff';
+        step3Title.style.color = '';
       }
       if (step3ActionText) {
         step3ActionText.innerText = activeDiagnosisReport.step3.action;
@@ -4173,7 +4228,7 @@ function switchStateBan(stateName, btnElement) {
     } else {
       if (step3Title) {
         step3Title.innerText = 'रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)';
-        step3Title.style.color = '#ffffff';
+        step3Title.style.color = '';
       }
       if (step3ActionText) {
         step3ActionText.innerText = 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।';

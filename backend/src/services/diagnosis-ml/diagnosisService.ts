@@ -460,13 +460,36 @@ export class DiagnosisService {
       predictedDiseaseCode = (context.weatherContext?.relativeHumidityPercent > 80) ? 'DIS_SOYBEAN_RUST' : 'DIS_ZINC_DEFICIENCY';
     }
 
+    // Real on-device pixel analysis (web_simulator/leaf-vision-engine.js) takes precedence
+    // over filename keyword heuristics. Conditions the server rule-book doesn't cover yet
+    // (e.g. rust on wheat, nitrogen deficiency) are persisted as client-vision findings.
+    const clientVision = payload.clientVision && typeof payload.clientVision.code === 'string' ? payload.clientVision : null;
+    let clientOnlyCondition: { code: string; category: string; nameHi: string; nameEn: string } | null = null;
+    if (clientVision) {
+      baseConfidence = Math.max(0, Math.min(0.99, Number(clientVision.confidence) || 0));
+      if (clientVision.backendCode && NutritionRuleEngine.getDiseaseRule(clientVision.backendCode)) {
+        predictedDiseaseCode = clientVision.backendCode;
+      } else {
+        clientOnlyCondition = {
+          code: `CV_${String(clientVision.code).replace(/[^A-Z0-9_]/gi, '').toUpperCase()}`,
+          category: String(clientVision.category || 'UNCLASSIFIED'),
+          nameHi: String(clientVision.nameHi || clientVision.code),
+          nameEn: String(clientVision.nameEn || clientVision.code)
+        };
+        predictedDiseaseCode = clientOnlyCondition.code;
+      }
+    }
+
     const diseaseRule = NutritionRuleEngine.getDiseaseRule(predictedDiseaseCode);
     const imageUrl = payload.imageUrl || 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80';
 
     const enrichedContext = {
       ...context,
       cropSpecies: resolvedCropSpecies,
-      leafBotanicalIdentification: leafIdentification
+      leafBotanicalIdentification: leafIdentification,
+      clientVision: clientVision
+        ? { engineVersion: clientVision.engineVersion, code: clientVision.code, confidence: clientVision.confidence, tissue: clientVision.tissue, lesions: clientVision.lesions, frames: clientVision.frames }
+        : undefined
     };
 
     const record: DiagnosisRecord = {
@@ -480,23 +503,31 @@ export class DiagnosisService {
       context: enrichedContext,
       status: 'COMPLETED_HIGH_CONFIDENCE',
       confidenceScore: baseConfidence,
-      diagnosisCategory: diseaseRule?.category || 'NUTRITIONAL_DEFICIENCY',
+      diagnosisCategory: diseaseRule?.category || clientOnlyCondition?.category || 'NUTRITIONAL_DEFICIENCY',
       primaryDiagnosis: {
         code: predictedDiseaseCode,
-        commonName: diseaseRule?.[`name${language === 'en' ? 'En' : 'Hi'}`] || diseaseRule?.nameHi,
-        scientificName: diseaseRule?.nameEn || 'Diagnosed Condition',
+        commonName: diseaseRule?.[`name${language === 'en' ? 'En' : 'Hi'}`] || diseaseRule?.nameHi ||
+          (clientOnlyCondition ? (language === 'en' ? clientOnlyCondition.nameEn : clientOnlyCondition.nameHi) : undefined),
+        scientificName: diseaseRule?.nameEn || clientOnlyCondition?.nameEn || 'Diagnosed Condition',
         severity: 'MODERATE',
         confidence: baseConfidence,
         descriptionLocalized: diseaseRule?.[`description${language === 'en' ? 'En' : 'Hi'}`] || diseaseRule?.descriptionHi
       },
-      differentialDiagnoses: [
-        {
-          code: 'DIS_POTASSIUM_DEFICIENCY',
-          commonName: language === 'en' ? 'Potassium Deficiency' : 'पोटाश की कमी',
-          scientificName: 'Nutritional Disorder - K',
-          confidence: parseFloat((1.0 - baseConfidence).toFixed(2))
-        }
-      ],
+      differentialDiagnoses: clientVision
+        ? (Array.isArray(clientVision.differentials) ? clientVision.differentials : []).slice(0, 3).map((d: any) => ({
+            code: `CV_${String(d.code || '').toUpperCase()}`,
+            commonName: d.nameHi || d.code,
+            scientificName: 'On-device vision differential',
+            confidence: Number(d.score) || 0
+          }))
+        : [
+            {
+              code: 'DIS_POTASSIUM_DEFICIENCY',
+              commonName: language === 'en' ? 'Potassium Deficiency' : 'पोटाश की कमी',
+              scientificName: 'Nutritional Disorder - K',
+              confidence: parseFloat((1.0 - baseConfidence).toFixed(2))
+            }
+          ],
       submittedAt: new Date().toISOString()
     };
 
@@ -561,7 +592,8 @@ export class DiagnosisService {
     // 2. Tiered Inference Confidence Branching Logic (Child records)
     if (baseConfidence >= 0.85) {
       record.recommendation = NutritionRuleEngine.buildRecommendation(predictedDiseaseCode, user.state, 3.5);
-      
+    }
+    if (baseConfidence >= 0.85 && record.recommendation) {
       // Calculate location & soil-aware deficiency solution with metric dosage
       const locationSolution = NutritionRuleEngine.buildDeficiencySolution(
         resolvedCropSpecies,
@@ -576,6 +608,9 @@ export class DiagnosisService {
       record.recommendation.locationDeficiencySolution = locationSolution;
       record.completedAt = new Date().toISOString();
       DiagnosisRepository.saveRecommendation(diagnosisId, record.recommendation);
+    } else if (baseConfidence >= 0.85) {
+      // Client-vision-only condition: on-device solution is authoritative; mark complete
+      record.completedAt = new Date().toISOString();
     } else if (baseConfidence >= 0.55 && baseConfidence < 0.85) {
       const qTree = diseaseRule?.adaptiveQuestionnaire;
       const qId = crypto.randomUUID();

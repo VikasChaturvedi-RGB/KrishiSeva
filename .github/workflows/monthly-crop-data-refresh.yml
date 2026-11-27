@@ -1,0 +1,79 @@
+name: Monthly Crop-Variety & Soil Data Refresh
+
+# 06:00 IST on the 1st of every month (00:30 UTC). Can also be run by hand.
+on:
+  schedule:
+    - cron: '30 0 1 * *'
+  workflow_dispatch:
+    inputs:
+      review_date:
+        description: 'Override review date (YYYY-MM-DD), blank = today IST'
+        required: false
+
+permissions:
+  contents: write   # commit refreshed datasets
+  actions: write    # dispatch the deploy workflows afterwards
+
+concurrency:
+  group: monthly-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Refresh area-intelligence datasets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend dependencies
+        run: cd backend && npm ci
+
+      # Optional inputs (Settings → Secrets and variables → Actions):
+      #   vars.ALMANAC_OVERRIDES_URL   JSON feed of agronomist-curated variety / suitability / soil updates
+      #   secrets.DATA_GOV_IN_API_KEY  free data.gov.in key for live mandi price signals
+      - name: Refresh datasets
+        env:
+          ALMANAC_OVERRIDES_URL: ${{ vars.ALMANAC_OVERRIDES_URL }}
+          DATA_GOV_IN_API_KEY: ${{ secrets.DATA_GOV_IN_API_KEY }}
+        run: |
+          if [ -n "${{ github.event.inputs.review_date }}" ]; then
+            node scripts/refresh_crop_variety_almanac.mjs --date="${{ github.event.inputs.review_date }}"
+          else
+            node scripts/refresh_crop_variety_almanac.mjs
+          fi
+
+      - name: Publish datasets into the PWA bundle
+        run: npm run build
+
+      - name: Gate — area-intelligence, parity & leaf-vision tests
+        run: cd backend && npm run test:area
+
+      - name: Commit refreshed data
+        id: commit
+        run: |
+          git config user.name "krishi-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add backend/src/data web_simulator web_app public android_app/app/src/main/assets/pwa
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No dataset changes this month."
+          else
+            git commit -m "data(monthly): refresh crop-variety almanac & soil atlas $(date -u +%Y-%m)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pushes made with GITHUB_TOKEN do not trigger push workflows, so redeploy explicitly
+      - name: Redeploy web & API with the new month's data
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy-free-github-pages.yml --ref main || echo "::warning::GitHub Pages redeploy not dispatched"
+          gh workflow run deploy-google-cloud-india.yml --ref main || echo "::warning::Firebase/Cloud Run redeploy not dispatched"

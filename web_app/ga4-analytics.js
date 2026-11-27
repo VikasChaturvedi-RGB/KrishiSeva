@@ -13,6 +13,12 @@ window.KRISHI_GA4_MEASUREMENT_ID =
   localStorage.getItem('krishi_ga4_id') ||
   'G-KRISHIFREE'; // Auto-overridden by /v1/google-free/status or Firebase web config when linked
 
+// Google Tag Manager container (server-side taggable; GA4 tag is configured inside GTM)
+window.KRISHI_GTM_CONTAINER_ID =
+  window.KRISHI_GTM_CONTAINER_ID ||
+  localStorage.getItem('krishi_gtm_id') ||
+  'GTM-M9S2B335';
+
 window.dataLayer = window.dataLayer || [];
 function gtag() {
   window.dataLayer.push(arguments);
@@ -21,22 +27,50 @@ window.gtag = gtag;
 
 window.KrishiAnalytics = {
   initialized: false,
+  gtmLoaded: false,
   measurementId: window.KRISHI_GA4_MEASUREMENT_ID,
+  containerId: window.KRISHI_GTM_CONTAINER_ID,
+
+  // Loads the GTM container exactly once (the inline <head> snippet normally
+  // does this already; this is the safety net for pages/WebViews that cache an
+  // older shell, and it stays silent when offline).
+  ensureGtmContainer() {
+    if (this.gtmLoaded || !this.containerId || !/^GTM-/.test(this.containerId)) return;
+    const already = Array.from(document.scripts).some(
+      sc => sc.src && sc.src.indexOf('googletagmanager.com/gtm.js') !== -1
+    );
+    this.gtmLoaded = true;
+    if (already || !navigator.onLine) return;
+    window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(this.containerId)}`;
+    document.head.appendChild(s);
+  },
+
+  usesGtm() {
+    return Boolean(this.containerId && /^GTM-/.test(this.containerId));
+  },
+
+  isRealMeasurementId() {
+    return Boolean(this.measurementId && /^G-[A-Z0-9]{6,}$/.test(this.measurementId) && this.measurementId !== 'G-KRISHIFREE');
+  },
 
   init(customMeasurementId) {
+    this.ensureGtmContainer();
     if (customMeasurementId && customMeasurementId.startsWith('G-')) {
       this.measurementId = customMeasurementId;
     }
 
-    // Load gtag.js asynchronously when online and a real GA4 Measurement ID is configured
-    if (!this.initialized && navigator.onLine && this.measurementId && this.measurementId.startsWith('G-')) {
+    // Direct GA4 (gtag.js) is only used when there is NO GTM container — with GTM the
+    // GA4 Google Tag lives inside the container, so configuring it here too would
+    // double-count. The 'G-KRISHIFREE' placeholder is never configured.
+    if (!this.initialized && navigator.onLine && this.isRealMeasurementId() && !this.usesGtm()) {
       this.initialized = true;
-      if (this.measurementId !== 'G-KRISHIFREE') {
-        const s = document.createElement('script');
-        s.async = true;
-        s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(this.measurementId)}`;
-        document.head.appendChild(s);
-      }
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(this.measurementId)}`;
+      document.head.appendChild(s);
 
       gtag('js', new Date());
       gtag('config', this.measurementId, {
@@ -55,7 +89,7 @@ window.KrishiAnalytics = {
       .then(r => (r.ok ? r.json() : null))
       .then(data => {
         const remoteGaId = data?.services?.googleAnalytics?.measurementId;
-        if (remoteGaId && remoteGaId.startsWith('G-') && remoteGaId !== this.measurementId) {
+        if (remoteGaId && remoteGaId.startsWith('G-') && remoteGaId !== this.measurementId && !this.usesGtm()) {
           localStorage.setItem('krishi_ga4_id', remoteGaId);
           this.initialized = false;
           this.init(remoteGaId);
@@ -85,10 +119,25 @@ window.KrishiAnalytics = {
       } catch (e) {}
     }
 
-    // 2. Web GA4 gtag
+    // 2. Google Tag Manager dataLayer (named event so GTM triggers can fire,
+    //    and GTM forwards it to the GA4 configuration tag inside the container)
     try {
-      gtag('event', eventName, safeParams);
+      window.dataLayer.push(Object.assign({ event: eventName }, safeParams));
     } catch (e) {}
+
+    // 3. Direct GA4 only in non-GTM mode (GTM forwards dataLayer events to GA4 itself)
+    if (!this.usesGtm() && this.isRealMeasurementId()) {
+      try {
+        gtag('event', eventName, safeParams);
+      } catch (e) {}
+    }
+  },
+
+  // Convenience wrapper used by the crop-fit, soil-atlas and AI-diagnosis modules
+  trackTiming(eventName, startedAtMs, params = {}) {
+    this.trackEvent(eventName, Object.assign({
+      duration_ms: Math.max(0, Math.round(performance.now() - startedAtMs))
+    }, params));
   }
 };
 

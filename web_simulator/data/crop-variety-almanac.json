@@ -1,0 +1,781 @@
+{
+  "meta": {
+    "almanacVersion": "2026.11",
+    "schemaVersion": 2,
+    "lastReviewedAt": "2026-11-28",
+    "refreshCadence": "MONTHLY",
+    "refreshDayOfMonth": 1,
+    "maintainerNote": "Varieties listed are public-sector notified/released material (ICAR institutes, State Agricultural Universities, Central/State Varietal Release Committee). No private brand is promoted. Refreshed monthly by scripts/refresh_crop_variety_almanac.mjs.",
+    "sources": [
+      { "id": "SEEDNET", "name": "SeedNet India — Notified Variety Database, DA&FW", "url": "https://seednet.gov.in", "type": "VARIETY_NOTIFICATION" },
+      { "id": "ICAR_IIPR_IISR", "name": "ICAR Institute Variety Releases (IIPR, IIWBR, IIRR, IISR, IIOR, CPRI, IIHR, NRC Soybean)", "url": "https://icar.org.in", "type": "VARIETY_RELEASE" },
+      { "id": "DAFW_ADVISORY", "name": "DA&FW Seasonal Crop Advisory & Contingency Plans (NICRA district plans)", "url": "https://nicra-icar.in", "type": "SEASONAL_ADVISORY" },
+      { "id": "AGMARKNET", "name": "Agmarknet / e-NAM market arrivals & modal prices", "url": "https://agmarknet.gov.in", "type": "PRICE_DEMAND" }
+    ]
+  },
+
+  "seasonWindows": {
+    "KHARIF": { "nameHi": "खरीफ (मानसून)", "nameEn": "Kharif (Monsoon)", "sowingMonths": [6, 7], "growingMonths": [6, 7, 8, 9, 10], "planningMonths": [4, 5, 6] },
+    "RABI": { "nameHi": "रबी (सर्दी)", "nameEn": "Rabi (Winter)", "sowingMonths": [10, 11, 12], "growingMonths": [10, 11, 12, 1, 2, 3], "planningMonths": [9, 10, 11] },
+    "ZAID": { "nameHi": "जायद (गर्मी)", "nameEn": "Zaid (Summer)", "sowingMonths": [3, 4], "growingMonths": [3, 4, 5, 6], "planningMonths": [1, 2, 3] },
+    "PERENNIAL": { "nameHi": "बारहमासी", "nameEn": "Perennial / Annual Plantation", "sowingMonths": [2, 3, 6, 7, 9, 10], "growingMonths": [1,2,3,4,5,6,7,8,9,10,11,12], "planningMonths": [1,2,3,4,5,6,7,8,9,10,11,12] }
+  },
+
+  "crops": {
+    "SOYBEAN": {
+      "cropNameHi": "सोयाबीन", "cropNameEn": "Soybean", "botanicalName": "Glycine max",
+      "seasons": ["KHARIF"], "seedRatePerAcre": "28–32 kg (bold seed), 1.5 inch deep on ridges",
+      "sowingWindowHi": "20 जून – 10 जुलाई (75–100 mm वर्षा के बाद)",
+      "sowingWindowEn": "20 June – 10 July, after 75–100 mm cumulative rainfall",
+      "soilFit": ["BLACK_COTTON", "MEDIUM_BLACK", "RED_LATERITIC"], "phRange": "6.2–7.8",
+      "waterNeed": "RAINFED_OK", "droughtBand": "MEDIUM",
+      "rotationAdviceHi": "सोयाबीन–गेहूँ/चना चक्र। लगातार 3 साल सोयाबीन न लें — पीला मोजेक व जड़ सड़न बढ़ती है।",
+      "varieties": [
+        { "name": "JS 20-34", "releasedBy": "JNKVV Jabalpur", "durationDays": "86–88", "yieldQtlPerAcre": "9–11", "traits": ["EARLY", "YELLOW_MOSAIC_TOLERANT", "SUITS_LATE_RAIN"], "states": ["Madhya Pradesh", "Maharashtra", "Rajasthan", "Chhattisgarh"], "noteHi": "सबसे जल्दी पकने वाली — कम वर्षा वर्ष में सुरक्षित विकल्प।" },
+        { "name": "JS 20-69", "releasedBy": "JNKVV Jabalpur", "durationDays": "93–95", "yieldQtlPerAcre": "10–12", "traits": ["SEMI_EARLY", "POD_SHATTER_TOLERANT"], "states": ["Madhya Pradesh", "Maharashtra", "Rajasthan"], "noteHi": "फली चटकने की समस्या कम — मशीन कटाई हेतु उत्तम।" },
+        { "name": "JS 20-116", "releasedBy": "JNKVV Jabalpur", "durationDays": "95–98", "yieldQtlPerAcre": "11–13", "traits": ["HIGH_YIELD", "RHIZOCTONIA_TOLERANT"], "states": ["Madhya Pradesh", "Maharashtra"], "noteHi": "अच्छी वर्षा व सिंचाई उपलब्ध होने पर अधिक उत्पादन।" },
+        { "name": "NRC 86", "releasedBy": "ICAR-NRC Soybean, Indore", "durationDays": "90–92", "yieldQtlPerAcre": "9–11", "traits": ["EARLY", "WIDE_ADAPTABILITY"], "states": ["Madhya Pradesh", "Maharashtra", "Karnataka", "Telangana"], "noteHi": "देर से बुवाई (जुलाई मध्य) में भी स्थिर उपज।" },
+        { "name": "RVS 2001-4", "releasedBy": "RVSKVV Gwalior", "durationDays": "95–100", "yieldQtlPerAcre": "10–12", "traits": ["CHARCOAL_ROT_TOLERANT"], "states": ["Madhya Pradesh", "Rajasthan"], "noteHi": "हल्की व रेतीली मिट्टी तथा कोयला सड़न प्रभावित खेतों हेतु।" },
+        { "name": "MACS 1407", "releasedBy": "ARI Pune (MACS)", "durationDays": "100–104", "yieldQtlPerAcre": "11–14", "traits": ["PEST_TOLERANT", "MECHANICAL_HARVEST"], "states": ["Maharashtra", "Madhya Pradesh", "West Bengal", "Assam"], "noteHi": "गर्डल बीटल व तना मक्खी के प्रति सहनशील।" }
+      ]
+    },
+
+    "WHEAT": {
+      "cropNameHi": "गेहूँ", "cropNameEn": "Wheat", "botanicalName": "Triticum aestivum / T. durum",
+      "seasons": ["RABI"], "seedRatePerAcre": "40–44 kg (timely sown), 50 kg (late sown)",
+      "sowingWindowHi": "समय से: 1–25 नवम्बर • देर से: 10 दिसम्बर तक (हर दिन देरी = ~25–30 kg/एकड़ उपज हानि)",
+      "sowingWindowEn": "Timely: 1–25 November • Late: up to 10 December",
+      "soilFit": ["ALLUVIAL", "BLACK_COTTON", "MEDIUM_BLACK", "TERAI_ALLUVIAL"], "phRange": "6.5–7.8",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "धान–गेहूँ चक्र में हैप्पी सीडर से बुवाई करें; पराली न जलाएं।",
+      "varieties": [
+        { "name": "DBW 303 (Karan Vaishnavi)", "releasedBy": "ICAR-IIWBR Karnal", "durationDays": "140–145", "yieldQtlPerAcre": "26–32", "traits": ["HIGH_YIELD", "TIMELY_SOWN", "RUST_RESISTANT", "IRRIGATED"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Rajasthan", "Uttarakhand"], "noteHi": "उत्तर-पश्चिमी मैदानी क्षेत्र हेतु अधिक उपज; समय से बुवाई आवश्यक।" },
+        { "name": "DBW 187 (Karan Vandana)", "releasedBy": "ICAR-IIWBR Karnal", "durationDays": "120–125", "yieldQtlPerAcre": "22–26", "traits": ["EARLY", "BLAST_TOLERANT", "LATE_SOWN_OK"], "states": ["Uttar Pradesh", "Bihar", "West Bengal", "Jharkhand", "Odisha"], "noteHi": "पूर्वी भारत व देर से बुवाई हेतु; गेहूँ ब्लास्ट जोखिम वाले बंगाल/बिहार में उपयुक्त।" },
+        { "name": "HD 3086 (Pusa Gautami)", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "140–145", "yieldQtlPerAcre": "24–29", "traits": ["RUST_RESISTANT", "LODGING_TOLERANT", "IRRIGATED"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Rajasthan", "Madhya Pradesh"], "noteHi": "व्यापक अनुकूलन; पीला रतुआ प्रतिरोधी।" },
+        { "name": "HD 3226 (Pusa Yashasvi)", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "142–147", "yieldQtlPerAcre": "25–30", "traits": ["HIGH_PROTEIN", "RUST_RESISTANT", "CHAPATI_QUALITY"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Rajasthan"], "noteHi": "रोटी गुणवत्ता व प्रोटीन अधिक — घरेलू उपयोग व आटा मिल हेतु।" },
+        { "name": "GW 322", "releasedBy": "SDAU Gujarat", "durationDays": "115–120", "yieldQtlPerAcre": "20–24", "traits": ["EARLY", "HEAT_TOLERANT", "LIMITED_IRRIGATION"], "states": ["Gujarat", "Madhya Pradesh", "Rajasthan", "Maharashtra"], "noteHi": "2–3 सिंचाई में भी स्थिर उपज; मध्य भारत हेतु।" },
+        { "name": "HI 8759 (Pusa Tejas, Durum)", "releasedBy": "ICAR-IARI Indore", "durationDays": "117–125", "yieldQtlPerAcre": "22–27", "traits": ["DURUM", "HIGH_PROTEIN_ZINC", "SOOJI_QUALITY"], "states": ["Madhya Pradesh", "Gujarat", "Maharashtra", "Rajasthan"], "noteHi": "कठिया (दुरुम) गेहूँ — सूजी/दलिया हेतु अधिक भाव मिलता है।" },
+        { "name": "DBW 222 (Karan Narendra)", "releasedBy": "ICAR-IIWBR Karnal", "durationDays": "140–143", "yieldQtlPerAcre": "25–30", "traits": ["HIGH_YIELD", "RUST_RESISTANT", "IRRIGATED"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Delhi", "Rajasthan"], "noteHi": "समय से बुवाई, पूर्ण सिंचाई वाली परिस्थिति हेतु।" }
+      ]
+    },
+
+    "PADDY": {
+      "cropNameHi": "धान (चावल)", "cropNameEn": "Paddy / Rice", "botanicalName": "Oryza sativa",
+      "seasons": ["KHARIF", "RABI"], "seedRatePerAcre": "8–12 kg (nursery transplant), 20–25 kg (DSR)",
+      "sowingWindowHi": "नर्सरी: 20 मई – 10 जून • रोपाई: 20 जून – 10 जुलाई • DSR: 1–15 जून",
+      "sowingWindowEn": "Nursery 20 May–10 Jun • Transplant 20 Jun–10 Jul • DSR 1–15 Jun",
+      "soilFit": ["ALLUVIAL", "TERAI_ALLUVIAL", "COASTAL_SALINE", "RED_LATERITIC", "CLAY_LOAM"], "phRange": "5.5–7.5",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "लम्बी अवधि की किस्में (जैसे Pusa 44) भूजल व पराली समस्या बढ़ाती हैं — कम अवधि की PR किस्में चुनें।",
+      "varieties": [
+        { "name": "PR 126", "priorityStates": ["Punjab", "Haryana"], "releasedBy": "PAU Ludhiana", "durationDays": "120–125 (nursery to harvest)", "yieldQtlPerAcre": "30–32", "traits": ["SHORT_DURATION", "WATER_SAVING", "LOW_STUBBLE"], "states": ["Punjab", "Haryana"], "noteHi": "पूसा-44 की तुलना में ~3–4 सिंचाई व ~25 दिन बचाते हैं — पराली भी कम।" },
+        { "name": "PR 131", "releasedBy": "PAU Ludhiana", "durationDays": "140–143", "yieldQtlPerAcre": "32–34", "traits": ["BACTERIAL_BLIGHT_RESISTANT", "HIGH_YIELD"], "states": ["Punjab", "Haryana"], "noteHi": "जीवाणु झुलसा (BLB) प्रभावित क्षेत्रों हेतु।" },
+        { "name": "Pusa Basmati 1509", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "115–120", "yieldQtlPerAcre": "20–22", "traits": ["BASMATI", "EARLY", "EXPORT_PREMIUM"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Uttarakhand"], "noteHi": "निर्यात भाव अधिक; जल्दी खाली होकर आलू/सरसों हेतु खेत तैयार।" },
+        { "name": "Pusa Basmati 1847", "priorityStates": ["Punjab", "Haryana"], "releasedBy": "ICAR-IARI New Delhi", "durationDays": "125–130", "yieldQtlPerAcre": "22–24", "traits": ["BASMATI", "BLAST_AND_BLB_RESISTANT", "LOW_PESTICIDE"], "states": ["Punjab", "Haryana", "Uttar Pradesh"], "noteHi": "1509 का रोग-प्रतिरोधी सुधार — कीटनाशक अवशेष (MRL) समस्या घटती है।" },
+        { "name": "Improved Samba Mahsuri (RP Bio 226)", "releasedBy": "ICAR-IIRR Hyderabad", "durationDays": "135–140", "yieldQtlPerAcre": "22–26", "traits": ["BLB_RESISTANT", "FINE_GRAIN"], "states": ["Telangana", "Andhra Pradesh", "Karnataka", "Tamil Nadu", "Odisha"], "noteHi": "बारीक दाना, बाजार में माँग अधिक, BLB प्रतिरोधी।" },
+        { "name": "Sahbhagi Dhan", "releasedBy": "ICAR-NRRI / IRRI", "durationDays": "105–110", "yieldQtlPerAcre": "16–20", "traits": ["DROUGHT_TOLERANT", "RAINFED_UPLAND", "SHORT_DURATION"], "states": ["Jharkhand", "Odisha", "Chhattisgarh", "Bihar", "West Bengal"], "noteHi": "असिंचित/ऊपरी भूमि व सूखा जोखिम वाले क्षेत्रों हेतु।" },
+        { "name": "Swarna Sub-1", "releasedBy": "ICAR-NRRI Cuttack / IRRI", "durationDays": "140–145", "yieldQtlPerAcre": "20–24", "traits": ["FLOOD_SUBMERGENCE_TOLERANT"], "states": ["Bihar", "Odisha", "West Bengal", "Uttar Pradesh", "Assam"], "noteHi": "बाढ़ में 12–17 दिन डूबने के बाद भी जीवित रहती है।" },
+        { "name": "CR Dhan 801", "releasedBy": "ICAR-NRRI Cuttack", "durationDays": "145–150", "yieldQtlPerAcre": "22–25", "traits": ["FLOOD_AND_DROUGHT_TOLERANT"], "states": ["Odisha", "West Bengal", "Assam", "Bihar"], "noteHi": "बाढ़ + सूखा दोनों सहनशील (dual-tolerance)।" },
+        { "name": "DRR Dhan 45", "releasedBy": "ICAR-IIRR Hyderabad", "durationDays": "125–130", "yieldQtlPerAcre": "20–24", "traits": ["HIGH_ZINC", "BIOFORTIFIED"], "states": ["Telangana", "Andhra Pradesh", "Odisha", "Chhattisgarh", "Tamil Nadu"], "noteHi": "जिंक-समृद्ध बायोफोर्टिफाइड — घर की पोषण सुरक्षा हेतु।" }
+      ]
+    },
+
+    "COTTON": {
+      "cropNameHi": "कपास", "cropNameEn": "Cotton", "botanicalName": "Gossypium hirsutum / G. arboreum",
+      "seasons": ["KHARIF"], "seedRatePerAcre": "1.5–2.0 kg (HDPS: 4–5 kg)",
+      "sowingWindowHi": "वर्षा आधारित: 15 जून – 5 जुलाई • सिंचित (उत्तर): 1–15 मई",
+      "sowingWindowEn": "Rainfed 15 Jun–5 Jul • Irrigated north India 1–15 May",
+      "soilFit": ["BLACK_COTTON", "MEDIUM_BLACK", "ALLUVIAL"], "phRange": "6.5–8.2",
+      "waterNeed": "RAINFED_OK", "droughtBand": "MEDIUM",
+      "rotationAdviceHi": "गुलाबी सुंडी तोड़ने हेतु कपास–कपास लगातार न लें; दलहन/ज्वार के साथ चक्र अपनाएं और 31 दिसम्बर तक खेत साफ करें।",
+      "varieties": [
+        { "name": "Suraj", "releasedBy": "ICAR-CICR Nagpur", "durationDays": "150–160", "yieldQtlPerAcre": "8–10", "traits": ["NON_BT", "HDPS", "SEED_SAVEABLE", "LOW_COST"], "states": ["Maharashtra", "Madhya Pradesh", "Telangana", "Karnataka", "Gujarat"], "noteHi": "सीधी किस्म — बीज खुद बचा सकते हैं; उच्च घनत्व रोपण (HDPS) में अच्छी उपज।" },
+        { "name": "PA 812 / PA 528 (CICR HDPS)", "releasedBy": "ICAR-CICR", "durationDays": "140–150", "yieldQtlPerAcre": "7–9", "traits": ["NON_BT", "HDPS", "COMPACT_PLANT", "RAINFED"], "states": ["Maharashtra", "Telangana", "Karnataka"], "noteHi": "असिंचित काली मिट्टी में HDPS हेतु विकसित; लागत बहुत कम।" },
+        { "name": "AKH 081", "releasedBy": "PDKV Akola", "durationDays": "150–165", "yieldQtlPerAcre": "7–9", "traits": ["NON_BT", "RAINFED", "SUCKING_PEST_TOLERANT"], "states": ["Maharashtra", "Madhya Pradesh"], "noteHi": "विदर्भ की वर्षा आधारित स्थिति हेतु परखी हुई किस्म।" },
+        { "name": "Phule Dhanwantary", "releasedBy": "MPKV Rahuri", "durationDays": "150–160", "yieldQtlPerAcre": "8–10", "traits": ["NON_BT", "WILT_TOLERANT"], "states": ["Maharashtra", "Karnataka"], "noteHi": "उकठा (विल्ट) प्रभावित खेतों हेतु।" },
+        { "name": "Desi Cotton — PA 08 / AKA 8", "releasedBy": "ICAR-CICR / PDKV", "durationDays": "140–150", "yieldQtlPerAcre": "6–8", "traits": ["DESI_ARBOREUM", "PINK_BOLLWORM_ESCAPE", "ORGANIC_PREMIUM"], "states": ["Maharashtra", "Madhya Pradesh", "Gujarat", "Rajasthan", "Punjab", "Haryana"], "noteHi": "देसी कपास में गुलाबी सुंडी का हमला बहुत कम; जैविक कपास का भाव अधिक मिलता है।" }
+      ]
+    },
+
+    "CHICKPEA": {
+      "cropNameHi": "चना", "cropNameEn": "Chickpea / Gram", "botanicalName": "Cicer arietinum",
+      "seasons": ["RABI"], "seedRatePerAcre": "28–32 kg (desi), 40–45 kg (kabuli)",
+      "sowingWindowHi": "15 अक्टूबर – 15 नवम्बर (असिंचित में मिट्टी की नमी पर)",
+      "sowingWindowEn": "15 October – 15 November",
+      "soilFit": ["BLACK_COTTON", "MEDIUM_BLACK", "ALLUVIAL", "RED_LATERITIC"], "phRange": "6.0–8.0",
+      "waterNeed": "RAINFED_OK", "droughtBand": "HIGH",
+      "rotationAdviceHi": "चना नाइट्रोजन स्थिर करता है — अगली फसल गेहूँ/कपास में 25% तक यूरिया बचता है। राइजोबियम + PSB बीजोपचार अवश्य करें।",
+      "varieties": [
+        { "name": "JG 14", "releasedBy": "JNKVV Jabalpur", "durationDays": "100–110", "yieldQtlPerAcre": "7–9", "traits": ["DESI", "WILT_RESISTANT", "RAINFED"], "states": ["Madhya Pradesh", "Maharashtra", "Chhattisgarh", "Uttar Pradesh"], "noteHi": "उकठा प्रतिरोधी, असिंचित हेतु उत्तम।" },
+        { "name": "JAKI 9218", "releasedBy": "JNKVV / Akola", "durationDays": "105–115", "yieldQtlPerAcre": "8–10", "traits": ["DESI", "WILT_RESISTANT", "MACHINE_HARVEST"], "states": ["Maharashtra", "Madhya Pradesh", "Karnataka", "Telangana"], "noteHi": "मशीन कटाई योग्य ऊँचा पौधा; बाजार में माँग अधिक।" },
+        { "name": "RVG 202", "releasedBy": "RVSKVV Gwalior", "durationDays": "100–110", "yieldQtlPerAcre": "7–9", "traits": ["DESI", "EARLY", "HEAT_TOLERANT"], "states": ["Madhya Pradesh", "Rajasthan", "Uttar Pradesh"], "noteHi": "देर से बुवाई व गर्मी वाले वर्षों हेतु सुरक्षित।" },
+        { "name": "Pusa 372", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "120–130", "yieldQtlPerAcre": "7–9", "traits": ["DESI", "WIDE_ADAPTABILITY"], "states": ["Uttar Pradesh", "Haryana", "Punjab", "Rajasthan", "Bihar"], "noteHi": "उत्तर भारत के मैदानों हेतु परखी किस्म।" },
+        { "name": "Phule Vikram", "releasedBy": "MPKV Rahuri", "durationDays": "100–105", "yieldQtlPerAcre": "8–11", "traits": ["DESI", "WILT_RESISTANT", "MECHANICAL_HARVEST"], "states": ["Maharashtra", "Karnataka"], "noteHi": "अधिक उपज व यंत्र कटाई हेतु।" },
+        { "name": "PKV Kabuli 4", "releasedBy": "PDKV Akola", "durationDays": "105–115", "yieldQtlPerAcre": "6–8", "traits": ["KABULI", "BOLD_SEED", "PRICE_PREMIUM"], "states": ["Maharashtra", "Madhya Pradesh", "Karnataka"], "noteHi": "काबुली चना — भाव देसी से ~40% अधिक, पर सिंचाई चाहिए।" }
+      ]
+    },
+
+    "MUSTARD": {
+      "cropNameHi": "सरसों", "cropNameEn": "Indian Mustard", "botanicalName": "Brassica juncea",
+      "seasons": ["RABI"], "seedRatePerAcre": "1.5–2.0 kg",
+      "sowingWindowHi": "5 अक्टूबर – 5 नवम्बर (जल्दी बुवाई = सफेद रोली व माहू से बचाव)",
+      "sowingWindowEn": "5 October – 5 November",
+      "soilFit": ["ALLUVIAL", "SANDY_ARID", "MEDIUM_BLACK", "SALINE_SODIC"], "phRange": "6.5–8.5",
+      "waterNeed": "LIMITED_IRRIGATION", "droughtBand": "HIGH",
+      "rotationAdviceHi": "सरसों को गंधक (सल्फर) 8 kg/एकड़ अवश्य दें — तेल की मात्रा व उपज दोनों बढ़ती है।",
+      "varieties": [
+        { "name": "Pusa Mustard 31 (PM 31)", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "135–140", "yieldQtlPerAcre": "9–11", "traits": ["HIGH_OIL", "TIMELY_SOWN", "IRRIGATED"], "states": ["Rajasthan", "Haryana", "Uttar Pradesh", "Madhya Pradesh", "Punjab"], "noteHi": "तेल मात्रा ~41%; सिंचित दशा हेतु।" },
+        { "name": "Giriraj (DRMRIJ 31)", "releasedBy": "ICAR-DRMR Bharatpur", "durationDays": "135–142", "yieldQtlPerAcre": "10–12", "traits": ["HIGH_YIELD", "MANY_BRANCHES", "IRRIGATED"], "states": ["Rajasthan", "Haryana", "Madhya Pradesh", "Uttar Pradesh", "Gujarat"], "noteHi": "अधिक शाखाएं व फलियां — समय से बुवाई में सर्वाधिक उपज।" },
+        { "name": "RH 749", "releasedBy": "CCS HAU Hisar", "durationDays": "135–140", "yieldQtlPerAcre": "9–11", "traits": ["WHITE_RUST_TOLERANT", "IRRIGATED"], "states": ["Haryana", "Punjab", "Rajasthan", "Uttar Pradesh"], "noteHi": "सफेद रोली (White Rust) सहनशील।" },
+        { "name": "NRCHB 101", "releasedBy": "ICAR-DRMR Bharatpur", "durationDays": "110–115", "yieldQtlPerAcre": "7–9", "traits": ["EARLY", "RAINFED", "SALINITY_TOLERANT"], "states": ["Rajasthan", "Haryana", "Gujarat", "Uttar Pradesh"], "noteHi": "असिंचित व खारे पानी वाले क्षेत्र हेतु; जल्दी पकती है।" },
+        { "name": "CS 58 / CS 60 (Salt tolerant)", "releasedBy": "ICAR-CSSRI Karnal", "durationDays": "130–135", "yieldQtlPerAcre": "7–9", "traits": ["SALINITY_SODICITY_TOLERANT"], "states": ["Haryana", "Rajasthan", "Uttar Pradesh", "Gujarat"], "noteHi": "खारी/ऊसर भूमि व खारे सिंचाई जल (EC 6–9 dS/m) हेतु विशेष।" }
+      ]
+    },
+
+    "MAIZE": {
+      "cropNameHi": "मक्का", "cropNameEn": "Maize", "botanicalName": "Zea mays",
+      "seasons": ["KHARIF", "RABI", "ZAID"], "seedRatePerAcre": "8–10 kg",
+      "sowingWindowHi": "खरीफ: 15 जून – 10 जुलाई • रबी: 15 अक्टूबर – 15 नवम्बर • जायद: फरवरी",
+      "sowingWindowEn": "Kharif 15 Jun–10 Jul • Rabi 15 Oct–15 Nov • Zaid February",
+      "soilFit": ["ALLUVIAL", "RED_LATERITIC", "MEDIUM_BLACK", "TERAI_ALLUVIAL"], "phRange": "5.8–7.8",
+      "waterNeed": "LIMITED_IRRIGATION", "droughtBand": "MEDIUM",
+      "rotationAdviceHi": "फॉल आर्मीवर्म हेतु बुवाई के 15वें दिन से भुट्टे की गोफ (whorl) की जांच करें; धान के बदले मक्का भूजल बचाता है।",
+      "varieties": [
+        { "name": "Pusa HQPM 5 Improved", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "90–95", "yieldQtlPerAcre": "28–34", "traits": ["BIOFORTIFIED_LYSINE_TRYPTOPHAN", "HYBRID"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Bihar", "Madhya Pradesh", "Rajasthan"], "noteHi": "प्रोटीन गुणवत्ता उच्च — पशु आहार व घरेलू पोषण दोनों हेतु उत्तम।" },
+        { "name": "PMH 1 / PMH 11", "releasedBy": "PAU Ludhiana", "durationDays": "95–100", "yieldQtlPerAcre": "28–32", "traits": ["HYBRID", "HIGH_YIELD"], "states": ["Punjab", "Haryana", "Himachal Pradesh"], "noteHi": "उत्तर-पश्चिम हेतु; धान विकल्प (crop diversification) में प्रमुख।" },
+        { "name": "DHM 117", "releasedBy": "ICAR-IIMR", "durationDays": "100–110", "yieldQtlPerAcre": "26–30", "traits": ["HYBRID", "WIDE_ADAPTABILITY"], "states": ["Telangana", "Andhra Pradesh", "Karnataka", "Maharashtra", "Bihar"], "noteHi": "प्रायद्वीपीय भारत में व्यापक रूप से परखी।" },
+        { "name": "Pratap Makka Chari 6", "releasedBy": "MPUAT Udaipur", "durationDays": "60–70 (fodder)", "yieldQtlPerAcre": "180–220 (green fodder)", "traits": ["FODDER", "FAST_GROWING"], "states": ["Rajasthan", "Madhya Pradesh", "Gujarat", "Maharashtra"], "noteHi": "हरा चारा — दुधारू पशु हेतु 60 दिन में तैयार।" }
+      ]
+    },
+
+    "PIGEONPEA": {
+      "cropNameHi": "अरहर (तुअर)", "cropNameEn": "Pigeonpea", "botanicalName": "Cajanus cajan",
+      "seasons": ["KHARIF"], "seedRatePerAcre": "6–8 kg (sole), 2–3 kg (intercrop)",
+      "sowingWindowHi": "15 जून – 10 जुलाई (मेड़-नाली/BBF पद्धति पर)",
+      "sowingWindowEn": "15 June – 10 July on ridge-furrow / BBF",
+      "soilFit": ["BLACK_COTTON", "MEDIUM_BLACK", "RED_LATERITIC"], "phRange": "6.0–8.0",
+      "waterNeed": "RAINFED_OK", "droughtBand": "HIGH",
+      "rotationAdviceHi": "जल भराव अरहर की सबसे बड़ी दुश्मन है — मेड़ पर बोएं। सोयाबीन/कपास के साथ 4:2 अंतरवर्तीय लें।",
+      "varieties": [
+        { "name": "BDN 711", "releasedBy": "VNMKV Parbhani", "durationDays": "165–175", "yieldQtlPerAcre": "7–9", "traits": ["WILT_AND_STERILITY_MOSAIC_RESISTANT"], "states": ["Maharashtra", "Karnataka", "Telangana", "Madhya Pradesh"], "noteHi": "उकठा व बंध्य मोजेक दोनों प्रतिरोधी — मराठवाड़ा हेतु प्रमुख।" },
+        { "name": "Pusa Arhar 16", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "120–125", "yieldQtlPerAcre": "6–8", "traits": ["EARLY", "DWARF", "MACHINE_HARVEST", "DOUBLE_CROP"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Madhya Pradesh", "Bihar"], "noteHi": "जल्दी पकने वाली बौनी किस्म — बाद में गेहूँ समय से बो सकते हैं।" },
+        { "name": "ICPL 87119 (Asha)", "releasedBy": "ICRISAT / ICAR", "durationDays": "180–190", "yieldQtlPerAcre": "7–10", "traits": ["WILT_RESISTANT", "LONG_DURATION"], "states": ["Telangana", "Karnataka", "Maharashtra", "Andhra Pradesh", "Madhya Pradesh"], "noteHi": "गहरी काली मिट्टी व अच्छी वर्षा वाले क्षेत्रों हेतु।" },
+        { "name": "Rajeshwari (WRGE 97)", "releasedBy": "PJTSAU Telangana", "durationDays": "155–165", "yieldQtlPerAcre": "7–9", "traits": ["WILT_TOLERANT", "BOLD_SEED"], "states": ["Telangana", "Andhra Pradesh", "Karnataka"], "noteHi": "मोटा दाना, दाल मिल में अधिक भाव।" }
+      ]
+    },
+
+    "GROUNDNUT": {
+      "cropNameHi": "मूँगफली", "cropNameEn": "Groundnut", "botanicalName": "Arachis hypogaea",
+      "seasons": ["KHARIF", "ZAID"], "seedRatePerAcre": "40–50 kg kernels (bunch type)",
+      "sowingWindowHi": "खरीफ: 15 जून – 10 जुलाई • जायद/रबी (दक्षिण): जनवरी–फरवरी",
+      "sowingWindowEn": "Kharif 15 Jun–10 Jul • Summer Jan–Feb (south/Gujarat)",
+      "soilFit": ["SANDY_ARID", "RED_LATERITIC", "MEDIUM_BLACK", "COASTAL_SANDY"], "phRange": "6.0–7.5",
+      "waterNeed": "RAINFED_OK", "droughtBand": "MEDIUM",
+      "rotationAdviceHi": "जिप्सम 100 kg/एकड़ फूल आते समय दें — फलियां भरती हैं व कैल्शियम/सल्फर पूरा होता है।",
+      "varieties": [
+        { "name": "Girnar 4 / Girnar 5 (High Oleic)", "releasedBy": "ICAR-DGR Junagadh", "durationDays": "120–125", "yieldQtlPerAcre": "10–13", "traits": ["HIGH_OLEIC", "EXPORT_PREMIUM", "LONG_SHELF_LIFE"], "states": ["Gujarat", "Rajasthan", "Andhra Pradesh", "Karnataka", "Tamil Nadu"], "noteHi": "हाई-ओलिक तेल — निर्यात व तेल मिल में प्रीमियम भाव।" },
+        { "name": "GJG 31 / GJG 32", "releasedBy": "JAU Junagadh", "durationDays": "110–120", "yieldQtlPerAcre": "10–12", "traits": ["SEMI_SPREADING", "HIGH_OIL"], "states": ["Gujarat", "Rajasthan", "Maharashtra"], "noteHi": "सौराष्ट्र/कच्छ की रेतीली भूमि हेतु।" },
+        { "name": "TAG 24", "releasedBy": "BARC Mumbai", "durationDays": "100–110", "yieldQtlPerAcre": "9–11", "traits": ["EARLY", "BUNCH", "DROUGHT_ESCAPE"], "states": ["Maharashtra", "Karnataka", "Gujarat", "Andhra Pradesh"], "noteHi": "जल्दी पकने वाली — कम वर्षा वर्ष में सुरक्षित।" },
+        { "name": "Dh 86 (Dharani)", "releasedBy": "UAS Dharwad", "durationDays": "105–110", "yieldQtlPerAcre": "9–12", "traits": ["LEAF_SPOT_TOLERANT", "RAINFED"], "states": ["Karnataka", "Andhra Pradesh", "Telangana", "Maharashtra"], "noteHi": "टिक्का रोग (leaf spot) सहनशील।" }
+      ]
+    },
+
+    "SUGARCANE": {
+      "cropNameHi": "गन्ना", "cropNameEn": "Sugarcane", "botanicalName": "Saccharum officinarum",
+      "seasons": ["PERENNIAL"], "seedRatePerAcre": "16,000–18,000 three-bud setts (~30–35 qtl)",
+      "sowingWindowHi": "शरदकालीन: 15 सितम्बर – 31 अक्टूबर (सर्वोत्तम) • बसंतकालीन: 15 फरवरी – 31 मार्च",
+      "sowingWindowEn": "Autumn 15 Sep–31 Oct (best) • Spring 15 Feb–31 Mar",
+      "soilFit": ["ALLUVIAL", "TERAI_ALLUVIAL", "MEDIUM_BLACK", "BLACK_COTTON"], "phRange": "6.5–7.8",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "Co 0238 में लाल सड़न (Red Rot) का प्रकोप उ.प्र./बिहार में तेजी से बढ़ा है — नई किस्मों पर क्षेत्र बदलें और बीज गर्म-जल/ट्राइकोडर्मा उपचार करें।",
+      "varieties": [
+        { "name": "Co 15023 (Karan 13)", "priorityStates": ["Uttar Pradesh", "Bihar", "Uttarakhand"], "releasedBy": "ICAR-SBI / IISR", "durationDays": "Early (300–330)", "yieldQtlPerAcre": "320–380", "traits": ["EARLY_MATURING", "RED_ROT_TOLERANT", "HIGH_SUCROSE"], "states": ["Uttar Pradesh", "Uttarakhand", "Bihar", "Haryana", "Punjab"], "noteHi": "Co 0238 का प्रमुख विकल्प — लाल सड़न के प्रति अधिक सहनशील।" },
+        { "name": "CoLk 14201 (Ikshu 5)", "priorityStates": ["Uttar Pradesh"], "releasedBy": "ICAR-IISR Lucknow", "durationDays": "Early", "yieldQtlPerAcre": "300–360", "traits": ["EARLY", "RED_ROT_TOLERANT", "GOOD_RATOON"], "states": ["Uttar Pradesh", "Bihar", "Uttarakhand"], "noteHi": "पेड़ी (ratoon) उपज अच्छी; उ.प्र. मध्य क्षेत्र हेतु संस्तुत।" },
+        { "name": "Co 118", "releasedBy": "ICAR-SBI Coimbatore", "durationDays": "Mid-late", "yieldQtlPerAcre": "320–400", "traits": ["MID_LATE", "HIGH_TONNAGE"], "states": ["Uttar Pradesh", "Haryana", "Punjab", "Uttarakhand"], "noteHi": "अधिक टनेज; शरदकालीन बुवाई में सर्वोत्तम।" },
+        { "name": "Co 86032", "releasedBy": "ICAR-SBI Coimbatore", "durationDays": "Mid-late", "yieldQtlPerAcre": "340–420", "traits": ["HIGH_SUCROSE", "GOOD_RATOON", "PENINSULAR"], "states": ["Maharashtra", "Karnataka", "Tamil Nadu", "Andhra Pradesh", "Gujarat"], "noteHi": "प्रायद्वीपीय भारत की मुख्य किस्म; चीनी परता अधिक।" },
+        { "name": "Co 11015 (Atulya)", "releasedBy": "ICAR-SBI Coimbatore", "durationDays": "Mid-late", "yieldQtlPerAcre": "350–430", "traits": ["HIGH_YIELD", "WATERLOGGING_TOLERANT"], "states": ["Maharashtra", "Karnataka", "Tamil Nadu"], "noteHi": "जल भराव सहनशील; दक्षिण के भारी क्षेत्रों हेतु।" }
+      ]
+    },
+
+    "POTATO": {
+      "cropNameHi": "आलू", "cropNameEn": "Potato", "botanicalName": "Solanum tuberosum",
+      "seasons": ["RABI"], "seedRatePerAcre": "800–1,000 kg seed tubers (35–45 mm)",
+      "sowingWindowHi": "मैदानी: 10 अक्टूबर – 25 नवम्बर • पहाड़ी: मार्च–अप्रैल",
+      "sowingWindowEn": "Plains 10 Oct–25 Nov • Hills Mar–Apr",
+      "soilFit": ["ALLUVIAL", "TERAI_ALLUVIAL", "SANDY_LOAM"], "phRange": "5.5–6.8",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "पछेती झुलसा (Late Blight) हेतु मौसम आधारित पूर्वानुमान देखें; बादल+नमी वाले 3 दिन लगातार हों तो बचाव छिड़काव करें।",
+      "varieties": [
+        { "name": "Kufri Pukhraj", "releasedBy": "ICAR-CPRI Shimla", "durationDays": "70–80", "yieldQtlPerAcre": "100–130", "traits": ["EARLY", "HIGH_YIELD", "TABLE_PURPOSE"], "states": ["Uttar Pradesh", "Bihar", "West Bengal", "Punjab", "Gujarat", "Madhya Pradesh"], "noteHi": "जल्दी तैयार — अक्टूबर बुवाई में दिसम्बर का ऊँचा भाव मिलता है।" },
+        { "name": "Kufri Chipsona-1 / Chipsona-3", "releasedBy": "ICAR-CPRI Shimla", "durationDays": "90–100", "yieldQtlPerAcre": "110–140", "traits": ["PROCESSING_CHIPS", "LOW_SUGAR", "CONTRACT_DEMAND"], "states": ["Punjab", "Uttar Pradesh", "Gujarat", "Madhya Pradesh", "Maharashtra"], "noteHi": "चिप्स/प्रसंस्करण हेतु — कंपनियों से अनुबंध भाव अधिक।" },
+        { "name": "Kufri Mohan", "releasedBy": "ICAR-CPRI Shimla", "durationDays": "80–90", "yieldQtlPerAcre": "110–140", "traits": ["HIGH_YIELD", "LATE_BLIGHT_MODERATE"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Bihar"], "noteHi": "आकर्षक सफेद कंद, मैदानी क्षेत्रों हेतु।" },
+        { "name": "Kufri Bahar", "releasedBy": "ICAR-CPRI Shimla", "durationDays": "90–100", "yieldQtlPerAcre": "100–130", "traits": ["LONG_STORAGE", "TABLE_PURPOSE"], "states": ["Uttar Pradesh", "Bihar", "Haryana", "Punjab"], "noteHi": "भंडारण क्षमता अच्छी — कोल्ड स्टोर रखने हेतु उपयुक्त।" }
+      ]
+    },
+
+    "ONION": {
+      "cropNameHi": "प्याज", "cropNameEn": "Onion", "botanicalName": "Allium cepa",
+      "seasons": ["KHARIF", "RABI"], "seedRatePerAcre": "3–4 kg (nursery), 2.5–3 kg (kharif)",
+      "sowingWindowHi": "खरीफ नर्सरी: मई–जून • लेट खरीफ: अगस्त–सितम्बर • रबी: अक्टूबर–नवम्बर",
+      "sowingWindowEn": "Kharif nursery May–Jun • Late kharif Aug–Sep • Rabi Oct–Nov",
+      "soilFit": ["MEDIUM_BLACK", "ALLUVIAL", "RED_LATERITIC", "SANDY_LOAM"], "phRange": "6.0–7.5",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "रबी प्याज ही भंडारण योग्य है — खरीफ प्याज तुरंत बेचें। गंधक व बोरोन की कमी से कंद फटते हैं।",
+      "varieties": [
+        { "name": "Bhima Super", "releasedBy": "ICAR-DOGR Rajgurunagar", "durationDays": "100–110", "yieldQtlPerAcre": "100–120", "traits": ["KHARIF_AND_LATE_KHARIF", "DARK_RED"], "states": ["Maharashtra", "Karnataka", "Madhya Pradesh", "Gujarat", "Rajasthan", "Haryana"], "noteHi": "खरीफ व लेट-खरीफ दोनों हेतु संस्तुत।" },
+        { "name": "Bhima Kiran", "releasedBy": "ICAR-DOGR Rajgurunagar", "durationDays": "110–120", "yieldQtlPerAcre": "110–130", "traits": ["RABI", "LONG_STORAGE_5_MONTH"], "states": ["Maharashtra", "Karnataka", "Madhya Pradesh", "Gujarat", "Rajasthan"], "noteHi": "5 माह तक भंडारण — भाव बढ़ने पर बेच सकते हैं।" },
+        { "name": "Bhima Shakti", "releasedBy": "ICAR-DOGR Rajgurunagar", "durationDays": "110–125", "yieldQtlPerAcre": "110–130", "traits": ["LATE_KHARIF_AND_RABI", "GOOD_STORAGE"], "states": ["Maharashtra", "Karnataka", "Madhya Pradesh", "Bihar", "Haryana"], "noteHi": "लेट खरीफ + रबी दोनों में; भंडारण अच्छा।" },
+        { "name": "Agrifound Light Red", "releasedBy": "NHRDF Nashik", "durationDays": "110–120", "yieldQtlPerAcre": "100–120", "traits": ["RABI", "EXPORT_GRADE"], "states": ["Maharashtra", "Gujarat", "Madhya Pradesh", "Rajasthan"], "noteHi": "निर्यात ग्रेड — नासिक पट्टी की परखी किस्म।" }
+      ]
+    },
+
+    "PEARL_MILLET": {
+      "cropNameHi": "बाजरा", "cropNameEn": "Pearl Millet (Bajra)", "botanicalName": "Pennisetum glaucum",
+      "seasons": ["KHARIF", "ZAID"], "seedRatePerAcre": "1.5–2.0 kg",
+      "sowingWindowHi": "खरीफ: 1 जुलाई – 25 जुलाई (मानसून आने पर) • गर्मी: फरवरी",
+      "sowingWindowEn": "Kharif 1–25 July with monsoon onset • Summer February",
+      "soilFit": ["SANDY_ARID", "RED_LATERITIC", "MEDIUM_BLACK"], "phRange": "6.5–8.5",
+      "waterNeed": "RAINFED_OK", "droughtBand": "VERY_HIGH",
+      "rotationAdviceHi": "सबसे कम पानी में उपज देने वाला अनाज — 350 mm वर्षा में भी सफल। श्री अन्न (millet) मिशन में MSP व माँग दोनों बढ़ रहे हैं।",
+      "varieties": [
+        { "name": "HHB 67 Improved", "releasedBy": "CCS HAU Hisar", "durationDays": "62–70", "yieldQtlPerAcre": "8–10", "traits": ["EXTRA_EARLY", "DOWNY_MILDEW_RESISTANT", "DROUGHT_ESCAPE"], "states": ["Rajasthan", "Haryana", "Gujarat", "Uttar Pradesh"], "noteHi": "65 दिन में तैयार — देर से मानसून या सूखे वर्ष हेतु सबसे सुरक्षित।" },
+        { "name": "HHB 299", "releasedBy": "CCS HAU Hisar", "durationDays": "75–80", "yieldQtlPerAcre": "11–13", "traits": ["BIOFORTIFIED_IRON_ZINC", "HIGH_YIELD"], "states": ["Rajasthan", "Haryana", "Gujarat", "Maharashtra"], "noteHi": "आयरन व जिंक समृद्ध — कुपोषण व एनीमिया हेतु लाभकारी।" },
+        { "name": "Dhanashakti (ICMV 221 Fe)", "releasedBy": "ICRISAT / MPKV", "durationDays": "75–80", "yieldQtlPerAcre": "8–10", "traits": ["BIOFORTIFIED_IRON", "OPV_SEED_SAVEABLE"], "states": ["Maharashtra", "Rajasthan", "Karnataka", "Gujarat"], "noteHi": "खुली परागित किस्म — बीज हर साल खुद रख सकते हैं।" },
+        { "name": "Pusa Composite 701", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "80–85", "yieldQtlPerAcre": "9–11", "traits": ["OPV", "DOWNY_MILDEW_RESISTANT"], "states": ["Rajasthan", "Haryana", "Uttar Pradesh", "Gujarat"], "noteHi": "हरित बाली रोग प्रतिरोधी संकुल किस्म।" }
+      ]
+    },
+
+    "FINGER_MILLET": {
+      "cropNameHi": "रागी (मंडुआ)", "cropNameEn": "Finger Millet (Ragi)", "botanicalName": "Eleusine coracana",
+      "seasons": ["KHARIF"], "seedRatePerAcre": "4–5 kg (line sowing), 2 kg (transplant)",
+      "sowingWindowHi": "जून अंत – जुलाई मध्य",
+      "sowingWindowEn": "Late June – mid July",
+      "soilFit": ["RED_LATERITIC", "HILL_ACIDIC", "SANDY_LOAM"], "phRange": "5.0–7.0",
+      "waterNeed": "RAINFED_OK", "droughtBand": "VERY_HIGH",
+      "rotationAdviceHi": "कैल्शियम से भरपूर श्री अन्न — आंगनवाड़ी/ICDS की खरीद माँग बढ़ी है।",
+      "varieties": [
+        { "name": "GPU 28", "releasedBy": "UAS Bengaluru", "durationDays": "105–110", "yieldQtlPerAcre": "10–13", "traits": ["BLAST_RESISTANT", "HIGH_YIELD"], "states": ["Karnataka", "Tamil Nadu", "Andhra Pradesh", "Odisha", "Maharashtra"], "noteHi": "झुलसा (blast) प्रतिरोधी — सर्वाधिक लोकप्रिय।" },
+        { "name": "ML 365", "releasedBy": "UAS Bengaluru", "durationDays": "100–110", "yieldQtlPerAcre": "9–12", "traits": ["DROUGHT_TOLERANT", "FODDER_BONUS"], "states": ["Karnataka", "Tamil Nadu", "Maharashtra", "Jharkhand"], "noteHi": "दाना + पशु चारा दोनों अच्छा।" },
+        { "name": "VL Mandua 352", "releasedBy": "ICAR-VPKAS Almora", "durationDays": "95–105", "yieldQtlPerAcre": "8–10", "traits": ["HILL_ADAPTED", "EARLY"], "states": ["Uttarakhand", "Himachal Pradesh", "Jharkhand"], "noteHi": "पहाड़ी व अम्लीय मिट्टी हेतु।" }
+      ]
+    },
+
+    "GREENGRAM": {
+      "cropNameHi": "मूँग", "cropNameEn": "Greengram (Mung)", "botanicalName": "Vigna radiata",
+      "seasons": ["KHARIF", "ZAID"], "seedRatePerAcre": "8–10 kg",
+      "sowingWindowHi": "खरीफ: जुलाई • जायद (गेहूँ कटाई के बाद): 20 मार्च – 15 अप्रैल",
+      "sowingWindowEn": "Kharif July • Summer 20 Mar–15 Apr after wheat",
+      "soilFit": ["ALLUVIAL", "MEDIUM_BLACK", "SANDY_LOAM", "RED_LATERITIC"], "phRange": "6.2–7.8",
+      "waterNeed": "LIMITED_IRRIGATION", "droughtBand": "HIGH",
+      "rotationAdviceHi": "60–65 दिन की जायद मूँग खेत में 8–10 kg/एकड़ नाइट्रोजन छोड़ती है — अगली फसल की यूरिया घटाएं।",
+      "varieties": [
+        { "name": "IPM 02-3", "releasedBy": "ICAR-IIPR Kanpur", "durationDays": "62–68", "yieldQtlPerAcre": "4–5", "traits": ["EARLY", "YELLOW_MOSAIC_RESISTANT", "SYNCHRONOUS_MATURITY"], "states": ["Uttar Pradesh", "Bihar", "Punjab", "Haryana", "Madhya Pradesh"], "noteHi": "पीला मोजेक प्रतिरोधी; एक साथ पकती है (एक तुड़ाई)।" },
+        { "name": "Virat (IPM 205-7)", "releasedBy": "ICAR-IIPR Kanpur", "durationDays": "52–60", "yieldQtlPerAcre": "4–5", "traits": ["EXTRA_EARLY", "SUMMER_FIT", "MOSAIC_RESISTANT"], "states": ["Punjab", "Haryana", "Uttar Pradesh", "Madhya Pradesh", "Rajasthan"], "noteHi": "सबसे जल्दी — गेहूँ व धान के बीच का 55 दिन का खाली समय भर देती है।" },
+        { "name": "SML 668", "releasedBy": "PAU Ludhiana", "durationDays": "60–65", "yieldQtlPerAcre": "4–5", "traits": ["SUMMER_MUNG", "SHINY_GREEN_SEED"], "states": ["Punjab", "Haryana", "Rajasthan"], "noteHi": "ग्रीष्मकालीन मूँग हेतु मानक किस्म।" },
+        { "name": "Pusa Vishal", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "65–70", "yieldQtlPerAcre": "4–6", "traits": ["BOLD_SEED", "PRICE_PREMIUM"], "states": ["Uttar Pradesh", "Madhya Pradesh", "Maharashtra", "Gujarat"], "noteHi": "मोटा चमकदार दाना — मंडी में अधिक भाव।" }
+      ]
+    },
+
+    "TOMATO": {
+      "cropNameHi": "टमाटर", "cropNameEn": "Tomato", "botanicalName": "Solanum lycopersicum",
+      "seasons": ["KHARIF", "RABI", "ZAID"], "seedRatePerAcre": "80–100 g (nursery/tray)",
+      "sowingWindowHi": "खरीफ नर्सरी: जून–जुलाई • रबी नर्सरी: सितम्बर–अक्टूबर • जायद: जनवरी",
+      "sowingWindowEn": "Kharif nursery Jun–Jul • Rabi nursery Sep–Oct • Summer January",
+      "soilFit": ["ALLUVIAL", "RED_LATERITIC", "MEDIUM_BLACK", "SANDY_LOAM"], "phRange": "6.0–7.0",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "टमाटर–मिर्च–बैंगन (एक ही कुल) लगातार न लें — जीवाणु उकठा व सूत्रकृमि बढ़ते हैं। गेंदा की सीमावर्ती फसल लगाएं।",
+      "varieties": [
+        { "name": "Arka Rakshak (F1)", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "140–150", "yieldQtlPerAcre": "300–400", "traits": ["TRIPLE_DISEASE_RESISTANT", "HYBRID", "FIRM_FRUIT"], "states": ["Karnataka", "Maharashtra", "Andhra Pradesh", "Telangana", "Tamil Nadu", "Madhya Pradesh"], "noteHi": "पत्ती मोड़ वायरस + जीवाणु उकठा + अगेती झुलसा तीनों प्रतिरोधी — छिड़काव खर्च बहुत घटता है।" },
+        { "name": "Arka Samrat (F1)", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "140–145", "yieldQtlPerAcre": "300–380", "traits": ["TRIPLE_DISEASE_RESISTANT", "HYBRID", "LONG_DISTANCE_TRANSPORT"], "states": ["Karnataka", "Maharashtra", "Telangana", "Andhra Pradesh", "Odisha"], "noteHi": "कड़ा फल — दूर मंडी भेजने में टूट-फूट कम।" },
+        { "name": "Arka Vikas", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "120–130", "yieldQtlPerAcre": "140–180", "traits": ["OPV_SEED_SAVEABLE", "HEAT_TOLERANT"], "states": ["Karnataka", "Maharashtra", "Tamil Nadu", "Madhya Pradesh"], "noteHi": "खुली परागित — बीज खुद रख सकते हैं, लागत कम।" },
+        { "name": "Pusa Rohini", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "125–135", "yieldQtlPerAcre": "180–240", "traits": ["OPV", "WIDE_ADAPTABILITY"], "states": ["Uttar Pradesh", "Haryana", "Punjab", "Bihar", "Madhya Pradesh"], "noteHi": "उत्तर भारत के मैदानों हेतु; बीज सस्ता।" }
+      ]
+    },
+
+    "CHILLI": {
+      "cropNameHi": "मिर्च", "cropNameEn": "Chilli", "botanicalName": "Capsicum annuum",
+      "seasons": ["KHARIF", "RABI"], "seedRatePerAcre": "150–200 g (nursery)",
+      "sowingWindowHi": "खरीफ नर्सरी: मई–जून • रबी नर्सरी: सितम्बर–अक्टूबर",
+      "sowingWindowEn": "Kharif nursery May–Jun • Rabi nursery Sep–Oct",
+      "soilFit": ["MEDIUM_BLACK", "RED_LATERITIC", "ALLUVIAL"], "phRange": "6.0–7.5",
+      "waterNeed": "IRRIGATED", "droughtBand": "MEDIUM",
+      "rotationAdviceHi": "थ्रिप्स व चुरड़ा-मुरड़ा (leaf curl) हेतु नीले-पीले चिपचिपे ट्रैप 15/एकड़ लगाएं; मक्का की बॉर्डर फसल लें।",
+      "varieties": [
+        { "name": "Arka Meghana (F1)", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "150–165", "yieldQtlPerAcre": "110–140 (green)", "traits": ["HYBRID", "POWDERY_MILDEW_TOLERANT", "HIGH_PUNGENCY"], "states": ["Karnataka", "Andhra Pradesh", "Telangana", "Maharashtra", "Tamil Nadu"], "noteHi": "हरी व सूखी दोनों हेतु; तीखापन अधिक।" },
+        { "name": "Arka Khyati (F1)", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "150–160", "yieldQtlPerAcre": "120–150 (green)", "traits": ["HYBRID", "HIGH_YIELD", "GREEN_CHILLI"], "states": ["Karnataka", "Maharashtra", "Andhra Pradesh", "Telangana"], "noteHi": "हरी मिर्च बाजार हेतु सर्वाधिक उपज।" },
+        { "name": "LCA 334 (Guntur)", "releasedBy": "ANGRAU Lam, Guntur", "durationDays": "165–180", "yieldQtlPerAcre": "20–28 (dry)", "traits": ["DRY_CHILLI", "HIGH_COLOUR_VALUE", "EXPORT"], "states": ["Andhra Pradesh", "Telangana", "Karnataka"], "noteHi": "गुंटूर सूखी मिर्च — निर्यात व ओलेओरेसिन माँग।" },
+        { "name": "Byadgi Dabbi (Local selection / KA)", "releasedBy": "UAS Dharwad", "durationDays": "170–180", "yieldQtlPerAcre": "15–20 (dry)", "traits": ["DRY_CHILLI", "LOW_PUNGENCY_HIGH_COLOUR", "GI_TAG"], "states": ["Karnataka", "Maharashtra"], "noteHi": "ब्याडगी — रंग (colour value) के लिए सर्वोच्च भाव।" }
+      ]
+    },
+
+    "BANANA": {
+      "cropNameHi": "केला", "cropNameEn": "Banana", "botanicalName": "Musa acuminata / M. balbisiana",
+      "seasons": ["PERENNIAL"], "seedRatePerAcre": "1,200–1,450 tissue-culture plants (1.8 × 1.5 m)",
+      "sowingWindowHi": "मृग बाग: जून–जुलाई • कांदे बाग: अक्टूबर–नवम्बर",
+      "sowingWindowEn": "Mrig bagh Jun–Jul • Kande bagh Oct–Nov",
+      "soilFit": ["ALLUVIAL", "MEDIUM_BLACK", "RED_LATERITIC", "COASTAL_SANDY"], "phRange": "6.0–7.5",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "पनामा विल्ट (TR4) प्रभावित खेत में 3 वर्ष केला न लगाएं। केला पोटाश का सबसे भूखा पौधा है — 1 kg K2O/पौधा दें।",
+      "varieties": [
+        { "name": "Grand Naine (G9)", "releasedBy": "Tissue-culture, ICAR-NRCB recommended", "durationDays": "11–12 months", "yieldQtlPerAcre": "500–650", "traits": ["HIGH_YIELD", "UNIFORM_BUNCH", "EXPORT_GRADE"], "states": ["Maharashtra", "Gujarat", "Madhya Pradesh", "Tamil Nadu", "Andhra Pradesh", "Bihar", "Uttar Pradesh"], "noteHi": "भारत का प्रमुख व्यापारिक केला; ऊतक संवर्धित (TC) पौधे ही लगाएं।" },
+        { "name": "Ney Poovan", "releasedBy": "ICAR-NRCB Trichy", "durationDays": "12–14 months", "yieldQtlPerAcre": "300–400", "traits": ["SIGATOKA_TOLERANT", "LOCAL_PREMIUM", "HARDY"], "states": ["Tamil Nadu", "Karnataka", "Kerala", "Andhra Pradesh"], "noteHi": "सिगाटोका सहनशील; दक्षिण में अच्छा भाव।" },
+        { "name": "Udhayam (Rasthali improved)", "releasedBy": "TNAU / ICAR-NRCB", "durationDays": "12–13 months", "yieldQtlPerAcre": "300–380", "traits": ["PANAMA_WILT_TOLERANT"], "states": ["Tamil Nadu", "Kerala", "Karnataka"], "noteHi": "पनामा विल्ट प्रभावित क्षेत्रों हेतु विकल्प।" },
+        { "name": "Bhusavali Keli / Ardhapuri (Local)", "releasedBy": "Regional selection", "durationDays": "12–13 months", "yieldQtlPerAcre": "350–450", "traits": ["GI_TAG", "LOCAL_TASTE_PREMIUM"], "states": ["Maharashtra", "Madhya Pradesh"], "noteHi": "जलगाँव पट्टी की पारंपरिक किस्म — स्वाद हेतु अलग भाव।" }
+      ]
+    },
+
+    "MUSKMELON_VEG_ZAID": {
+      "cropNameHi": "जायद सब्जी (खरबूज/तरबूज/लौकी/भिंडी)", "cropNameEn": "Summer Vegetables (Melon, Gourd, Okra)", "botanicalName": "Cucurbitaceae / Abelmoschus",
+      "seasons": ["ZAID"], "seedRatePerAcre": "Melon 400 g • Bottle gourd 1.5 kg • Okra 6–8 kg",
+      "sowingWindowHi": "15 फरवरी – 20 मार्च (नदी तट/रेत में जनवरी से)",
+      "sowingWindowEn": "15 Feb – 20 Mar (river-bed sandy soils from January)",
+      "soilFit": ["SANDY_LOAM", "ALLUVIAL", "SANDY_ARID"], "phRange": "6.0–7.5",
+      "waterNeed": "IRRIGATED", "droughtBand": "LOW",
+      "rotationAdviceHi": "गेहूँ कटाई के बाद खाली खेत में 90 दिन की नकदी फसल — ड्रिप + मल्चिंग से 40% पानी बचता है।",
+      "varieties": [
+        { "name": "Pusa Madhuras / Arka Jeet (Muskmelon)", "releasedBy": "ICAR-IARI / IIHR", "durationDays": "80–90", "yieldQtlPerAcre": "70–100", "traits": ["HIGH_TSS_SWEET", "SUMMER"], "states": ["Uttar Pradesh", "Punjab", "Haryana", "Rajasthan", "Madhya Pradesh"], "noteHi": "मिठास (TSS) अधिक — स्थानीय मंडी में तेज बिक्री।" },
+        { "name": "Arka Manik (Watermelon)", "releasedBy": "ICAR-IIHR Bengaluru", "durationDays": "90–100", "yieldQtlPerAcre": "180–250", "traits": ["POWDERY_MILDEW_TOLERANT", "GOOD_TRANSPORT"], "states": ["Karnataka", "Maharashtra", "Andhra Pradesh", "Tamil Nadu", "Madhya Pradesh"], "noteHi": "भभूतिया रोग सहनशील; ढुलाई में सुरक्षित।" },
+        { "name": "Pusa Sawani / Arka Anamika (Okra)", "releasedBy": "ICAR-IARI / IIHR", "durationDays": "50–55 to first pick", "yieldQtlPerAcre": "60–90", "traits": ["YVMV_TOLERANT", "SPINELESS"], "states": ["Uttar Pradesh", "Bihar", "Maharashtra", "Karnataka", "Madhya Pradesh"], "noteHi": "पीला शिरा मोजेक सहनशील; कांटे रहित फल।" },
+        { "name": "Pusa Naveen (Bottle gourd)", "releasedBy": "ICAR-IARI New Delhi", "durationDays": "55–60 to first pick", "yieldQtlPerAcre": "140–180", "traits": ["EARLY", "STRAIGHT_FRUIT"], "states": ["Uttar Pradesh", "Haryana", "Punjab", "Bihar", "Rajasthan"], "noteHi": "जल्दी व लम्बे सीधे फल — मंडी ग्रेड उत्तम।" }
+      ]
+    }
+  },
+
+  "stateSuitability": {
+    "Madhya Pradesh": {
+      "agroClimaticZones": ["Malwa Plateau", "Nimar Valley", "Vindhya Plateau", "Kymore Plateau & Satpura", "Gird Region", "Chhattisgarh Plain (east)"],
+      "dominantSoils": ["BLACK_COTTON", "MEDIUM_BLACK", "ALLUVIAL", "RED_LATERITIC"],
+      "normalRainfallMm": 950,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "SOYBEAN", "fitScore": 95, "reasonHi": "मालवा-निमाड़ की काली मिट्टी व 800–1000 mm वर्षा सोयाबीन हेतु आदर्श; देश का 45% उत्पादन यहीं।" },
+          { "crop": "PIGEONPEA", "fitScore": 85, "reasonHi": "सोयाबीन के साथ 4:2 अंतरवर्तीय लेने से सूखे में जोखिम बंटता है।" },
+          { "crop": "MAIZE", "fitScore": 80, "reasonHi": "झाबुआ/छिंदवाड़ा पट्टी में अच्छी उपज; पशु आहार माँग मजबूत।" },
+          { "crop": "COTTON", "fitScore": 78, "reasonHi": "निमाड़ (खरगोन, बड़वानी) की गहरी काली मिट्टी में सिंचाई सहित उपयुक्त।" },
+          { "crop": "PADDY", "fitScore": 72, "reasonHi": "बालाघाट, जबलपुर व पूर्वी म.प्र. की भारी मिट्टी में।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 94, "reasonHi": "शरबती/दुरुम पट्टी — सीहोर, विदिशा, नरसिंहपुर में गुणवत्ता भाव अधिक।" },
+          { "crop": "CHICKPEA", "fitScore": 92, "reasonHi": "देश का सबसे बड़ा चना उत्पादक राज्य; असिंचित काली मिट्टी में भी सफल।" },
+          { "crop": "MUSTARD", "fitScore": 76, "reasonHi": "ग्वालियर-चंबल संभाग में सीमित सिंचाई हेतु उत्तम।" },
+          { "crop": "ONION", "fitScore": 74, "reasonHi": "मालवा (रतलाम, नीमच) में भंडारण योग्य रबी प्याज।" },
+          { "crop": "POTATO", "fitScore": 70, "reasonHi": "इंदौर-ग्वालियर पट्टी में प्रसंस्करण (चिप्स) अनुबंध उपलब्ध।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 85, "reasonHi": "गेहूँ के बाद 60 दिन की मूँग — मिट्टी में नाइट्रोजन बढ़ाती है।" },
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 76, "reasonHi": "नर्मदा/चंबल तट की रेतीली भूमि में नकदी आय।" }
+        ]
+      }
+    },
+
+    "Maharashtra": {
+      "agroClimaticZones": ["Western Ghat (Konkan)", "Transition Zone", "Scarcity Zone (W. Maharashtra)", "Marathwada Assured Rainfall", "Vidarbha Cotton Zone", "Eastern Vidarbha Rice Zone"],
+      "dominantSoils": ["BLACK_COTTON", "MEDIUM_BLACK", "RED_LATERITIC", "COASTAL_SANDY"],
+      "normalRainfallMm": 1100,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "COTTON", "fitScore": 92, "reasonHi": "विदर्भ-खानदेश की मुख्य फसल; असिंचित हेतु HDPS सीधी किस्में लागत घटाती हैं।" },
+          { "crop": "SOYBEAN", "fitScore": 90, "reasonHi": "मराठवाड़ा व पश्चिम महाराष्ट्र में कपास का सुरक्षित विकल्प।" },
+          { "crop": "PIGEONPEA", "fitScore": 88, "reasonHi": "लातूर दाल क्लस्टर की माँग; उकठा-प्रतिरोधी BDN किस्में चुनें।" },
+          { "crop": "PEARL_MILLET", "fitScore": 78, "reasonHi": "अहमदनगर-सोलापुर के न्यून वर्षा (scarcity) क्षेत्र हेतु सबसे सुरक्षित अनाज।" },
+          { "crop": "PADDY", "fitScore": 75, "reasonHi": "कोंकण व पूर्व विदर्भ (भंडारा, गोंदिया) में।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 90, "reasonHi": "अवशिष्ट नमी पर भी उपज; यंत्र-कटाई योग्य किस्में उपलब्ध।" },
+          { "crop": "ONION", "fitScore": 90, "reasonHi": "नासिक-अहमदनगर पट्टी; भंडारण किस्में भाव बढ़ने तक रोक सकती हैं।" },
+          { "crop": "WHEAT", "fitScore": 68, "reasonHi": "सीमित सिंचाई क्षेत्र में ही; जल्दी पकने वाली किस्में लें।" },
+          { "crop": "TOMATO", "fitScore": 78, "reasonHi": "नारायणगाँव-पुणे पट्टी में तीनों रोग प्रतिरोधी संकर उपयुक्त।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 76, "reasonHi": "सिंचाई उपलब्ध होने पर अल्पावधि नकदी दलहन।" },
+          { "crop": "GROUNDNUT", "fitScore": 74, "reasonHi": "ग्रीष्मकालीन मूँगफली में तेल व फली दर अधिक मिलती है।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "SUGARCANE", "fitScore": 85, "reasonHi": "कोल्हापुर-सांगली-पुणे चीनी पट्टी; ड्रिप अनिवार्य रूप से अपनाएं।" },
+          { "crop": "BANANA", "fitScore": 88, "reasonHi": "जलगाँव — देश की सबसे बड़ी केला पट्टी; TC पौधे + ड्रिप फर्टिगेशन।" }
+        ]
+      }
+    },
+
+    "Punjab": {
+      "agroClimaticZones": ["Sub-mountain Undulating", "Undulating Plain", "Central Plain", "Western Plain", "Western Zone (arid)"],
+      "dominantSoils": ["ALLUVIAL", "SANDY_LOAM", "SALINE_SODIC"],
+      "normalRainfallMm": 650,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 88, "reasonHi": "मुख्य फसल, पर भूजल गिरावट गंभीर — PR 126 जैसी कम अवधि किस्में अनिवार्य।", "cautionHi": "Pusa 44 व लम्बी अवधि किस्में भूजल व पराली समस्या दोनों बढ़ाती हैं।" },
+          { "crop": "MAIZE", "fitScore": 86, "reasonHi": "धान का सर्वोत्तम विकल्प — 80% कम पानी, फसल विविधीकरण प्रोत्साहन उपलब्ध।" },
+          { "crop": "COTTON", "fitScore": 72, "reasonHi": "दक्षिण-पश्चिम (बठिंडा, मानसा) में; गुलाबी सुंडी निगरानी अनिवार्य।" },
+          { "crop": "PIGEONPEA", "fitScore": 68, "reasonHi": "अल्पावधि Pusa Arhar 16 से गेहूँ समय से बोया जा सकता है।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 96, "reasonHi": "आदर्श जलवायु व पूर्ण सिंचाई; हैप्पी सीडर से पराली प्रबंधन करें।" },
+          { "crop": "MUSTARD", "fitScore": 78, "reasonHi": "हल्की व खारी भूमि में गेहूँ से अधिक लाभकारी।" },
+          { "crop": "POTATO", "fitScore": 84, "reasonHi": "जालंधर-कपूरथला बीज आलू पट्टी; चिप्सोना अनुबंध उपलब्ध।" },
+          { "crop": "CHICKPEA", "fitScore": 62, "reasonHi": "दक्षिण-पश्चिम की रेतीली भूमि में भूजल बचाने हेतु।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 88, "reasonHi": "गेहूँ–धान के बीच ग्रीष्मकालीन मूँग (Virat/SML 668) — मिट्टी सुधार + अतिरिक्त आय।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "SUGARCANE", "fitScore": 74, "reasonHi": "शरदकालीन बुवाई + अंतरवर्तीय सरसों/आलू से आय दोगुनी।" }
+        ]
+      }
+    },
+
+    "Haryana": {
+      "agroClimaticZones": ["North-Eastern Zone", "South-Western Zone (arid)"],
+      "dominantSoils": ["ALLUVIAL", "SANDY_ARID", "SALINE_SODIC"],
+      "normalRainfallMm": 560,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 82, "reasonHi": "करनाल-कैथल बासमती पट्टी; निर्यात MRL हेतु रोग-प्रतिरोधी PB 1847/1885 चुनें।" },
+          { "crop": "PEARL_MILLET", "fitScore": 90, "reasonHi": "दक्षिण-पश्चिम (हिसार, भिवानी, महेंद्रगढ़) की न्यून वर्षा हेतु सर्वोत्तम।" },
+          { "crop": "COTTON", "fitScore": 76, "reasonHi": "सिरसा-फतेहाबाद में; सफेद मक्खी निगरानी आवश्यक।" },
+          { "crop": "MAIZE", "fitScore": 78, "reasonHi": "धान विकल्प योजना (मेरा पानी मेरी विरासत) में प्रोत्साहन उपलब्ध।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 94, "reasonHi": "पूर्ण सिंचित; समय से बुवाई पर DBW 303/HD 3226 अधिक उपज देती हैं।" },
+          { "crop": "MUSTARD", "fitScore": 90, "reasonHi": "दक्षिण हरियाणा की खारी/हल्की भूमि हेतु सर्वाधिक लाभकारी रबी फसल।" },
+          { "crop": "CHICKPEA", "fitScore": 66, "reasonHi": "रेतीली भूमि व सीमित पानी में विकल्प।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 84, "reasonHi": "अल्पावधि दलहन — भूजल पर दबाव कम।" },
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 72, "reasonHi": "यमुना खादर की रेतीली भूमि में उच्च नकदी आय।" }
+        ]
+      }
+    },
+
+    "Uttar Pradesh": {
+      "agroClimaticZones": ["Bhabhar & Terai", "Western Plain", "Mid-Western Plain", "Central Plain", "Bundelkhand", "North-Eastern Plain", "Eastern Plain", "Vindhyan"],
+      "dominantSoils": ["ALLUVIAL", "TERAI_ALLUVIAL", "SALINE_SODIC", "RED_LATERITIC"],
+      "normalRainfallMm": 900,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 88, "reasonHi": "पूर्वी उ.प्र. की मुख्य फसल; बाढ़-प्रवण क्षेत्रों में Swarna Sub-1 लगाएं।" },
+          { "crop": "MAIZE", "fitScore": 80, "reasonHi": "पश्चिमी उ.प्र. में पशु आहार व स्टार्च उद्योग की माँग।" },
+          { "crop": "PIGEONPEA", "fitScore": 78, "reasonHi": "बुंदेलखंड की असिंचित भूमि हेतु; मेड़ पर बोएं।" },
+          { "crop": "PEARL_MILLET", "fitScore": 72, "reasonHi": "बुंदेलखंड व दक्षिण-पश्चिम के सूखा-प्रवण जिलों हेतु।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 94, "reasonHi": "देश का सबसे बड़ा गेहूँ उत्पादक; देर से बुवाई हो तो DBW 187 चुनें।" },
+          { "crop": "MUSTARD", "fitScore": 82, "reasonHi": "ऊसर व सीमित सिंचाई वाले क्षेत्रों में CS 58/NRCHB 101 उपयुक्त।" },
+          { "crop": "POTATO", "fitScore": 90, "reasonHi": "आगरा-फर्रुखाबाद-कन्नौज पट्टी; कोल्ड स्टोर नेटवर्क मजबूत।" },
+          { "crop": "CHICKPEA", "fitScore": 74, "reasonHi": "बुंदेलखंड में अवशिष्ट नमी पर सफल।" },
+          { "crop": "GREENGRAM", "fitScore": 60, "reasonHi": "रबी में नहीं — जायद हेतु योजना बनाएं।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 88, "reasonHi": "गेहूँ के बाद 60 दिन की मूँग — पूर्वी उ.प्र. में बहुत सफल।" },
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 80, "reasonHi": "गंगा-यमुना खादर की रेत में तरबूज/खरबूज की ऊँची आय।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "SUGARCANE", "fitScore": 92, "reasonHi": "देश का सबसे बड़ा गन्ना क्षेत्र। Co 0238 में लाल सड़न बढ़ा है — Co 15023/CoLk 14201 पर बदलें।", "cautionHi": "Co 0238 का क्षेत्र घटाएं; बीज का ट्राइकोडर्मा/गर्म जल उपचार अनिवार्य।" },
+          { "crop": "BANANA", "fitScore": 72, "reasonHi": "कुशीनगर-फैजाबाद पट्टी में TC केला का विस्तार हो रहा है।" }
+        ]
+      }
+    },
+
+    "Rajasthan": {
+      "agroClimaticZones": ["Arid Western Plain", "Irrigated North-West (IGNP)", "Transitional Plain of Luni", "Semi-Arid Eastern Plain", "Flood-prone Eastern Plain", "Humid Southern Plain"],
+      "dominantSoils": ["SANDY_ARID", "ALLUVIAL", "MEDIUM_BLACK", "SALINE_SODIC"],
+      "normalRainfallMm": 575,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PEARL_MILLET", "fitScore": 95, "reasonHi": "देश का सबसे बड़ा बाजरा राज्य; 350 mm वर्षा में भी HHB 67 Improved सफल।" },
+          { "crop": "GREENGRAM", "fitScore": 85, "reasonHi": "नागौर-जोधपुर-बीकानेर में मूँग मुख्य नकदी दलहन।" },
+          { "crop": "GROUNDNUT", "fitScore": 80, "reasonHi": "जयपुर-सीकर-बीकानेर में सिंचित मूँगफली का तेजी से विस्तार।" },
+          { "crop": "SOYBEAN", "fitScore": 76, "reasonHi": "हाड़ौती (कोटा, बारां, झालावाड़) की काली मिट्टी में।" }
+        ],
+        "RABI": [
+          { "crop": "MUSTARD", "fitScore": 96, "reasonHi": "देश का ~45% सरसों उत्पादन; भरतपुर-अलवर पट्टी आदर्श।" },
+          { "crop": "WHEAT", "fitScore": 82, "reasonHi": "IGNP व पूर्वी राजस्थान के सिंचित क्षेत्रों में।" },
+          { "crop": "CHICKPEA", "fitScore": 84, "reasonHi": "बीकानेर-श्रीगंगानगर व हाड़ौती में असिंचित चना।" }
+        ],
+        "ZAID": [
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 78, "reasonHi": "चंबल व माही तट की रेत में नकदी फसल।" },
+          { "crop": "GREENGRAM", "fitScore": 74, "reasonHi": "नहरी क्षेत्र में ग्रीष्मकालीन मूँग।" }
+        ]
+      }
+    },
+
+    "Gujarat": {
+      "agroClimaticZones": ["South Gujarat Heavy Rainfall", "Middle Gujarat", "North Gujarat", "North-West Arid (Kachchh)", "Saurashtra", "Bhal & Coastal"],
+      "dominantSoils": ["MEDIUM_BLACK", "SANDY_ARID", "COASTAL_SALINE", "ALLUVIAL"],
+      "normalRainfallMm": 830,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "GROUNDNUT", "fitScore": 94, "reasonHi": "सौराष्ट्र की रेतीली भूमि — देश का सबसे बड़ा मूँगफली क्षेत्र; हाई-ओलिक किस्में निर्यात भाव देती हैं।" },
+          { "crop": "COTTON", "fitScore": 90, "reasonHi": "मध्य गुजरात व सौराष्ट्र की मुख्य नकदी फसल।" },
+          { "crop": "PEARL_MILLET", "fitScore": 80, "reasonHi": "कच्छ व बनासकांठा के शुष्क क्षेत्र हेतु।" },
+          { "crop": "PIGEONPEA", "fitScore": 72, "reasonHi": "मध्य गुजरात में कपास के साथ अंतरवर्तीय।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 86, "reasonHi": "सीमित सिंचाई हेतु GW 322 व दुरुम किस्में उपयुक्त।" },
+          { "crop": "MUSTARD", "fitScore": 82, "reasonHi": "बनासकांठा-पाटण में; खारे पानी में CS किस्में लें।" },
+          { "crop": "CHICKPEA", "fitScore": 78, "reasonHi": "भाल व मध्य गुजरात में अवशिष्ट नमी पर।" },
+          { "crop": "ONION", "fitScore": 74, "reasonHi": "भावनगर-महुवा सफेद प्याज (निर्जलीकरण उद्योग माँग)।" }
+        ],
+        "ZAID": [
+          { "crop": "GROUNDNUT", "fitScore": 82, "reasonHi": "ग्रीष्मकालीन मूँगफली — जूनागढ़/राजकोट में सिंचित उच्च उपज।" },
+          { "crop": "GREENGRAM", "fitScore": 74, "reasonHi": "अल्पावधि दलहन।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "BANANA", "fitScore": 86, "reasonHi": "भरूच-सूरत-आनंद पट्टी; ड्रिप फर्टिगेशन अनिवार्य।" },
+          { "crop": "SUGARCANE", "fitScore": 76, "reasonHi": "दक्षिण गुजरात की सहकारी चीनी मिल पट्टी।" }
+        ]
+      }
+    },
+
+    "Bihar": {
+      "agroClimaticZones": ["North-West Alluvial", "North-East Alluvial", "South Bihar Alluvial"],
+      "dominantSoils": ["ALLUVIAL", "TERAI_ALLUVIAL", "CALCAREOUS_ALLUVIAL"],
+      "normalRainfallMm": 1100,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 90, "reasonHi": "मुख्य फसल; उत्तर बिहार के बाढ़ क्षेत्रों में Swarna Sub-1 / CR Dhan 801 लगाएं।" },
+          { "crop": "MAIZE", "fitScore": 88, "reasonHi": "कोसी पट्टी (खगड़िया, समस्तीपुर) — रबी मक्का विश्व स्तरीय उपज देती है।" },
+          { "crop": "PIGEONPEA", "fitScore": 70, "reasonHi": "ऊँची भूमि (diara/tal) पर मेड़ पद्धति से।" }
+        ],
+        "RABI": [
+          { "crop": "WHEAT", "fitScore": 88, "reasonHi": "देर से बुवाई आम है — DBW 187 जैसी अल्पावधि ताप-सहिष्णु किस्में चुनें।" },
+          { "crop": "MAIZE", "fitScore": 92, "reasonHi": "रबी मक्का बिहार की सबसे लाभकारी फसल; संकर + ड्रिप से 40 qtl/एकड़ संभव।" },
+          { "crop": "POTATO", "fitScore": 84, "reasonHi": "नालंदा-पटना पट्टी में उच्च उपज।" },
+          { "crop": "CHICKPEA", "fitScore": 70, "reasonHi": "दक्षिण बिहार के ताल क्षेत्रों में।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 86, "reasonHi": "गेहूँ के बाद मूँग — चूनायुक्त मिट्टी में भी सफल।" },
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 78, "reasonHi": "गंगा दियारा की रेत में तरबूज/खरबूज।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "SUGARCANE", "fitScore": 76, "reasonHi": "पश्चिम चंपारण-गोपालगंज मिल क्षेत्र।" },
+          { "crop": "BANANA", "fitScore": 78, "reasonHi": "हाजीपुर-वैशाली पट्टी; TC पौधे से उपज दोगुनी।" }
+        ]
+      }
+    },
+
+    "West Bengal": {
+      "agroClimaticZones": ["Hill Zone (Darjeeling)", "Terai-Teesta Alluvial", "Gangetic Alluvial", "Red & Laterite", "Coastal Saline"],
+      "dominantSoils": ["ALLUVIAL", "TERAI_ALLUVIAL", "RED_LATERITIC", "COASTAL_SALINE"],
+      "normalRainfallMm": 1700,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 94, "reasonHi": "देश का सबसे बड़ा चावल राज्य; तटीय खारी भूमि में लवण-सहिष्णु किस्में चुनें।" },
+          { "crop": "GREENGRAM", "fitScore": 66, "reasonHi": "ऊँची भूमि में अल्पावधि दलहन।" }
+        ],
+        "RABI": [
+          { "crop": "POTATO", "fitScore": 92, "reasonHi": "हुगली-बर्दवान पट्टी — देश का दूसरा सबसे बड़ा आलू क्षेत्र।" },
+          { "crop": "MUSTARD", "fitScore": 80, "reasonHi": "धान के बाद अवशिष्ट नमी पर सरसों (तोरिया) सफल।" },
+          { "crop": "WHEAT", "fitScore": 64, "reasonHi": "गेहूँ ब्लास्ट जोखिम — केवल DBW 187 जैसी सहनशील किस्में, व जल्दी बुवाई।", "cautionHi": "गेहूँ ब्लास्ट (Magnaporthe oryzae Triticum) सीमावर्ती जिलों में घोषित खतरा है।" },
+          { "crop": "CHICKPEA", "fitScore": 60, "reasonHi": "लाल-लेटराइट पट्टी में सीमित क्षेत्र।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 80, "reasonHi": "बोरो धान के विकल्प में कम पानी वाली मूँग।" },
+          { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 74, "reasonHi": "नदी तट की रेत में नकदी फसल।" }
+        ]
+      }
+    },
+
+    "Odisha": {
+      "agroClimaticZones": ["North-Western Plateau", "North-Central Plateau", "East & South-Eastern Coastal Plain", "Western Undulating", "Mid-Central Table Land"],
+      "dominantSoils": ["RED_LATERITIC", "COASTAL_SALINE", "ALLUVIAL", "HILL_ACIDIC"],
+      "normalRainfallMm": 1450,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 92, "reasonHi": "मुख्य फसल; तटीय बाढ़ व खारेपन हेतु CR Dhan 801 / Swarna Sub-1 उपयुक्त।" },
+          { "crop": "FINGER_MILLET", "fitScore": 84, "reasonHi": "कंधमाल-कोरापुट की अम्लीय पहाड़ी भूमि; श्री अन्न मिशन में खरीद माँग।" },
+          { "crop": "PIGEONPEA", "fitScore": 74, "reasonHi": "पश्चिमी अनडुलेटिंग क्षेत्र में ऊँची भूमि पर।" },
+          { "crop": "GROUNDNUT", "fitScore": 72, "reasonHi": "तटीय रेतीली भूमि में।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 72, "reasonHi": "धान के बाद अवशिष्ट नमी पर; राइजोबियम उपचार करें।" },
+          { "crop": "GREENGRAM", "fitScore": 80, "reasonHi": "धान-परती भूमि (rice fallow) में रिले बुवाई से अतिरिक्त आय।" },
+          { "crop": "MUSTARD", "fitScore": 68, "reasonHi": "सीमित क्षेत्र; तोरिया जल्दी पकती है।" }
+        ],
+        "ZAID": [
+          { "crop": "GROUNDNUT", "fitScore": 78, "reasonHi": "ग्रीष्मकालीन मूँगफली — तटीय जिलों में सिंचित उच्च उपज।" }
+        ]
+      }
+    },
+
+    "Chhattisgarh": {
+      "agroClimaticZones": ["Chhattisgarh Plains", "Bastar Plateau", "Northern Hills"],
+      "dominantSoils": ["RED_LATERITIC", "CLAY_LOAM", "HILL_ACIDIC", "MEDIUM_BLACK"],
+      "normalRainfallMm": 1250,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 94, "reasonHi": "'धान का कटोरा' — मटासी/कन्हार मिट्टी में मुख्य फसल।" },
+          { "crop": "SOYBEAN", "fitScore": 72, "reasonHi": "ऊँची भरी/मटासी भूमि में धान का विकल्प।" },
+          { "crop": "PIGEONPEA", "fitScore": 76, "reasonHi": "ऊँची भूमि व मेड़ पर; धान-परती से बेहतर आय।" },
+          { "crop": "MAIZE", "fitScore": 74, "reasonHi": "बस्तर पठार में; पशु आहार माँग।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 86, "reasonHi": "धान-परती भूमि में चना सबसे लाभकारी विकल्प (उकठा-प्रतिरोधी JG 14)।" },
+          { "crop": "WHEAT", "fitScore": 70, "reasonHi": "सिंचित क्षेत्रों में अल्पावधि किस्में।" },
+          { "crop": "GREENGRAM", "fitScore": 74, "reasonHi": "धान-परती में रिले/उतेरा बुवाई।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 76, "reasonHi": "नहरी क्षेत्र में अल्पावधि मूँग।" }
+        ]
+      }
+    },
+
+    "Jharkhand": {
+      "agroClimaticZones": ["Central & North-Eastern Plateau", "Western Plateau", "South-Eastern Plateau"],
+      "dominantSoils": ["RED_LATERITIC", "HILL_ACIDIC", "SANDY_LOAM"],
+      "normalRainfallMm": 1300,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 84, "reasonHi": "नीची भूमि में; ऊपरी (टांड) भूमि हेतु सूखा-सहिष्णु Sahbhagi Dhan चुनें।" },
+          { "crop": "FINGER_MILLET", "fitScore": 86, "reasonHi": "अम्लीय लाल मिट्टी व असिंचित टांड भूमि हेतु सर्वोत्तम; श्री अन्न खरीद माँग।" },
+          { "crop": "PIGEONPEA", "fitScore": 80, "reasonHi": "टांड/मध्यम भूमि में; चूना (lime) से अम्लता सुधारें।" },
+          { "crop": "MAIZE", "fitScore": 74, "reasonHi": "पठारी क्षेत्र में; अम्लीय मिट्टी हेतु चूना आवश्यक।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 70, "reasonHi": "अवशिष्ट नमी पर; राइजोबियम + PSB अनिवार्य।" },
+          { "crop": "MUSTARD", "fitScore": 72, "reasonHi": "अल्पावधि तोरिया से अतिरिक्त आय।" },
+          { "crop": "WHEAT", "fitScore": 62, "reasonHi": "सीमित सिंचाई — DBW 187 जैसी अल्पावधि किस्में।" }
+        ]
+      }
+    },
+
+    "Karnataka": {
+      "agroClimaticZones": ["North-Eastern Dry", "Northern Dry", "Central Dry", "Eastern Dry", "Southern Dry", "Southern Transition", "Northern Transition", "Hilly", "Coastal"],
+      "dominantSoils": ["RED_LATERITIC", "MEDIUM_BLACK", "BLACK_COTTON", "COASTAL_SANDY"],
+      "normalRainfallMm": 1150,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PIGEONPEA", "fitScore": 92, "reasonHi": "कलबुर्गी (गुलबर्गा) तुअर क्लस्टर — देश की सबसे बड़ी अरहर पट्टी।" },
+          { "crop": "FINGER_MILLET", "fitScore": 90, "reasonHi": "दक्षिण कर्नाटक की मुख्य खाद्य फसल; GPU 28 ब्लास्ट प्रतिरोधी।" },
+          { "crop": "COTTON", "fitScore": 80, "reasonHi": "हावेरी-धारवाड़-रायचूर में; HDPS सीधी किस्में लागत घटाती हैं।" },
+          { "crop": "GROUNDNUT", "fitScore": 80, "reasonHi": "चित्रदुर्ग-तुमकुर की लाल मिट्टी में।" },
+          { "crop": "MAIZE", "fitScore": 84, "reasonHi": "दावणगेरे-हावेरी — मक्का का सबसे बड़ा क्षेत्र।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 88, "reasonHi": "उत्तर कर्नाटक की काली मिट्टी में अवशिष्ट नमी पर।" },
+          { "crop": "ONION", "fitScore": 82, "reasonHi": "बागलकोट-गदग पट्टी; भंडारण किस्में चुनें।" },
+          { "crop": "TOMATO", "fitScore": 86, "reasonHi": "कोलार-चिक्कबल्लापुर — तीनों रोग प्रतिरोधी Arka संकर अनिवार्य।" },
+          { "crop": "WHEAT", "fitScore": 58, "reasonHi": "सीमित; दुरुम गेहूँ उत्तर कर्नाटक में।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "SUGARCANE", "fitScore": 84, "reasonHi": "बेलगावी-बागलकोट मिल पट्टी; Co 86032 मानक किस्म।" },
+          { "crop": "BANANA", "fitScore": 80, "reasonHi": "दक्षिण कर्नाटक में Ney Poovan का अच्छा स्थानीय भाव।" }
+        ]
+      }
+    },
+
+    "Telangana": {
+      "agroClimaticZones": ["Northern Telangana", "Central Telangana", "Southern Telangana"],
+      "dominantSoils": ["RED_LATERITIC", "MEDIUM_BLACK", "BLACK_COTTON"],
+      "normalRainfallMm": 900,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "COTTON", "fitScore": 90, "reasonHi": "राज्य की सबसे बड़ी नकदी फसल; गुलाबी सुंडी हेतु समय पर खेत सफाई अनिवार्य।" },
+          { "crop": "PADDY", "fitScore": 88, "reasonHi": "कालेश्वरम सिंचाई विस्तार के बाद प्रमुख; बारीक दाना किस्में भाव अधिक।" },
+          { "crop": "PIGEONPEA", "fitScore": 84, "reasonHi": "वर्षा आधारित लाल मिट्टी में; Rajeshwari/Asha चुनें।" },
+          { "crop": "MAIZE", "fitScore": 82, "reasonHi": "पोल्ट्री आहार माँग मजबूत।" },
+          { "crop": "CHILLI", "fitScore": 86, "reasonHi": "खम्मम-वारंगल मिर्च पट्टी; थ्रिप्स निगरानी अनिवार्य।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 80, "reasonHi": "काली मिट्टी में अवशिष्ट नमी पर।" },
+          { "crop": "GROUNDNUT", "fitScore": 78, "reasonHi": "रबी/ग्रीष्म मूँगफली — महबूबनगर पट्टी।" },
+          { "crop": "PADDY", "fitScore": 80, "reasonHi": "रबी धान; जल उपलब्धता देखकर बोएं।" },
+          { "crop": "MAIZE", "fitScore": 84, "reasonHi": "रबी मक्का में उपज सर्वाधिक।" }
+        ]
+      }
+    },
+
+    "Andhra Pradesh": {
+      "agroClimaticZones": ["Krishna-Godavari Zone", "North Coastal Zone", "Southern Zone", "Scarce Rainfall Zone (Rayalaseema)", "High Altitude Tribal Zone"],
+      "dominantSoils": ["ALLUVIAL", "COASTAL_SALINE", "RED_LATERITIC", "BLACK_COTTON"],
+      "normalRainfallMm": 960,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 92, "reasonHi": "कृष्णा-गोदावरी डेल्टा; तटीय खारेपन हेतु लवण-सहिष्णु किस्में।" },
+          { "crop": "GROUNDNUT", "fitScore": 86, "reasonHi": "रायलसीमा (अनंतपुर) की मुख्य वर्षा आधारित फसल — हाई-ओलिक Girnar 4/5 चुनें।" },
+          { "crop": "COTTON", "fitScore": 80, "reasonHi": "गुंटूर-कुरनूल काली मिट्टी में।" },
+          { "crop": "CHILLI", "fitScore": 90, "reasonHi": "गुंटूर — विश्व की सबसे बड़ी सूखी मिर्च मंडी; LCA 334 निर्यात ग्रेड।" },
+          { "crop": "PIGEONPEA", "fitScore": 74, "reasonHi": "रायलसीमा में मूँगफली के साथ अंतरवर्तीय।" }
+        ],
+        "RABI": [
+          { "crop": "CHICKPEA", "fitScore": 78, "reasonHi": "कुरनूल-अनंतपुर में अवशिष्ट नमी पर।" },
+          { "crop": "GREENGRAM", "fitScore": 80, "reasonHi": "धान-परती भूमि में रिले बुवाई।" },
+          { "crop": "PADDY", "fitScore": 82, "reasonHi": "डेल्टा में रबी धान (dalwa)।" },
+          { "crop": "GROUNDNUT", "fitScore": 80, "reasonHi": "रबी मूँगफली सिंचित दशा में अधिक उपज।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "BANANA", "fitScore": 86, "reasonHi": "कडप्पा-अनंतपुर व तटीय पट्टी; ड्रिप फर्टिगेशन से उपज अधिक।" },
+          { "crop": "SUGARCANE", "fitScore": 74, "reasonHi": "उत्तर तटीय मिल क्षेत्र।" }
+        ]
+      }
+    },
+
+    "Tamil Nadu": {
+      "agroClimaticZones": ["Cauvery Delta", "North-Eastern Zone", "Western Zone", "North-Western Zone", "Southern Zone", "High Rainfall Zone", "Hilly Zone"],
+      "dominantSoils": ["ALLUVIAL", "RED_LATERITIC", "BLACK_COTTON", "COASTAL_SANDY"],
+      "normalRainfallMm": 950,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 88, "reasonHi": "कुरुवै/सम्बा मौसम; कावेरी डेल्टा मुख्य क्षेत्र।" },
+          { "crop": "GROUNDNUT", "fitScore": 86, "reasonHi": "तिरुवन्नामलै-विल्लुपुरम की लाल मिट्टी में प्रमुख।" },
+          { "crop": "FINGER_MILLET", "fitScore": 78, "reasonHi": "वर्षा आधारित क्षेत्रों हेतु; GPU 28 उपयुक्त।" },
+          { "crop": "COTTON", "fitScore": 70, "reasonHi": "पश्चिमी क्षेत्र (कोयम्बत्तूर) में सीमित।" }
+        ],
+        "RABI": [
+          { "crop": "PADDY", "fitScore": 86, "reasonHi": "सम्बा/थलाडी मौसम — उत्तर-पूर्वी मानसून पर आधारित।" },
+          { "crop": "GREENGRAM", "fitScore": 82, "reasonHi": "धान-परती भूमि में रिले दलहन।" },
+          { "crop": "CHICKPEA", "fitScore": 58, "reasonHi": "सीमित क्षेत्र।" },
+          { "crop": "ONION", "fitScore": 72, "reasonHi": "छोटा प्याज (aggregatum) की स्थानीय माँग।" }
+        ],
+        "PERENNIAL": [
+          { "crop": "BANANA", "fitScore": 92, "reasonHi": "तिरुचिरापल्ली-थेनी पट्टी; Ney Poovan/Udhayam पनामा विल्ट हेतु सुरक्षित।" },
+          { "crop": "SUGARCANE", "fitScore": 82, "reasonHi": "Co 86032/Co 11015 — चीनी परता उच्च।" }
+        ]
+      }
+    },
+
+    "Assam": {
+      "agroClimaticZones": ["Upper Brahmaputra Valley", "Central Brahmaputra Valley", "Lower Brahmaputra Valley", "Barak Valley", "Hill Zone"],
+      "dominantSoils": ["TERAI_ALLUVIAL", "ALLUVIAL", "HILL_ACIDIC"],
+      "normalRainfallMm": 2200,
+      "seasons": {
+        "KHARIF": [
+          { "crop": "PADDY", "fitScore": 92, "reasonHi": "साली धान मुख्य फसल; बाढ़ क्षेत्रों में Swarna Sub-1 / CR Dhan 801।" },
+          { "crop": "MAIZE", "fitScore": 68, "reasonHi": "ऊँची भूमि में; अम्लीय मिट्टी हेतु चूना आवश्यक।" }
+        ],
+        "RABI": [
+          { "crop": "MUSTARD", "fitScore": 86, "reasonHi": "धान के बाद तोरिया/सरसों — असम की प्रमुख रबी तिलहन।" },
+          { "crop": "POTATO", "fitScore": 76, "reasonHi": "ब्रह्मपुत्र तट की दोमट भूमि में।" },
+          { "crop": "WHEAT", "fitScore": 54, "reasonHi": "बहुत सीमित; ब्लास्ट जोखिम के कारण सावधानी।" },
+          { "crop": "GREENGRAM", "fitScore": 70, "reasonHi": "धान-परती में अल्पावधि दलहन।" }
+        ],
+        "ZAID": [
+          { "crop": "GREENGRAM", "fitScore": 72, "reasonHi": "अहु धान के विकल्प में।" }
+        ]
+      }
+    }
+  },
+
+  "nationalFallback": {
+    "noteHi": "आपके राज्य का विस्तृत मैट्रिक्स जुड़ रहा है — नीचे अखिल भारतीय स्तर पर परखी हुई सुरक्षित किस्में दी गई हैं। कृपया नजदीकी KVK (1800-180-1551) से जिला-स्तरीय पुष्टि अवश्य करें।",
+    "noteEn": "Your state's detailed matrix is being added. Shown below are pan-India tested safe options. Please confirm district-level fit with your nearest KVK (1800-180-1551).",
+    "seasons": {
+      "KHARIF": [
+        { "crop": "PIGEONPEA", "fitScore": 70, "reasonHi": "लगभग सभी राज्यों की वर्षा आधारित ऊँची भूमि हेतु सुरक्षित दलहन।" },
+        { "crop": "MAIZE", "fitScore": 70, "reasonHi": "व्यापक अनुकूलन; पशु आहार माँग हर जगह।" },
+        { "crop": "GREENGRAM", "fitScore": 68, "reasonHi": "60–65 दिन की अल्पावधि दलहन, मिट्टी सुधारती है।" }
+      ],
+      "RABI": [
+        { "crop": "CHICKPEA", "fitScore": 72, "reasonHi": "अवशिष्ट नमी पर भी उपज; नाइट्रोजन स्थिरीकरण का लाभ।" },
+        { "crop": "MUSTARD", "fitScore": 70, "reasonHi": "सीमित सिंचाई व हल्की/खारी भूमि हेतु।" },
+        { "crop": "WHEAT", "fitScore": 68, "reasonHi": "सिंचाई उपलब्ध हो तो क्षेत्र-अनुकूल किस्म चुनें।" }
+      ],
+      "ZAID": [
+        { "crop": "GREENGRAM", "fitScore": 72, "reasonHi": "गेहूँ/धान के बीच खाली समय की सर्वोत्तम फसल।" },
+        { "crop": "MUSKMELON_VEG_ZAID", "fitScore": 66, "reasonHi": "सिंचाई व रेतीली भूमि हो तो उच्च नकदी आय।" }
+      ],
+      "PERENNIAL": [
+        { "crop": "BANANA", "fitScore": 64, "reasonHi": "सुनिश्चित सिंचाई व ड्रिप हो तो उच्च आय।" }
+      ]
+    }
+  }
+}

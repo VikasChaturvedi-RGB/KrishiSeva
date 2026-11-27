@@ -1,5 +1,7 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'krishi-sahayak-pwa-v2026.11-free';
+// CACHE_NAME is re-stamped by scripts/build_pwa.mjs with a content hash on every
+// build, so installed apps pick up new code and the monthly datasets automatically.
+const CACHE_NAME = 'krishi-sahayak-pwa-139938449b';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -9,45 +11,22 @@ const STATIC_ASSETS = [
   './google-cloud-client.js',
   './b2c-consumer.js',
   './ga4-analytics.js',
+  './leaf-vision-engine.js',
+  './ai-diagnosis-pipeline.js',
+  './area-intelligence-engine.js',
+  './area-intelligence.js',
   './app.js',
+  './data/crop-variety-almanac.json',
+  './data/soil-zone-atlas.json',
+  './data/crop-variety-almanac.js',
+  './data/soil-zone-atlas.js',
   './manifest.json',
   './icons/icon-192.svg',
   './icons/icon-512.svg'
 ];
 
-const OFFLINE_DIAGNOSIS_FALLBACK = {
-  status: 'OFFLINE_CACHED_INFERENCE',
-  confidenceScore: 0.91,
-  diagnosisCategory: 'NUTRITIONAL_DEFICIENCY',
-  primaryDiagnosis: {
-    code: 'DIS_ZINC_DEFICIENCY',
-    commonName: 'जिंक (जस्ता) पोषक तत्व की कमी [ऑफ़लाइन मार्गदर्शन]',
-    scientificName: 'Zinc Micronutrient Deficiency (Interveinal Chlorosis)',
-    confidence: 0.91,
-    descriptionLocalized: 'ऑफ़लाइन पादप शरीर-क्रिया इंजन: नई पत्तियों की शिराओं के बीच सममित पीलापन। यह वायरस नहीं बल्कि मिट्टी में जिंक की कमी है — महंगे कीटनाशक न खरीदें।'
-  },
-  recommendation: {
-    priorityOrder: [
-      'STEP_1_MINERAL_FOLIAR_CORRECTION',
-      'STEP_2_BIOLOGICAL_AND_SOIL_REMEDIATION',
-      'STEP_3_CIBRC_CHEMICAL_INTERVENTION'
-    ],
-    step1NutrientFoliarCorrection: {
-      isRecommended: true,
-      titleHi: 'चरण 1: संतुलित सूक्ष्म-पोषक छिड़काव (प्रति 15L पंप: 38g)',
-      actionHi: 'जिंक सल्फेट 21% (38 ग्राम) + बुझा चूना पानी (19 ग्राम) प्रति 15 लीटर पंप की दर से सुबह 7–10 बजे छिड़कें (1 एकड़ = 500g / 200L पानी)।'
-    },
-    step2BiologicalOrCultural: {
-      isRecommended: true,
-      titleHi: 'चरण 2: घरेलू जीवामृत एवं ZSB जैव-सुधार',
-      actionHi: '200 लीटर घरेलू जीवामृत या 1 किग्रा ZSB जीवाणु 50 किग्रा सड़ी गोबर खाद के साथ जड़ों के पास दें।'
-    },
-    step3ChemicalIntervention: {
-      isRecommended: false,
-      actionHi: 'रासायनिक जहर/कीटनाशक की बिल्कुल आवश्यकता नहीं है — अपने पैसे व मिट्टी बचाएं।'
-    }
-  }
-};
+// NOTE: diagnosis no longer needs a canned offline answer — the on-device
+// KrishiLeafVision engine analyses the real photo without any network.
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -81,19 +60,32 @@ self.addEventListener('fetch', (event) => {
         .catch(async () => {
           const cached = await caches.match(event.request);
           if (cached) return cached;
-          if (url.pathname.includes('/diagnosis/diagnose/submit')) {
-            return new Response(JSON.stringify(OFFLINE_DIAGNOSIS_FALLBACK), {
-              headers: { 'Content-Type': 'application/json' }
-            });
-          }
+          // 503 (not a fake 200) so the app knows to use its on-device engines/data
           return new Response(JSON.stringify({
             offline: true,
             zeroCostOfflineMode: true,
             message: 'ऑफ़लाइन मोड सक्रिय है — आपके फोन पर सुरक्षित कृषि मार्गदर्शन दिखाया जा रहा है।'
           }), {
+            status: 503,
             headers: { 'Content-Type': 'application/json' }
           });
         })
+    );
+    return;
+  }
+
+  // Monthly-refreshed datasets: network-first so a new month's advice shows at once
+  if (url.pathname.includes('/data/') && /\.(json|js)$/.test(url.pathname)) {
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          if (res && res.status === 200) {
+            const copy = res.clone();
+            caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match(event.request))
     );
     return;
   }
@@ -115,6 +107,17 @@ self.addEventListener('fetch', (event) => {
           return cached;
         });
       return cached || fetchPromise;
+    })
+  );
+});
+
+// Background Sync: when connectivity returns, ask open app windows to upload the
+// diagnoses that were completed on-device while offline (queue lives in the page).
+self.addEventListener('sync', (event) => {
+  if (event.tag !== 'krishi-diagnosis-sync') return;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      clients.forEach((c) => c.postMessage({ type: 'KRISHI_SYNC_DIAGNOSES' }));
     })
   );
 });

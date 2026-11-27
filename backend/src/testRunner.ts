@@ -138,6 +138,28 @@ async function runAllVerificationTests() {
   assert(lowDiag.escalationDetails?.assignedAgronomistName.includes('Dr. Suresh Verma') === true, 'KVK Agronomist assigned');
   assert(lowDiag.escalationDetails?.timeRemainingMinutes > 0, '2-Hour SLA countdown active');
 
+  // Test 5b: Real on-device vision result (clientVision) overrides filename heuristics
+  console.log('\n--- 5b. On-device Leaf Vision (clientVision) Integration ---');
+  const cvKnown = DiagnosisService.submitDiagnosis(authVerify.user.userId, {
+    fileName: 'banana_sigatoka_leaf.jpg', // misleading filename must be ignored
+    qualityMetrics: { blurScore: 0.9, brightnessScore: 0.8, isAcceptableQuality: true },
+    clientVision: { engineVersion: 'test', code: 'ZN_DEF', backendCode: 'DIS_ZINC_DEFICIENCY', category: 'NUTRITIONAL_DEFICIENCY', nameHi: 'जिंक की कमी', nameEn: 'Zinc Deficiency', confidence: 0.87, differentials: [{ code: 'FE_DEF', nameHi: 'आयरन की कमी', score: 0.3 }] },
+    context: { cropSpecies: 'SOYBEAN', affectedPlantPart: 'LEAF', farmId: farmList.farms[0].id }
+  }) as DiagnosisRecord;
+  assert(cvKnown.primaryDiagnosis.code === 'DIS_ZINC_DEFICIENCY', 'clientVision: measured zinc deficiency wins over misleading filename');
+  assert(cvKnown.confidenceScore === 0.87, 'clientVision: measured confidence is used (no forced 94%)');
+  assert(cvKnown.recommendation !== undefined && cvKnown.recommendation !== null, 'clientVision: known condition gets the CIB&RC/state-ban checked prescription');
+  assert(cvKnown.differentialDiagnoses[0].code === 'CV_FE_DEF', 'clientVision: on-device differentials persisted');
+
+  const cvNovel = DiagnosisService.submitDiagnosis(authVerify.user.userId, {
+    qualityMetrics: { blurScore: 0.9, brightnessScore: 0.8, isAcceptableQuality: true },
+    clientVision: { engineVersion: 'test', code: 'RUST', category: 'FUNGAL_DISEASE', nameHi: 'रतुआ', nameEn: 'Rust (Fungal)', confidence: 0.86 },
+    context: { cropSpecies: 'WHEAT', affectedPlantPart: 'LEAF', farmId: farmList.farms[0].id }
+  }) as DiagnosisRecord;
+  assert(cvNovel.primaryDiagnosis.code === 'CV_RUST' && cvNovel.diagnosisCategory === 'FUNGAL_DISEASE', 'clientVision: condition outside server rule-book is persisted, not crashed');
+  assert(cvNovel.status === 'COMPLETED_HIGH_CONFIDENCE', 'clientVision: high-confidence novel condition completes');
+  assert(DiagnosisRepository.findById(cvNovel.diagnosisId) !== null, 'clientVision: novel condition saved in SQLite');
+
   // Verify Audit Log in SQLite
   const auditLogs = AuditRepository.getRecentLogs(10);
   assert(auditLogs.length > 0, 'SQLite Audit Logs: System activity recorded and verifiable');

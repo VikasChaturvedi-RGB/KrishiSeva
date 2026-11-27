@@ -10,6 +10,9 @@ import { InventoryRepository, AuditRepository, FarmerActivityLogRepository, Diag
 import { FarmerEcosystemService } from '../services/farmer-ecosystem/farmerEcosystemService';
 import { LicensedAgriGraduateService } from '../services/agri-graduate/licensedAgriGraduateService';
 import { GoogleFreeServices } from '../services/google-cloud/googleFreeServices';
+import { CropVarietyAdvisorService } from '../services/area-intelligence/cropVarietyAdvisorService';
+import { SoilAtlasService } from '../services/area-intelligence/soilAtlasService';
+import { NutritionRuleEngine } from '../services/nutrition-rules/nutritionRuleEngine';
 import fs from 'fs';
 import path from 'path';
 
@@ -265,6 +268,46 @@ router.post('/diagnosis/deficiency-solution', (req: Request, res: Response) => {
     return res.json(result);
   } catch (err: any) {
     return res.status(500).json({ errorCode: 'DEFICIENCY_SOLVER_ERROR', message: err.message });
+  }
+});
+
+// Diagnosis engine health — runs the same on-device leaf-vision engine the PWA ships
+// against synthetic test leaves. Point an uptime monitor at this to catch breakage.
+let engineHealthCache: { at: number; body: any } | null = null;
+function loadLeafVisionEngine(): any {
+  const candidates = [
+    path.join(__dirname, '../../../web_simulator/leaf-vision-engine.js'),
+    path.join(process.cwd(), 'web_simulator/leaf-vision-engine.js'),
+    path.join(process.cwd(), '../web_simulator/leaf-vision-engine.js'),
+    path.join(__dirname, '../../../../web_simulator/leaf-vision-engine.js')
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return require(c);
+  }
+  throw new Error('leaf-vision-engine.js not found next to the API');
+}
+
+router.get('/diagnosis/engine-health', (_req: Request, res: Response) => {
+  try {
+    if (!engineHealthCache || Date.now() - engineHealthCache.at > 10 * 60 * 1000) {
+      const engine = loadLeafVisionEngine();
+      const selfTest = engine.runSelfTest();
+      const rulesLoaded = Boolean(NutritionRuleEngine.getDiseaseRule('DIS_ZINC_DEFICIENCY'));
+      engineHealthCache = {
+        at: Date.now(),
+        body: {
+          status: selfTest.healthy && rulesLoaded ? 'HEALTHY' : 'DEGRADED',
+          engineVersion: selfTest.engineVersion,
+          selfTest: { passed: selfTest.passed, total: selfTest.total, ms: selfTest.ms, failures: selfTest.results.filter((r: any) => !r.pass) },
+          serverRuleBookLoaded: rulesLoaded,
+          checkedAt: new Date().toISOString()
+        }
+      };
+    }
+    const body = engineHealthCache.body;
+    return res.status(body.status === 'HEALTHY' ? 200 : 503).json(body);
+  } catch (err: any) {
+    return res.status(503).json({ status: 'DOWN', error: err.message, checkedAt: new Date().toISOString() });
   }
 });
 
@@ -736,6 +779,58 @@ router.post('/gemini/guidance', async (req: Request, res: Response) => {
 });
 
 // 8.6 State-Wise Agro-Climatic Challenges & CHC/Drone Tech Intervention Booking
+// -------------------------------------------------------------
+// AREA INTELLIGENCE: crop/variety fit (monthly refreshed) & soil atlas
+// -------------------------------------------------------------
+router.get('/advisory/crop-variety-fit', (req: Request, res: Response) => {
+  try {
+    const q = req.query;
+    const result = CropVarietyAdvisorService.recommend({
+      state: q.state ? String(q.state) : undefined,
+      district: q.district ? String(q.district) : undefined,
+      month: q.month ? Number(q.month) : undefined,
+      season: q.season ? (String(q.season).toUpperCase() as any) : undefined,
+      soilType: q.soilType ? String(q.soilType) : undefined,
+      irrigation: q.irrigation ? (String(q.irrigation).toUpperCase() as any) : undefined,
+      limit: q.limit ? Number(q.limit) : undefined
+    });
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'CROP_FIT_ERROR', message: err.message });
+  }
+});
+
+router.get('/soil/area-profile', (req: Request, res: Response) => {
+  try {
+    const q = req.query;
+    const result = SoilAtlasService.getAreaSoilProfile({
+      state: q.state ? String(q.state) : undefined,
+      district: q.district ? String(q.district) : undefined,
+      cropCode: q.cropCode ? String(q.cropCode) : undefined,
+      acres: q.acres ? Number(q.acres) : undefined
+    });
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.json(result);
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'SOIL_ATLAS_ERROR', message: err.message });
+  }
+});
+
+router.get('/area-intelligence/freshness', (_req: Request, res: Response) => {
+  try {
+    const crop = CropVarietyAdvisorService.getFreshness();
+    const soil = SoilAtlasService.getFreshness();
+    return res.status(crop.isStale || soil.isStale ? 503 : 200).json({
+      status: crop.isStale || soil.isStale ? 'STALE' : 'FRESH',
+      cropVarietyAlmanac: crop,
+      soilZoneAtlas: soil
+    });
+  } catch (err: any) {
+    return res.status(500).json({ errorCode: 'FRESHNESS_ERROR', message: err.message });
+  }
+});
+
 router.get('/states/challenges', (req: Request, res: Response) => {
   try {
     const result = FarmerEcosystemService.getStateWiseChallengesAndTechSolutions({
@@ -783,9 +878,10 @@ router.get('/graduate/products', (req: Request, res: Response) => {
   try {
     const category = req.query.category ? String(req.query.category) : undefined;
     const cropCode = req.query.crop ? String(req.query.crop) : undefined;
-    const products = LicensedAgriGraduateService.getLicensedProducts(category, cropCode);
+    const result = LicensedAgriGraduateService.getLicensedProducts({ category, cropCode });
+    const products = result.products;
     return res.json({
-      totalCount: products.length,
+      totalCount: result.count,
       categoryFilter: category || 'ALL',
       cropFilter: cropCode || 'ALL',
       products
@@ -828,7 +924,7 @@ router.post('/graduate/orders', (req: Request, res: Response) => {
 // 9.6 Farmer Bahi-Khata Credit Ledger & Settlement Tracker
 router.get('/graduate/khata/:mobileNumber', (req: Request, res: Response) => {
   try {
-    const khata = LicensedAgriGraduateService.getFarmerKhataLedger(req.params.mobileNumber);
+    const khata = LicensedAgriGraduateService.getFarmerKhataLedger(String(req.params.mobileNumber));
     return res.json(khata);
   } catch (err: any) {
     return res.status(500).json({ errorCode: 'KHATA_FETCH_ERROR', message: err.message });

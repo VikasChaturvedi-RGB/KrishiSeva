@@ -1,0 +1,695 @@
+{
+  "meta": {
+    "atlasVersion": "2026.11",
+    "lastReviewedAt": "2026-11-28",
+    "refreshCadence": "MONTHLY",
+    "disclaimerHi": "क्षेत्रीय (जिला/राज्य) औसत आँकड़े हैं — आपके अपने खेत की सटीक स्थिति केवल मृदा स्वास्थ्य कार्ड (Soil Health Card) जांच से पता चलेगी। नमूना निःशुल्क जांच हेतु नजदीकी KVK/मृदा प्रयोगशाला में दें।",
+    "disclaimerEn": "Area-level (district/state) indicative figures. Your own field's status is only known from a Soil Health Card test — submit a free sample at your nearest KVK / soil testing lab.",
+    "sources": [
+      { "id": "SHC", "name": "Soil Health Card Scheme portal, DA&FW", "url": "https://soilhealth.dac.gov.in" },
+      { "id": "ICAR_IISS_MSPE", "name": "ICAR-IISS Bhopal — AICRP on Micro & Secondary Nutrients and Pollutant Elements (district deficiency maps)", "url": "https://iiss.icar.gov.in" },
+      { "id": "NBSSLUP", "name": "ICAR-NBSS&LUP Nagpur — Soil resource maps of India", "url": "https://nbsslup.icar.gov.in" }
+    ]
+  },
+
+  "diySoilTests": [
+    {
+      "id": "jar-texture",
+      "titleHi": "काँच जार मिट्टी बनावट परीक्षण (1 दिन)",
+      "stepsHi": "1. पारदर्शी बोतल में 1/3 मिट्टी + 2/3 पानी + 1 चम्मच नमक डालें।\n2. 3 मिनट जोर से हिलाकर रख दें।\n3. 1 मिनट में नीचे बैठी परत = रेत, 2 घंटे में = गाद (silt), 24 घंटे बाद ऊपर = चिकनी मिट्टी (clay)। तीनों परतों की मोटाई से अपनी मिट्टी पहचानें।"
+    },
+    {
+      "id": "vinegar-fizz",
+      "titleHi": "सिरका/नींबू झाग परीक्षण — चूना (क्षारीयता) जांच",
+      "stepsHi": "1. एक चम्मच सूखी मिट्टी पर 4–5 बूंद सिरका या नींबू रस डालें।\n2. तेज झाग/बुलबुले = मुक्त चूना अधिक (pH 8+) → जिंक, आयरन व बोरोन की कमी की संभावना अधिक।\n3. कोई झाग नहीं = सामान्य या अम्लीय मिट्टी।"
+    },
+    {
+      "id": "turmeric-ph",
+      "titleHi": "हल्दी घोल pH परीक्षण",
+      "stepsHi": "1. आधा चम्मच हल्दी को थोड़े पानी में घोलकर सफेद कागज पर पट्टी बना लें।\n2. उस पर गीली मिट्टी रखें। लाल-भूरा रंग = क्षारीय मिट्टी (pH > 8)।\n3. रंग न बदले तो अम्लीय/सामान्य — पुष्टि हेतु मृदा प्रयोगशाला में pH जांच कराएं।"
+    },
+    {
+      "id": "ribbon",
+      "titleHi": "मुट्ठी रिबन परीक्षण",
+      "stepsHi": "1. थोड़ी मिट्टी गीली करके अंगूठे व उंगली के बीच दबाते हुए पट्टी (रिबन) बनाएं।\n2. रिबन न बने = रेतीली; 2–3 cm पर टूटे = दोमट; 5 cm+ चमकदार रिबन = चिकनी/काली मिट्टी।"
+    }
+  ],
+
+  "soilHealthCardGuidanceHi": [
+    "मृदा स्वास्थ्य कार्ड हर 2 साल में निःशुल्क बनता है — नमूना फसल कटाई के बाद, खाद डालने से पहले लें।",
+    "खेत के 8–10 स्थानों से \"V\" आकार गड्ढे की 6 इंच (15 cm) गहराई की परत लेकर मिलाएं, 500 ग्राम नमूना छाया में सुखाएं।",
+    "मेड़, खाद के ढेर, पेड़ के नीचे या पानी जमा होने वाली जगह से नमूना न लें।",
+    "नमूना नजदीकी KVK / जिला मृदा परीक्षण प्रयोगशाला में दें या किसान कॉल सेंटर 1800-180-1551 पर पता पूछें।"
+  ],
+
+  "soilTypes": {
+    "BLACK_COTTON": {
+      "nameHi": "गहरी काली मिट्टी (रेगुर / कपास मिट्टी)", "nameEn": "Deep Black Cotton Soil (Vertisol)",
+      "localNamesHi": "रेगुर, कन्हार, भारी काली", "textureHi": "चिकनी (Clay 40–60%) — सूखने पर गहरी दरारें, गीली होने पर बहुत चिपचिपी",
+      "phTypical": "7.5–8.5", "organicCarbonTypical": "LOW_MEDIUM (0.4–0.6%)", "waterHoldingHi": "बहुत अधिक — अवशिष्ट नमी पर रबी फसल संभव",
+      "strengthsHi": "पोटाश, कैल्शियम व मैग्नीशियम भरपूर; नमी लम्बे समय तक रहती है।",
+      "weaknessesHi": "जल निकासी कमजोर; ऊँचे pH के कारण जिंक, आयरन व फॉस्फोरस पौधे को कम मिलते हैं; गंधक की कमी आम।",
+      "managementHi": "चौड़ी क्यारी-नाली (BBF) या मेड़-नाली पर बुवाई; 2–3 साल में एक बार गहरी जुताई; गोबर खाद 2 टन/एकड़; जिंक सल्फेट हर 2–3 सीजन में।",
+      "diyIdentifyHi": "मुट्ठी में गीली मिट्टी दबाएं — चमकदार लम्बा रिबन (5 cm+) बने और गर्मी में खेत में चौड़ी दरारें पड़ें तो यह काली कपास मिट्टी है।"
+    },
+    "MEDIUM_BLACK": {
+      "nameHi": "मध्यम काली मिट्टी", "nameEn": "Medium Black Soil (Inceptisol/Vertic)",
+      "localNamesHi": "मुरमी-काली, मध्यम भारी", "textureHi": "चिकनी दोमट (Clay loam) — हल्की दरारें",
+      "phTypical": "7.2–8.2", "organicCarbonTypical": "LOW_MEDIUM (0.4–0.65%)", "waterHoldingHi": "मध्यम–अधिक",
+      "strengthsHi": "अधिकतर फसलों हेतु उपयुक्त; पोटाश ठीक।",
+      "weaknessesHi": "जिंक, गंधक व बोरोन की कमी; ढलान पर कटाव।",
+      "managementHi": "मेड़बंदी व कंटूर खेती; दलहन चक्र; गंधक 8 kg/एकड़ तिलहन में।",
+      "diyIdentifyHi": "रंग गहरा भूरा-काला, गीली करने पर 2.5–5 cm का रिबन बनता है।"
+    },
+    "ALLUVIAL": {
+      "nameHi": "जलोढ़ (दोमट) मिट्टी", "nameEn": "Alluvial Soil (Entisol/Inceptisol)",
+      "localNamesHi": "दोमट, खादर (नई), बांगर (पुरानी)", "textureHi": "बलुई दोमट से चिकनी दोमट — भुरभुरी",
+      "phTypical": "6.8–8.2", "organicCarbonTypical": "LOW (0.3–0.5%)", "waterHoldingHi": "मध्यम",
+      "strengthsHi": "भारत की सबसे उपजाऊ मिट्टी; पोटाश सामान्यतः पर्याप्त; सिंचाई से बहु-फसली।",
+      "weaknessesHi": "लगातार धान-गेहूँ से जैविक कार्बन, जिंक, गंधक व मैंगनीज घटे हैं; कुछ क्षेत्रों में ऊसर (सोडिक)।",
+      "managementHi": "फसल अवशेष न जलाएं — मिलाएं; हरी खाद (ढैंचा) 45 दिन; दलहन को चक्र में शामिल करें।",
+      "diyIdentifyHi": "भुरभुरी, हल्के भूरे रंग की; गीली मिट्टी का रिबन 2–3 cm पर टूट जाता है।"
+    },
+    "TERAI_ALLUVIAL": {
+      "nameHi": "तराई जलोढ़ मिट्टी", "nameEn": "Terai / Sub-Himalayan Alluvium",
+      "localNamesHi": "तराई, भाभर", "textureHi": "दोमट से गाद-दोमट (silty loam), जैविक पदार्थ अधिक",
+      "phTypical": "6.0–7.2", "organicCarbonTypical": "MEDIUM_HIGH (0.6–1.0%)", "waterHoldingHi": "अधिक; जलस्तर ऊँचा",
+      "strengthsHi": "जैविक कार्बन अपेक्षाकृत अधिक; धान, गन्ना व गेहूँ हेतु उत्कृष्ट।",
+      "weaknessesHi": "जल भराव; जिंक व बोरोन की कमी; अम्लता की ओर झुकाव।",
+      "managementHi": "जल निकासी नालियाँ; जिंक सल्फेट धान रोपाई पर; बोरेक्स दलहन/सरसों में।",
+      "diyIdentifyHi": "गहरा भूरा, चिकना-रेशमी स्पर्श (गाद), सामान्यतः नम।"
+    },
+    "RED_LATERITIC": {
+      "nameHi": "लाल व लेटराइट मिट्टी", "nameEn": "Red & Lateritic Soil (Alfisol/Ultisol)",
+      "localNamesHi": "लाल मुरम, भाटा, टांड", "textureHi": "बलुई दोमट, कंकड़युक्त — भुरभुरी व जल्दी सूखने वाली",
+      "phTypical": "5.0–6.8", "organicCarbonTypical": "LOW (0.3–0.5%)", "waterHoldingHi": "कम",
+      "strengthsHi": "जल निकासी अच्छी; मूँगफली, रागी, दलहन व बागवानी हेतु उपयुक्त।",
+      "weaknessesHi": "अम्लीयता (pH<5.5 पर एल्युमिनियम विषाक्तता); फॉस्फोरस स्थिरीकरण; नाइट्रोजन, बोरोन, जिंक, मॉलिब्डेनम व कैल्शियम की कमी।",
+      "managementHi": "कृषि चूना (lime) 1–2 क्विंटल/एकड़ कूंड़ में; रॉक फॉस्फेट; मल्चिंग व जैविक खाद से नमी संरक्षण।",
+      "diyIdentifyHi": "ईंट-लाल या पीला-लाल रंग; सूखने पर कड़ी परत, कंकड़/मुरम दिखाई देते हैं।"
+    },
+    "SANDY_ARID": {
+      "nameHi": "रेतीली (मरुस्थलीय) मिट्टी", "nameEn": "Arid Sandy Soil (Aridisol/Entisol)",
+      "localNamesHi": "धोरा, टिब्बा, बालू", "textureHi": "रेतीली (Sand 80%+) — पानी तुरंत रिस जाता है",
+      "phTypical": "7.8–8.8", "organicCarbonTypical": "VERY_LOW (<0.2%)", "waterHoldingHi": "बहुत कम",
+      "strengthsHi": "बाजरा, ग्वार, मूँग, मोठ व सरसों हेतु उपयुक्त; जुताई आसान।",
+      "weaknessesHi": "जैविक कार्बन बहुत कम; नाइट्रोजन, जिंक, आयरन व गंधक की कमी; हवा से कटाव।",
+      "managementHi": "खेत की मेड़ पर वायुरोधक पेड़; गोबर खाद/कम्पोस्ट 3–4 टन/एकड़; बूंद-बूंद/फव्वारा सिंचाई।",
+      "diyIdentifyHi": "मुट्ठी में दबाने पर गोला नहीं बनता, रेत बिखर जाती है।"
+    },
+    "SANDY_LOAM": {
+      "nameHi": "बलुई दोमट मिट्टी", "nameEn": "Sandy Loam",
+      "localNamesHi": "हल्की दोमट, भूड़", "textureHi": "बलुई दोमट — भुरभुरी, जल्दी गर्म",
+      "phTypical": "6.5–8.0", "organicCarbonTypical": "LOW (0.25–0.45%)", "waterHoldingHi": "कम–मध्यम",
+      "strengthsHi": "आलू, सब्जी, मूँगफली व खरबूज हेतु आदर्श; जल निकासी उत्तम।",
+      "weaknessesHi": "पोषक तत्व बह जाते हैं — नाइट्रोजन, पोटाश, गंधक व मैंगनीज की कमी।",
+      "managementHi": "उर्वरक कई किश्तों में दें; मल्चिंग; हरी खाद।",
+      "diyIdentifyHi": "गोला बनता है पर हल्के दबाव से टूट जाता है; रिबन नहीं बनता।"
+    },
+    "SALINE_SODIC": {
+      "nameHi": "लवणीय / क्षारीय (ऊसर) मिट्टी", "nameEn": "Saline / Sodic (Usar) Soil",
+      "localNamesHi": "ऊसर, रेह, कल्लर", "textureHi": "सतह पर सफेद (लवणीय) या काली (क्षारीय) परत",
+      "phTypical": "8.5–10.5", "organicCarbonTypical": "VERY_LOW", "waterHoldingHi": "पानी ऊपर रुकता है, अंदर नहीं जाता",
+      "strengthsHi": "सुधार के बाद धान, गेहूँ, सरसों व जौ अच्छी उपज देते हैं।",
+      "weaknessesHi": "सोडियम अधिक — जड़ें नहीं बढ़तीं; जिंक व आयरन की भारी कमी।",
+      "managementHi": "जिप्सम (मृदा जांच के GR अनुसार, सामान्यतः 2–5 टन/एकड़) + धान से शुरुआत; ढैंचा हरी खाद; CSSRI की लवण-सहिष्णु किस्में (CS सरसों, KRL/CSR धान)।",
+      "diyIdentifyHi": "सूखने पर सफेद पाउडर जैसी परत (लवणीय) या चिकनी काली पपड़ी (क्षारीय); बारिश का पानी कई दिन ऊपर खड़ा रहता है।"
+    },
+    "COASTAL_SALINE": {
+      "nameHi": "तटीय लवणीय मिट्टी", "nameEn": "Coastal Saline Soil",
+      "localNamesHi": "खार, क्षार भूमि", "textureHi": "चिकनी से दोमट; समुद्री लवण युक्त",
+      "phTypical": "6.5–8.5", "organicCarbonTypical": "MEDIUM", "waterHoldingHi": "अधिक; जल भराव",
+      "strengthsHi": "वर्षा ऋतु में धान अच्छा; नारियल/केला उपयुक्त।",
+      "weaknessesHi": "गर्मी में लवणता बढ़ती है; जिंक व बोरोन की कमी; चक्रवात से खारा पानी घुसना।",
+      "managementHi": "वर्षा जल संचय तालाब; ऊँची क्यारी-नाली (land shaping); लवण-सहिष्णु धान किस्में।",
+      "diyIdentifyHi": "गर्मी में सफेद लवण धब्बे; कुएं का पानी खारा।"
+    },
+    "COASTAL_SANDY": {
+      "nameHi": "तटीय रेतीली मिट्टी", "nameEn": "Coastal Sandy Soil",
+      "localNamesHi": "तटीय रेत", "textureHi": "रेतीली — बहुत तेज जल निकासी",
+      "phTypical": "6.0–7.8", "organicCarbonTypical": "LOW", "waterHoldingHi": "बहुत कम",
+      "strengthsHi": "मूँगफली, नारियल, काजू व सब्जियों हेतु उपयुक्त।",
+      "weaknessesHi": "पोटाश, मैग्नीशियम, बोरोन व जिंक की कमी; पोषक तत्व बह जाते हैं।",
+      "managementHi": "जैविक खाद अधिक; ड्रिप फर्टिगेशन; मल्चिंग।",
+      "diyIdentifyHi": "हल्की, सफेद-भूरी रेत; गोला नहीं बनता।"
+    },
+    "HILL_ACIDIC": {
+      "nameHi": "पहाड़ी अम्लीय मिट्टी", "nameEn": "Hill / Forest Acidic Soil",
+      "localNamesHi": "पहाड़ी, जंगल की मिट्टी", "textureHi": "दोमट, जैविक पदार्थ अधिक, ढलानदार",
+      "phTypical": "4.5–6.0", "organicCarbonTypical": "HIGH (>0.75%)", "waterHoldingHi": "मध्यम",
+      "strengthsHi": "जैविक कार्बन अधिक; बागवानी, रागी, अदरक व हल्दी हेतु उपयुक्त।",
+      "weaknessesHi": "तीव्र अम्लता; फॉस्फोरस स्थिरीकरण; कैल्शियम, मैग्नीशियम, बोरोन व मॉलिब्डेनम की कमी।",
+      "managementHi": "चूना/डोलोमाइट 1–2 क्विंटल/एकड़; सीढ़ीनुमा खेत; दलहन में मॉलिब्डेनम बीजोपचार।",
+      "diyIdentifyHi": "गहरा भूरा-काला ऊपरी परत, पत्तियों से भरी; हल्दी घोल परीक्षण में रंग नहीं बदलता (अम्लीय)।"
+    },
+    "CLAY_LOAM": {
+      "nameHi": "चिकनी दोमट (धान की भारी) मिट्टी", "nameEn": "Clay Loam (Paddy Lowland)",
+      "localNamesHi": "डोरसा, मटासी, कन्हार (छ.ग.)", "textureHi": "चिकनी दोमट — पानी रोकने वाली",
+      "phTypical": "6.0–7.5", "organicCarbonTypical": "LOW_MEDIUM", "waterHoldingHi": "अधिक",
+      "strengthsHi": "धान हेतु उत्कृष्ट; अवशिष्ट नमी पर दलहन।",
+      "weaknessesHi": "जिंक की कमी (धान में खैरा रोग); गंधक व बोरोन कम।",
+      "managementHi": "धान रोपाई पर जिंक सल्फेट 10 kg/एकड़; धान-परती में चना/अलसी/मसूर।",
+      "diyIdentifyHi": "भूरी-धूसर, गीली होने पर लम्बा रिबन बनता है पर काली मिट्टी जैसी गहरी दरारें नहीं।"
+    },
+    "CALCAREOUS_ALLUVIAL": {
+      "nameHi": "चूनेदार जलोढ़ मिट्टी", "nameEn": "Calcareous Alluvium",
+      "localNamesHi": "चूनायुक्त दोमट (उत्तर बिहार)", "textureHi": "दोमट; मुक्त चूना (CaCO3) 10–35%",
+      "phTypical": "8.0–8.8", "organicCarbonTypical": "LOW", "waterHoldingHi": "मध्यम",
+      "strengthsHi": "मक्का, गन्ना, केला व दलहन हेतु उपयुक्त।",
+      "weaknessesHi": "बोरोन व जिंक की गंभीर कमी; आयरन उपलब्धता कम।",
+      "managementHi": "बोरेक्स 4 kg/एकड़ (2 साल में एक बार); जिंक का पर्णीय छिड़काव मिट्टी में डालने से अधिक प्रभावी।",
+      "diyIdentifyHi": "मिट्टी पर नींबू रस/सिरका डालें — झाग (बुलबुले) उठें तो चूना अधिक है।"
+    }
+  },
+
+  "nutrients": {
+    "N": {
+      "nameHi": "नाइट्रोजन (N)", "nameEn": "Nitrogen",
+      "symptomHi": "पुरानी (नीचे की) पत्तियाँ पूरी पीली — नोक से शुरू होकर बीच की शिरा तक; पौधा छोटा व पतला।",
+      "photoCueHi": "नीचे से ऊपर की ओर समान पीलापन, धब्बे नहीं",
+      "soilCorrectionHi": "नीम-लेपित यूरिया 2–3 किश्तों में; दलहन/हरी खाद चक्र; जीवामृत।",
+      "foliarCorrectionHi": "2% यूरिया घोल (300 ग्राम / 15 L पंप) — तुरंत हरियाली हेतु।",
+      "organicHi": "वर्मीकम्पोस्ट 1 टन/एकड़; एज़ोटोबैक्टर/राइजोबियम कल्चर।"
+    },
+    "P": {
+      "nameHi": "फॉस्फोरस (P)", "nameEn": "Phosphorus",
+      "symptomHi": "पत्तियाँ गहरी हरी-नीली या बैंगनी; जड़ें कमजोर; फूल-फल देर से।",
+      "photoCueHi": "पुरानी पत्तियों पर बैंगनी/लाल रंगत",
+      "soilCorrectionHi": "SSP (16% P + 12% S) या DAP बुवाई के समय कूंड़ में; अम्लीय मिट्टी में रॉक फॉस्फेट।",
+      "foliarCorrectionHi": "1% DAP का साफ घोल (150 ग्राम / 15 L, रातभर भिगोकर छाना हुआ)।",
+      "organicHi": "PSB कल्चर से बीजोपचार; फॉस्फो-कम्पोस्ट।"
+    },
+    "K": {
+      "nameHi": "पोटाश (K)", "nameEn": "Potassium",
+      "symptomHi": "पुरानी पत्तियों के किनारे (margin) झुलसे/भूरे, जैसे जल गए हों; तना कमजोर, फसल गिरती है।",
+      "photoCueHi": "किनारों से अंदर की ओर भूरापन (marginal scorch)",
+      "soilCorrectionHi": "म्यूरेट ऑफ पोटाश (MOP) 20–40 kg/एकड़ बुवाई पर; केला/गन्ना में अधिक।",
+      "foliarCorrectionHi": "1% पोटैशियम नाइट्रेट (13:0:45) — 150 ग्राम / 15 L।",
+      "organicHi": "लकड़ी की राख (छनी हुई) 1–2 क्विंटल/एकड़; KMB जीवाणु।"
+    },
+    "S": {
+      "nameHi": "गंधक (सल्फर, S)", "nameEn": "Sulphur",
+      "symptomHi": "नई (ऊपर की) पत्तियाँ समान रूप से हल्की पीली — नाइट्रोजन जैसी पर ऊपर से शुरू; तिलहन में तेल कम।",
+      "photoCueHi": "ऊपरी नई पत्तियाँ पूरी हल्की पीली",
+      "soilCorrectionHi": "जिप्सम 100 kg/एकड़ या बेंटोनाइट सल्फर 8–10 kg/एकड़; DAP के बजाय SSP का उपयोग।",
+      "foliarCorrectionHi": "तुरंत लाभ हेतु पर्णीय कम प्रभावी — मिट्टी में दें।",
+      "organicHi": "सरसों खली; गोबर खाद।"
+    },
+    "ZN": {
+      "nameHi": "जिंक (जस्ता, Zn)", "nameEn": "Zinc",
+      "symptomHi": "नई पत्तियों में शिराओं के बीच पीलापन (interveinal chlorosis), पत्तियाँ छोटी व गुच्छेदार; धान में 'खैरा' — भूरे जंग जैसे धब्बे।",
+      "photoCueHi": "हरी शिराएं + बीच में पीली पट्टियाँ, नई पत्तियों पर",
+      "soilCorrectionHi": "जिंक सल्फेट (21%) 10 kg/एकड़ बुवाई/रोपाई पर — हर 2–3 सीजन में एक बार।",
+      "foliarCorrectionHi": "0.5% जिंक सल्फेट + 0.25% बुझा चूना (75 g + 38 g / 15 L पंप), 10 दिन के अंतर पर 2 बार।",
+      "organicHi": "ZSB (जिंक घोलक जीवाणु) 1 kg/एकड़ गोबर खाद में मिलाकर।"
+    },
+    "B": {
+      "nameHi": "बोरोन (B)", "nameEn": "Boron",
+      "symptomHi": "बढ़वार बिंदु (शिखर) मर जाता है; नई पत्तियाँ मुड़ी/मोटी; फूल-फल झड़ते हैं; फल/कंद फटते हैं; सरसों/चने में दाना कम।",
+      "photoCueHi": "शीर्ष कलिका सूखी, नई पत्तियाँ विकृत, फल फटे",
+      "soilCorrectionHi": "बोरेक्स 4 kg/एकड़ (2 वर्ष में एक बार) — अधिक न दें, विषाक्त होता है।",
+      "foliarCorrectionHi": "0.2% बोरेक्स (30 g / 15 L) या 0.1% सॉल्यूबोर — फूल आने से पहले।",
+      "organicHi": "गोबर खाद नियमित; बोरोन-समृद्ध कम्पोस्ट।"
+    },
+    "FE": {
+      "nameHi": "आयरन (लोहा, Fe)", "nameEn": "Iron",
+      "symptomHi": "सबसे नई पत्तियाँ लगभग सफेद-पीली, शिराएं हरी (बारीक जाल जैसी); चूनेदार/क्षारीय मिट्टी व धान की सूखी नर्सरी में आम।",
+      "photoCueHi": "नई पत्तियाँ सफेद-पीली, शिराएं बारीक हरी",
+      "soilCorrectionHi": "क्षारीय मिट्टी में मिट्टी में डालना कम प्रभावी — पर्णीय छिड़काव करें; जैविक खाद बढ़ाएं।",
+      "foliarCorrectionHi": "0.5% फेरस सल्फेट + 0.1% साइट्रिक एसिड/नींबू रस (75 g + 15 g / 15 L), 7 दिन अंतर पर 2–3 बार।",
+      "organicHi": "गोबर खाद व हरी खाद से उपलब्धता बढ़ती है।"
+    },
+    "MN": {
+      "nameHi": "मैंगनीज (Mn)", "nameEn": "Manganese",
+      "symptomHi": "मध्य पत्तियों पर शिराओं के बीच धूसर-पीले धब्बे/धारियाँ; गेहूँ में हल्की मिट्टी पर धान के बाद आम।",
+      "photoCueHi": "धूसर-हल्की धारियाँ/धब्बे, शिराएं हरी",
+      "soilCorrectionHi": "मिट्टी में कम प्रभावी — पर्णीय छिड़काव।",
+      "foliarCorrectionHi": "0.5% मैंगनीज सल्फेट (75 g / 15 L) — पहली सिंचाई से 2–4 दिन पहले, फिर साप्ताहिक 2–3 बार।",
+      "organicHi": "जैविक खाद।"
+    },
+    "CU": {
+      "nameHi": "तांबा (Cu)", "nameEn": "Copper",
+      "symptomHi": "नई पत्तियों की नोक सफेद होकर मुड़ जाती है; बालियाँ खाली।",
+      "photoCueHi": "पत्ती की नोक सफेद-मुड़ी",
+      "soilCorrectionHi": "दुर्लभ — केवल मृदा जांच में कमी हो तो कॉपर सल्फेट 2–4 kg/एकड़।",
+      "foliarCorrectionHi": "0.1–0.2% कॉपर सल्फेट + आधा चूना।",
+      "organicHi": "गोबर खाद।"
+    },
+    "MO": {
+      "nameHi": "मॉलिब्डेनम (Mo)", "nameEn": "Molybdenum",
+      "symptomHi": "अम्लीय मिट्टी में दलहन की गांठें (nodules) कम; पत्तियाँ पीली व किनारे मुड़े।",
+      "photoCueHi": "दलहन में नाइट्रोजन जैसी पीली पत्तियाँ + गांठें कम",
+      "soilCorrectionHi": "अम्लीय मिट्टी में चूना देने से उपलब्धता बढ़ती है।",
+      "foliarCorrectionHi": "बीजोपचार: सोडियम मॉलिब्डेट 1 g / kg बीज (राइजोबियम के साथ)।",
+      "organicHi": "चूना + जैविक खाद।"
+    },
+    "ACIDITY": {
+      "nameHi": "मिट्टी की अम्लता (pH < 5.5)", "nameEn": "Soil Acidity",
+      "symptomHi": "दलहन की जड़ें छोटी व गांठ रहित; फॉस्फोरस देने पर भी असर नहीं; एल्युमिनियम विषाक्तता।",
+      "photoCueHi": "फसल बौनी, जड़ें मोटी-छोटी",
+      "soilCorrectionHi": "कृषि चूना/डोलोमाइट 1–2 क्विंटल/एकड़ हर साल कूंड़ में (pH 6 तक)।",
+      "foliarCorrectionHi": "लागू नहीं।",
+      "organicHi": "पेपर-मिल स्लज/बेसिक स्लैग (उपलब्ध हो तो)।"
+    },
+    "SODICITY": {
+      "nameHi": "क्षारीयता/लवणता (pH > 8.5)", "nameEn": "Sodicity / Salinity",
+      "symptomHi": "खेत में धब्बों में फसल नहीं उगती; पत्ती के किनारे जले; सफेद/काली परत।",
+      "photoCueHi": "धब्बेदार कमजोर फसल, सफेद परत",
+      "soilCorrectionHi": "जिप्सम (GR अनुसार) + ढैंचा हरी खाद + लवण-सहिष्णु किस्में; जल निकासी।",
+      "foliarCorrectionHi": "लागू नहीं।",
+      "organicHi": "प्रेसमड/गोबर खाद 4–5 टन/एकड़।"
+    }
+  },
+
+  "states": {
+    "Madhya Pradesh": {
+      "dominantSoils": [
+        { "type": "BLACK_COTTON", "sharePct": 47, "regionsHi": "मालवा पठार, निमाड़, नर्मदा घाटी" },
+        { "type": "MEDIUM_BLACK", "sharePct": 20, "regionsHi": "विदिशा, रायसेन, सागर" },
+        { "type": "ALLUVIAL", "sharePct": 15, "regionsHi": "ग्वालियर-चंबल (भिंड, मुरैना)" },
+        { "type": "RED_LATERITIC", "sharePct": 18, "regionsHi": "बघेलखंड, बालाघाट, मंडला, डिंडोरी" }
+      ],
+      "phBand": "7.2–8.4 (मुख्यतः हल्की क्षारीय)", "organicCarbonStatus": "LOW_MEDIUM",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "सीहोर, विदिशा, होशंगाबाद, धार, उज्जैन" },
+        { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "सोयाबीन-सरसों पट्टी (मालवा, ग्वालियर)" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "बालाघाट, मंडला (लाल मिट्टी)" },
+        { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 70, "hotspotsHi": "लगभग पूरे राज्य में कम उपलब्ध नाइट्रोजन" },
+        { "nutrient": "P", "severity": "MEDIUM", "approxPctSamplesDeficient": 35, "hotspotsHi": "काली मिट्टी में स्थिरीकरण" }
+      ],
+      "districts": {
+        "Dhar": { "soil": "BLACK_COTTON", "noteHi": "धरमपुरी-मनावर नर्मदा पट्टी: गहरी काली मिट्टी; जिंक व गंधक की कमी आम; सोयाबीन-गेहूँ/चना।" },
+        "Indore": { "soil": "BLACK_COTTON", "noteHi": "मालवा काली मिट्टी; जिंक कमी; आलू में प्रसंस्करण किस्में।" },
+        "Ujjain": { "soil": "BLACK_COTTON", "noteHi": "जिंक व गंधक कम; सोयाबीन-गेहूँ चक्र।" },
+        "Sehore": { "soil": "MEDIUM_BLACK", "noteHi": "शरबती गेहूँ पट्टी; जिंक कमी अधिक।" },
+        "Vidisha": { "soil": "MEDIUM_BLACK", "noteHi": "चना-गेहूँ पट्टी; गंधक व जिंक कमी।" },
+        "Khargone": { "soil": "BLACK_COTTON", "noteHi": "निमाड़ कपास-मिर्च पट्टी; बोरोन कमी कपास में।" },
+        "Jabalpur": { "soil": "MEDIUM_BLACK", "noteHi": "धान-गेहूँ; जिंक कमी।" },
+        "Balaghat": { "soil": "RED_LATERITIC", "noteHi": "धान पट्टी; अम्लीय झुकाव, बोरोन व जिंक कम।" },
+        "Gwalior": { "soil": "ALLUVIAL", "noteHi": "चंबल जलोढ़; सरसों में गंधक आवश्यक; कुछ क्षेत्र क्षारीय।" },
+        "Bhind": { "soil": "ALLUVIAL", "noteHi": "सरसों पट्टी; गंधक कमी।" },
+        "Mandla": { "soil": "RED_LATERITIC", "noteHi": "अम्लीय लाल मिट्टी; चूना व बोरोन आवश्यक।" }
+      }
+    },
+
+    "Maharashtra": {
+      "dominantSoils": [
+        { "type": "BLACK_COTTON", "sharePct": 45, "regionsHi": "विदर्भ, मराठवाड़ा, खानदेश" },
+        { "type": "MEDIUM_BLACK", "sharePct": 25, "regionsHi": "पश्चिम महाराष्ट्र" },
+        { "type": "RED_LATERITIC", "sharePct": 20, "regionsHi": "कोंकण, पूर्व विदर्भ" },
+        { "type": "COASTAL_SANDY", "sharePct": 10, "regionsHi": "कोंकण तट" }
+      ],
+      "phBand": "7.5–8.6 (दक्कन में क्षारीय/चूनेदार); कोंकण 5.0–6.5", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "मराठवाड़ा, सोलापुर, अहमदनगर" },
+        { "nutrient": "FE", "severity": "HIGH", "approxPctSamplesDeficient": 30, "hotspotsHi": "चूनेदार काली मिट्टी — गन्ना, केला, मूँगफली में" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "कपास व अरहर पट्टी" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 30, "hotspotsHi": "सोयाबीन पट्टी" },
+        { "nutrient": "ACIDITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 60, "hotspotsHi": "कोंकण लेटराइट (रत्नागिरी, सिंधुदुर्ग)" }
+      ],
+      "districts": {
+        "Jalgaon": { "soil": "BLACK_COTTON", "noteHi": "केला-कपास पट्टी; आयरन व जिंक कमी; पोटाश केला में अधिक दें।" },
+        "Nashik": { "soil": "MEDIUM_BLACK", "noteHi": "प्याज-अंगूर; गंधक व बोरोन प्याज में।" },
+        "Pune": { "soil": "MEDIUM_BLACK", "noteHi": "गन्ना-सब्जी; आयरन कमी चूनेदार मिट्टी में।" },
+        "Latur": { "soil": "BLACK_COTTON", "noteHi": "सोयाबीन-अरहर; जिंक व गंधक कमी।" },
+        "Nagpur": { "soil": "BLACK_COTTON", "noteHi": "कपास-संतरा; जिंक व बोरोन।" },
+        "Yavatmal": { "soil": "BLACK_COTTON", "noteHi": "कपास-सोयाबीन; बोरोन कपास में आवश्यक।" },
+        "Kolhapur": { "soil": "MEDIUM_BLACK", "noteHi": "गन्ना; आयरन व जिंक पर्णीय।" },
+        "Ratnagiri": { "soil": "RED_LATERITIC", "noteHi": "अम्लीय लेटराइट; चूना, बोरोन व मैग्नीशियम।" },
+        "Solapur": { "soil": "BLACK_COTTON", "noteHi": "न्यून वर्षा; ज्वार-बाजरा; जिंक व आयरन कमी।" }
+      }
+    },
+
+    "Punjab": {
+      "dominantSoils": [
+        { "type": "ALLUVIAL", "sharePct": 70, "regionsHi": "मध्य मैदान (लुधियाना, जालंधर, पटियाला)" },
+        { "type": "SANDY_LOAM", "sharePct": 18, "regionsHi": "दक्षिण-पश्चिम (बठिंडा, मानसा, फाजिल्का)" },
+        { "type": "SALINE_SODIC", "sharePct": 7, "regionsHi": "श्री मुक्तसर साहिब, फाजिल्का के जलभराव क्षेत्र" },
+        { "type": "TERAI_ALLUVIAL", "sharePct": 5, "regionsHi": "कंडी/उप-पर्वतीय क्षेत्र" }
+      ],
+      "phBand": "7.8–8.8", "organicCarbonStatus": "LOW (धान-गेहूँ व पराली जलाने से घटा)",
+      "deficiencies": [
+        { "nutrient": "MN", "severity": "HIGH", "approxPctSamplesDeficient": 25, "hotspotsHi": "हल्की मिट्टी में धान के बाद गेहूँ — लुधियाना, पटियाला, संगरूर" },
+        { "nutrient": "ZN", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "दक्षिण-पश्चिम की रेतीली भूमि" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 18, "hotspotsHi": "DSR धान व धान नर्सरी (हल्की मिट्टी)" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 30, "hotspotsHi": "तिलहन व दलहन क्षेत्र" },
+        { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 75, "hotspotsHi": "जैविक कार्बन कम — लगभग पूरे राज्य में" }
+      ],
+      "districts": {
+        "Ludhiana": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ; गेहूँ में मैंगनीज कमी सामान्य।" },
+        "Bathinda": { "soil": "SANDY_LOAM", "noteHi": "कपास पट्टी; जिंक, गंधक व मैंगनीज कमी।" },
+        "Sangrur": { "soil": "ALLUVIAL", "noteHi": "भूजल अत्यधिक दोहन; मैंगनीज व जिंक।" },
+        "Jalandhar": { "soil": "ALLUVIAL", "noteHi": "आलू पट्टी; पोटाश व गंधक संतुलित दें।" },
+        "Fazilka": { "soil": "SALINE_SODIC", "noteHi": "जलभराव व लवणता; जिप्सम व लवण-सहिष्णु किस्में।" },
+        "Patiala": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ; मैंगनीज।" }
+      }
+    },
+
+    "Haryana": {
+      "dominantSoils": [
+        { "type": "ALLUVIAL", "sharePct": 55, "regionsHi": "उत्तर-पूर्व (करनाल, कुरुक्षेत्र, यमुनानगर)" },
+        { "type": "SANDY_ARID", "sharePct": 30, "regionsHi": "दक्षिण-पश्चिम (हिसार, भिवानी, सिरसा, महेंद्रगढ़)" },
+        { "type": "SALINE_SODIC", "sharePct": 15, "regionsHi": "रोहतक, झज्जर, जींद (जलभराव/लवणीय)" }
+      ],
+      "phBand": "7.8–9.0", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 35, "hotspotsHi": "धान-गेहूँ पट्टी व रेतीली भूमि" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "दक्षिण-पश्चिम की चूनेदार रेत" },
+        { "nutrient": "MN", "severity": "MEDIUM", "approxPctSamplesDeficient": 15, "hotspotsHi": "हल्की मिट्टी में गेहूँ" },
+        { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 35, "hotspotsHi": "सरसों पट्टी (रेवाड़ी, महेंद्रगढ़, भिवानी)" },
+        { "nutrient": "SODICITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 15, "hotspotsHi": "रोहतक, झज्जर, जींद" }
+      ],
+      "districts": {
+        "Karnal": { "soil": "ALLUVIAL", "noteHi": "बासमती-गेहूँ; जिंक।" },
+        "Hisar": { "soil": "SANDY_ARID", "noteHi": "कपास-सरसों-बाजरा; गंधक, जिंक, आयरन।" },
+        "Sirsa": { "soil": "SANDY_ARID", "noteHi": "कपास; जिंक व आयरन।" },
+        "Rohtak": { "soil": "SALINE_SODIC", "noteHi": "लवणता/जलभराव; जिप्सम + उप-सतही जल निकासी।" },
+        "Bhiwani": { "soil": "SANDY_ARID", "noteHi": "बाजरा-सरसों; गंधक।" },
+        "Kurukshetra": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ; मैंगनीज।" }
+      }
+    },
+
+    "Uttar Pradesh": {
+      "dominantSoils": [
+        { "type": "ALLUVIAL", "sharePct": 68, "regionsHi": "गंगा-यमुना मैदान" },
+        { "type": "TERAI_ALLUVIAL", "sharePct": 10, "regionsHi": "पीलीभीत, लखीमपुर, बहराइच, महाराजगंज" },
+        { "type": "SALINE_SODIC", "sharePct": 8, "regionsHi": "मध्य उ.प्र. ऊसर (रायबरेली, उन्नाव, प्रतापगढ़, कानपुर देहात)" },
+        { "type": "RED_LATERITIC", "sharePct": 14, "regionsHi": "बुंदेलखंड व विंध्य (झाँसी, ललितपुर, सोनभद्र, मिर्जापुर)" }
+      ],
+      "phBand": "7.0–8.6 (ऊसर में 9+)", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "पूर्वी उ.प्र. धान पट्टी, ऊसर क्षेत्र" },
+        { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "पश्चिमी उ.प्र. व बुंदेलखंड" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "तराई व पूर्वी उ.प्र." },
+        { "nutrient": "SODICITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 10, "hotspotsHi": "मध्य उ.प्र. ऊसर पट्टी" },
+        { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 80, "hotspotsHi": "पूरे राज्य में" }
+      ],
+      "districts": {
+        "Meerut": { "soil": "ALLUVIAL", "noteHi": "गन्ना-गेहूँ; जिंक व गंधक।" },
+        "Muzaffarnagar": { "soil": "ALLUVIAL", "noteHi": "गन्ना पट्टी; Co 0238 का लाल सड़न — किस्म बदलें; जिंक।" },
+        "Lakhimpur Kheri": { "soil": "TERAI_ALLUVIAL", "noteHi": "तराई गन्ना-धान; जिंक व बोरोन।" },
+        "Raebareli": { "soil": "SALINE_SODIC", "noteHi": "ऊसर; जिप्सम + धान से सुधार; जिंक भारी कमी।" },
+        "Agra": { "soil": "ALLUVIAL", "noteHi": "आलू-सरसों; कुछ क्षेत्र खारा भूजल।" },
+        "Jhansi": { "soil": "RED_LATERITIC", "noteHi": "बुंदेलखंड — दलहन-तिलहन; गंधक व जिंक।" },
+        "Gorakhpur": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ; जिंक (खैरा) व बाढ़।" },
+        "Varanasi": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ-सब्जी; जिंक व गंधक।" }
+      }
+    },
+
+    "Rajasthan": {
+      "dominantSoils": [
+        { "type": "SANDY_ARID", "sharePct": 60, "regionsHi": "पश्चिमी मरुस्थल (जैसलमेर, बाड़मेर, बीकानेर, जोधपुर, नागौर)" },
+        { "type": "ALLUVIAL", "sharePct": 15, "regionsHi": "पूर्वी मैदान (भरतपुर, अलवर, धौलपुर)" },
+        { "type": "MEDIUM_BLACK", "sharePct": 15, "regionsHi": "हाड़ौती (कोटा, बूंदी, बारां, झालावाड़)" },
+        { "type": "SALINE_SODIC", "sharePct": 5, "regionsHi": "IGNP जलभराव क्षेत्र, बाड़मेर" },
+        { "type": "RED_LATERITIC", "sharePct": 5, "regionsHi": "दक्षिणी (बांसवाड़ा, डूंगरपुर, उदयपुर)" }
+      ],
+      "phBand": "7.8–9.0", "organicCarbonStatus": "VERY_LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "पश्चिमी व पूर्वी दोनों" },
+        { "nutrient": "FE", "severity": "HIGH", "approxPctSamplesDeficient": 30, "hotspotsHi": "चूनेदार रेत — मूँगफली व चना में पीलापन" },
+        { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "सरसों पट्टी" },
+        { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 85, "hotspotsHi": "जैविक कार्बन बहुत कम" }
+      ],
+      "districts": {
+        "Bikaner": { "soil": "SANDY_ARID", "noteHi": "मूँगफली-चना-मोठ; आयरन व जिंक।" },
+        "Jodhpur": { "soil": "SANDY_ARID", "noteHi": "बाजरा-मूँग-जीरा; जिंक।" },
+        "Bharatpur": { "soil": "ALLUVIAL", "noteHi": "सरसों पट्टी; गंधक अनिवार्य।" },
+        "Kota": { "soil": "MEDIUM_BLACK", "noteHi": "सोयाबीन-गेहूँ-धनिया; जिंक व गंधक।" },
+        "Sri Ganganagar": { "soil": "SANDY_LOAM", "noteHi": "नहरी — कपास-गेहूँ-किन्नू; जिंक व मैंगनीज।" },
+        "Barmer": { "soil": "SANDY_ARID", "noteHi": "बाजरा-ग्वार; कुछ क्षेत्र लवणीय।" }
+      }
+    },
+
+    "Gujarat": {
+      "dominantSoils": [
+        { "type": "MEDIUM_BLACK", "sharePct": 40, "regionsHi": "सौराष्ट्र व मध्य गुजरात" },
+        { "type": "SANDY_ARID", "sharePct": 20, "regionsHi": "उत्तर गुजरात व कच्छ" },
+        { "type": "ALLUVIAL", "sharePct": 20, "regionsHi": "मध्य गुजरात (आणंद, खेड़ा, गोरु)" },
+        { "type": "COASTAL_SALINE", "sharePct": 20, "regionsHi": "भाल, कच्छ व सौराष्ट्र तट" }
+      ],
+      "phBand": "7.6–8.8", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 25, "hotspotsHi": "मूँगफली-कपास पट्टी" },
+        { "nutrient": "FE", "severity": "HIGH", "approxPctSamplesDeficient": 25, "hotspotsHi": "चूनेदार सौराष्ट्र — मूँगफली में पीलापन (lime-induced chlorosis)" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 35, "hotspotsHi": "तिलहन पट्टी" },
+        { "nutrient": "SODICITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 15, "hotspotsHi": "भाल, कच्छ, तटीय सौराष्ट्र" }
+      ],
+      "districts": {
+        "Rajkot": { "soil": "MEDIUM_BLACK", "noteHi": "मूँगफली-कपास; आयरन व जिंक।" },
+        "Junagadh": { "soil": "MEDIUM_BLACK", "noteHi": "मूँगफली; जिप्सम 100 kg/एकड़ फूल पर।" },
+        "Banaskantha": { "soil": "SANDY_ARID", "noteHi": "आलू-सरसों-बाजरा; गंधक व जिंक।" },
+        "Anand": { "soil": "ALLUVIAL", "noteHi": "गोरु दोमट; धान-तम्बाकू-केला; जिंक।" },
+        "Bharuch": { "soil": "BLACK_COTTON", "noteHi": "कपास-केला-गन्ना; आयरन व जिंक।" },
+        "Kachchh": { "soil": "COASTAL_SALINE", "noteHi": "लवणीय; लवण-सहिष्णु फसलें, ड्रिप।" }
+      }
+    },
+
+    "Bihar": {
+      "dominantSoils": [
+        { "type": "CALCAREOUS_ALLUVIAL", "sharePct": 40, "regionsHi": "उत्तर बिहार (समस्तीपुर, बेगूसराय, मुजफ्फरपुर, दरभंगा)" },
+        { "type": "ALLUVIAL", "sharePct": 45, "regionsHi": "दक्षिण बिहार व गंगा मैदान" },
+        { "type": "TERAI_ALLUVIAL", "sharePct": 15, "regionsHi": "पश्चिम चंपारण, किशनगंज" }
+      ],
+      "phBand": "6.8–8.6 (उत्तर बिहार चूनेदार)", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "B", "severity": "VERY_HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "चूनेदार उत्तर बिहार — मक्का, सरसों, दलहन, फूलगोभी" },
+        { "nutrient": "ZN", "severity": "VERY_HIGH", "approxPctSamplesDeficient": 50, "hotspotsHi": "धान पट्टी — 'खैरा' रोग" },
+        { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 35, "hotspotsHi": "तिलहन क्षेत्र" },
+        { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 75, "hotspotsHi": "पूरे राज्य में" }
+      ],
+      "districts": {
+        "Samastipur": { "soil": "CALCAREOUS_ALLUVIAL", "noteHi": "मक्का-धान; बोरोन व जिंक दोनों की भारी कमी।" },
+        "Begusarai": { "soil": "CALCAREOUS_ALLUVIAL", "noteHi": "रबी मक्का; बोरोन।" },
+        "Muzaffarpur": { "soil": "CALCAREOUS_ALLUVIAL", "noteHi": "लीची-मक्का; बोरोन व जिंक।" },
+        "Patna": { "soil": "ALLUVIAL", "noteHi": "धान-गेहूँ-सब्जी; जिंक।" },
+        "Nalanda": { "soil": "ALLUVIAL", "noteHi": "आलू-प्याज; जिंक व गंधक।" },
+        "Purnia": { "soil": "TERAI_ALLUVIAL", "noteHi": "मक्का-जूट; अम्लीय झुकाव, बोरोन।" }
+      }
+    },
+
+    "West Bengal": {
+      "dominantSoils": [
+        { "type": "ALLUVIAL", "sharePct": 55, "regionsHi": "गंगा मैदान (बर्दवान, हुगली, नदिया, मुर्शिदाबाद)" },
+        { "type": "RED_LATERITIC", "sharePct": 20, "regionsHi": "पुरुलिया, बांकुड़ा, बीरभूम, पश्चिम मेदिनीपुर" },
+        { "type": "TERAI_ALLUVIAL", "sharePct": 15, "regionsHi": "जलपाईगुड़ी, कूचबिहार, अलीपुरद्वार" },
+        { "type": "COASTAL_SALINE", "sharePct": 10, "regionsHi": "सुंदरबन (दक्षिण 24 परगना)" }
+      ],
+      "phBand": "5.0–7.5 (लाल-लेटराइट व तराई अम्लीय)", "organicCarbonStatus": "MEDIUM",
+      "deficiencies": [
+        { "nutrient": "B", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "तराई व लाल-लेटराइट — सरसों, दलहन, सब्जी" },
+        { "nutrient": "ZN", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "धान पट्टी" },
+        { "nutrient": "ACIDITY", "severity": "HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "तराई व लेटराइट जिले" },
+        { "nutrient": "MO", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "अम्लीय मिट्टी में दलहन" }
+      ],
+      "districts": {
+        "Purba Bardhaman": { "soil": "ALLUVIAL", "noteHi": "धान-आलू; जिंक व बोरोन।" },
+        "Hooghly": { "soil": "ALLUVIAL", "noteHi": "आलू पट्टी; बोरोन।" },
+        "Bankura": { "soil": "RED_LATERITIC", "noteHi": "अम्लीय; चूना + बोरोन।" },
+        "Jalpaiguri": { "soil": "TERAI_ALLUVIAL", "noteHi": "अम्लीय तराई; बोरोन, मॉलिब्डेनम।" },
+        "South 24 Parganas": { "soil": "COASTAL_SALINE", "noteHi": "सुंदरबन लवणीय; लवण-सहिष्णु धान, जल संचय।" }
+      }
+    },
+
+    "Odisha": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 55, "regionsHi": "पश्चिमी व मध्य पठार" },
+        { "type": "ALLUVIAL", "sharePct": 20, "regionsHi": "महानदी डेल्टा (कटक, पुरी, जगतसिंहपुर)" },
+        { "type": "COASTAL_SALINE", "sharePct": 10, "regionsHi": "तटीय बालासोर, भद्रक, केंद्रपाड़ा" },
+        { "type": "HILL_ACIDIC", "sharePct": 15, "regionsHi": "कोरापुट, कंधमाल, रायगड़ा" }
+      ],
+      "phBand": "4.8–6.8 (अधिकतर अम्लीय)", "organicCarbonStatus": "LOW_MEDIUM",
+      "deficiencies": [
+        { "nutrient": "ACIDITY", "severity": "HIGH", "approxPctSamplesDeficient": 70, "hotspotsHi": "लगभग पूरे पठारी भाग में" },
+        { "nutrient": "B", "severity": "HIGH", "approxPctSamplesDeficient": 45, "hotspotsHi": "लाल-लेटराइट" },
+        { "nutrient": "ZN", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "धान पट्टी" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 30, "hotspotsHi": "तिलहन/दलहन क्षेत्र" },
+        { "nutrient": "P", "severity": "HIGH", "approxPctSamplesDeficient": 50, "hotspotsHi": "अम्लीय मिट्टी में स्थिरीकरण" }
+      ],
+      "districts": {
+        "Cuttack": { "soil": "ALLUVIAL", "noteHi": "डेल्टा धान; जिंक।" },
+        "Koraput": { "soil": "HILL_ACIDIC", "noteHi": "रागी-धान; चूना, बोरोन, फॉस्फोरस।" },
+        "Balasore": { "soil": "COASTAL_SALINE", "noteHi": "तटीय लवणता; लवण-सहिष्णु धान।" },
+        "Sambalpur": { "soil": "RED_LATERITIC", "noteHi": "हीराकुंड नहरी धान; जिंक, बोरोन।" },
+        "Kandhamal": { "soil": "HILL_ACIDIC", "noteHi": "हल्दी-रागी; अम्लीयता।" }
+      }
+    },
+
+    "Chhattisgarh": {
+      "dominantSoils": [
+        { "type": "CLAY_LOAM", "sharePct": 35, "regionsHi": "छत्तीसगढ़ मैदान — कन्हार/डोरसा (रायपुर, दुर्ग, बिलासपुर)" },
+        { "type": "RED_LATERITIC", "sharePct": 40, "regionsHi": "भाटा/मटासी — मैदान की ऊँची भूमि व बस्तर" },
+        { "type": "HILL_ACIDIC", "sharePct": 15, "regionsHi": "उत्तरी पहाड़ी (सरगुजा, जशपुर)" },
+        { "type": "MEDIUM_BLACK", "sharePct": 10, "regionsHi": "कवर्धा, राजनांदगांव का भाग" }
+      ],
+      "phBand": "5.5–7.5", "organicCarbonStatus": "LOW_MEDIUM",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 35, "hotspotsHi": "धान पट्टी (खैरा)" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "भाटा/मटासी भूमि" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 30, "hotspotsHi": "दलहन-तिलहन" },
+        { "nutrient": "ACIDITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 30, "hotspotsHi": "बस्तर व सरगुजा" }
+      ],
+      "districts": {
+        "Raipur": { "soil": "CLAY_LOAM", "noteHi": "धान-चना; जिंक।" },
+        "Durg": { "soil": "CLAY_LOAM", "noteHi": "धान; जिंक व गंधक।" },
+        "Bastar": { "soil": "RED_LATERITIC", "noteHi": "अम्लीय; चूना व बोरोन; रागी/कोदो-कुटकी।" },
+        "Surguja": { "soil": "HILL_ACIDIC", "noteHi": "अम्लीयता; दलहन में मॉलिब्डेनम।" },
+        "Bilaspur": { "soil": "CLAY_LOAM", "noteHi": "धान; जिंक।" }
+      }
+    },
+
+    "Jharkhand": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 70, "regionsHi": "छोटानागपुर पठार" },
+        { "type": "HILL_ACIDIC", "sharePct": 15, "regionsHi": "संथाल परगना व वन क्षेत्र" },
+        { "type": "SANDY_LOAM", "sharePct": 15, "regionsHi": "नदी घाटियाँ" }
+      ],
+      "phBand": "4.5–6.2 (लगभग 2/3 भूमि अम्लीय)", "organicCarbonStatus": "LOW_MEDIUM",
+      "deficiencies": [
+        { "nutrient": "ACIDITY", "severity": "VERY_HIGH", "approxPctSamplesDeficient": 65, "hotspotsHi": "राँची, गुमला, लोहरदगा, सिमडेगा" },
+        { "nutrient": "P", "severity": "HIGH", "approxPctSamplesDeficient": 55, "hotspotsHi": "अम्लीयता से स्थिरीकरण" },
+        { "nutrient": "B", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "पूरा पठार" },
+        { "nutrient": "MO", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "दलहन (अरहर, मसूर)" },
+        { "nutrient": "ZN", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "धान की नीची भूमि" }
+      ],
+      "districts": {
+        "Ranchi": { "soil": "RED_LATERITIC", "noteHi": "अम्लीय टांड; चूना 1–2 क्विं./एकड़ + बोरोन।" },
+        "Gumla": { "soil": "RED_LATERITIC", "noteHi": "रागी-धान; अम्लीयता व फॉस्फोरस।" },
+        "Hazaribagh": { "soil": "RED_LATERITIC", "noteHi": "सब्जी-धान; बोरोन।" },
+        "Dumka": { "soil": "HILL_ACIDIC", "noteHi": "अम्लीय; दलहन में मॉलिब्डेनम।" }
+      }
+    },
+
+    "Karnataka": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 50, "regionsHi": "दक्षिण व पूर्वी शुष्क क्षेत्र (कोलार, तुमकुर, चित्रदुर्ग)" },
+        { "type": "BLACK_COTTON", "sharePct": 30, "regionsHi": "उत्तर कर्नाटक (कलबुर्गी, विजयपुरा, रायचूर, धारवाड़)" },
+        { "type": "COASTAL_SANDY", "sharePct": 10, "regionsHi": "तटीय कर्नाटक" },
+        { "type": "HILL_ACIDIC", "sharePct": 10, "regionsHi": "मलनाड (शिवमोग्गा, चिकमगलूर, कोडगु)" }
+      ],
+      "phBand": "5.5–8.5 (दक्षिण अम्लीय, उत्तर क्षारीय)", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "उत्तर कर्नाटक काली मिट्टी" },
+        { "nutrient": "B", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "लाल मिट्टी — सब्जी, सूरजमुखी, तिलहन" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "चूनेदार उत्तर" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "मूँगफली-सूरजमुखी" }
+      ],
+      "districts": {
+        "Kalaburagi": { "soil": "BLACK_COTTON", "noteHi": "तुअर पट्टी; जिंक व आयरन।" },
+        "Kolar": { "soil": "RED_LATERITIC", "noteHi": "टमाटर-सब्जी; बोरोन व कैल्शियम।" },
+        "Dharwad": { "soil": "BLACK_COTTON", "noteHi": "कपास-सोयाबीन-चना; जिंक।" },
+        "Mandya": { "soil": "RED_LATERITIC", "noteHi": "गन्ना-धान; जिंक व बोरोन।" },
+        "Belagavi": { "soil": "MEDIUM_BLACK", "noteHi": "गन्ना; आयरन व जिंक।" },
+        "Tumakuru": { "soil": "RED_LATERITIC", "noteHi": "रागी-मूँगफली; बोरोन।" }
+      }
+    },
+
+    "Telangana": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 50, "regionsHi": "दक्षिण व मध्य (महबूबनगर, नलगोंडा, रंगारेड्डी)" },
+        { "type": "BLACK_COTTON", "sharePct": 30, "regionsHi": "उत्तर (आदिलाबाद, निर्मल, कामारेड्डी)" },
+        { "type": "MEDIUM_BLACK", "sharePct": 20, "regionsHi": "करीमनगर, वारंगल" }
+      ],
+      "phBand": "6.5–8.3", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "धान व मक्का पट्टी" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "चूनेदार काली मिट्टी" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "कपास व मूँगफली" },
+        { "nutrient": "S", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "तिलहन" }
+      ],
+      "districts": {
+        "Adilabad": { "soil": "BLACK_COTTON", "noteHi": "कपास-सोयाबीन; बोरोन व जिंक।" },
+        "Warangal": { "soil": "MEDIUM_BLACK", "noteHi": "मिर्च-कपास-धान; जिंक।" },
+        "Khammam": { "soil": "RED_LATERITIC", "noteHi": "मिर्च; बोरोन व कैल्शियम।" },
+        "Nalgonda": { "soil": "RED_LATERITIC", "noteHi": "धान-कपास; जिंक; कुछ क्षेत्रों में फ्लोराइड युक्त भूजल।" },
+        "Mahabubnagar": { "soil": "RED_LATERITIC", "noteHi": "मूँगफली-अरहर; बोरोन व जिंक।" }
+      }
+    },
+
+    "Andhra Pradesh": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 45, "regionsHi": "रायलसीमा व उत्तर तटीय" },
+        { "type": "ALLUVIAL", "sharePct": 25, "regionsHi": "कृष्णा-गोदावरी डेल्टा" },
+        { "type": "BLACK_COTTON", "sharePct": 20, "regionsHi": "गुंटूर, कुरनूल, प्रकाशम" },
+        { "type": "COASTAL_SALINE", "sharePct": 10, "regionsHi": "तटीय पट्टी" }
+      ],
+      "phBand": "6.5–8.5", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 35, "hotspotsHi": "डेल्टा धान" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "मूँगफली-मिर्च" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "चूनेदार काली मिट्टी" },
+        { "nutrient": "SODICITY", "severity": "MEDIUM", "approxPctSamplesDeficient": 10, "hotspotsHi": "तटीय लवणीय क्षेत्र" }
+      ],
+      "districts": {
+        "Guntur": { "soil": "BLACK_COTTON", "noteHi": "मिर्च-कपास; बोरोन व जिंक।" },
+        "Anantapur": { "soil": "RED_LATERITIC", "noteHi": "मूँगफली; जिप्सम, बोरोन; नमी संरक्षण।" },
+        "East Godavari": { "soil": "ALLUVIAL", "noteHi": "डेल्टा धान-केला-नारियल; जिंक।" },
+        "Kurnool": { "soil": "BLACK_COTTON", "noteHi": "कपास-चना-प्याज; जिंक व आयरन।" },
+        "Krishna": { "soil": "ALLUVIAL", "noteHi": "धान; जिंक; तट पर लवणता।" }
+      }
+    },
+
+    "Tamil Nadu": {
+      "dominantSoils": [
+        { "type": "RED_LATERITIC", "sharePct": 50, "regionsHi": "उत्तर-पश्चिम व दक्षिण" },
+        { "type": "ALLUVIAL", "sharePct": 20, "regionsHi": "कावेरी डेल्टा (तंजावुर, तिरुवारूर, नागपट्टिनम)" },
+        { "type": "BLACK_COTTON", "sharePct": 20, "regionsHi": "कोयम्बत्तूर, तिरुनेलवेली, विरुधुनगर" },
+        { "type": "COASTAL_SANDY", "sharePct": 10, "regionsHi": "तटीय पट्टी" }
+      ],
+      "phBand": "6.0–8.5", "organicCarbonStatus": "LOW",
+      "deficiencies": [
+        { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 55, "hotspotsHi": "डेल्टा धान व उत्तर-पश्चिम" },
+        { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "चूनेदार काली मिट्टी" },
+        { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "मूँगफली, सब्जी" },
+        { "nutrient": "CU", "severity": "LOW", "approxPctSamplesDeficient": 10, "hotspotsHi": "रेतीली तटीय भूमि" }
+      ],
+      "districts": {
+        "Thanjavur": { "soil": "ALLUVIAL", "noteHi": "डेल्टा धान; जिंक भारी कमी।" },
+        "Coimbatore": { "soil": "BLACK_COTTON", "noteHi": "कपास-मक्का-नारियल; जिंक व आयरन।" },
+        "Tiruchirappalli": { "soil": "RED_LATERITIC", "noteHi": "केला-धान; पोटाश व जिंक।" },
+        "Theni": { "soil": "RED_LATERITIC", "noteHi": "केला-अंगूर; जिंक व बोरोन।" },
+        "Villupuram": { "soil": "RED_LATERITIC", "noteHi": "मूँगफली-गन्ना; बोरोन व गंधक।" }
+      }
+    },
+
+    "Assam": {
+      "dominantSoils": [
+        { "type": "TERAI_ALLUVIAL", "sharePct": 55, "regionsHi": "ब्रह्मपुत्र घाटी" },
+        { "type": "ALLUVIAL", "sharePct": 25, "regionsHi": "नदी तट (चर/चापोरी)" },
+        { "type": "HILL_ACIDIC", "sharePct": 20, "regionsHi": "कार्बी आंगलोंग, दीमा हसाओ" }
+      ],
+      "phBand": "4.5–6.0 (अधिकतर अम्लीय)", "organicCarbonStatus": "MEDIUM_HIGH",
+      "deficiencies": [
+        { "nutrient": "ACIDITY", "severity": "VERY_HIGH", "approxPctSamplesDeficient": 75, "hotspotsHi": "लगभग पूरे राज्य में" },
+        { "nutrient": "B", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "सरसों/तोरिया व सब्जी" },
+        { "nutrient": "ZN", "severity": "MEDIUM", "approxPctSamplesDeficient": 25, "hotspotsHi": "धान" },
+        { "nutrient": "MO", "severity": "MEDIUM", "approxPctSamplesDeficient": 20, "hotspotsHi": "दलहन" },
+        { "nutrient": "P", "severity": "HIGH", "approxPctSamplesDeficient": 50, "hotspotsHi": "अम्लीयता से स्थिरीकरण" }
+      ],
+      "districts": {
+        "Nagaon": { "soil": "TERAI_ALLUVIAL", "noteHi": "धान-तोरिया-सब्जी; चूना व बोरोन।" },
+        "Jorhat": { "soil": "TERAI_ALLUVIAL", "noteHi": "धान-चाय; अम्लीयता।" },
+        "Barpeta": { "soil": "ALLUVIAL", "noteHi": "चर भूमि धान-सरसों; बाढ़।" },
+        "Karbi Anglong": { "soil": "HILL_ACIDIC", "noteHi": "अदरक-हल्दी; चूना, बोरोन।" }
+      }
+    }
+  },
+
+  "nationalFallback": {
+    "dominantSoils": [
+      { "type": "ALLUVIAL", "sharePct": 40, "regionsHi": "सिंधु-गंगा-ब्रह्मपुत्र मैदान" },
+      { "type": "RED_LATERITIC", "sharePct": 30, "regionsHi": "प्रायद्वीपीय पठार" },
+      { "type": "BLACK_COTTON", "sharePct": 15, "regionsHi": "दक्कन पठार" },
+      { "type": "SANDY_ARID", "sharePct": 10, "regionsHi": "थार मरुस्थल" }
+    ],
+    "phBand": "राज्य अनुसार भिन्न", "organicCarbonStatus": "LOW",
+    "deficiencies": [
+      { "nutrient": "N", "severity": "HIGH", "approxPctSamplesDeficient": 70, "hotspotsHi": "देश की अधिकांश मिट्टी में उपलब्ध नाइट्रोजन कम" },
+      { "nutrient": "S", "severity": "HIGH", "approxPctSamplesDeficient": 40, "hotspotsHi": "तिलहन-दलहन क्षेत्र" },
+      { "nutrient": "ZN", "severity": "HIGH", "approxPctSamplesDeficient": 37, "hotspotsHi": "लगभग सभी राज्य — भारत की सबसे व्यापक सूक्ष्म पोषक कमी" },
+      { "nutrient": "B", "severity": "MEDIUM", "approxPctSamplesDeficient": 23, "hotspotsHi": "पूर्वी भारत, चूनेदार व अम्लीय मिट्टी" },
+      { "nutrient": "FE", "severity": "MEDIUM", "approxPctSamplesDeficient": 13, "hotspotsHi": "चूनेदार व क्षारीय मिट्टी" }
+    ],
+    "districts": {}
+  }
+}

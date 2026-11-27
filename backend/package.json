@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
-    "test": "ts-node src/testRunner.ts"
+    "test": "ts-node src/testRunner.ts && npm run test:area",
+    "test:area": "ts-node src/areaIntelligenceTests.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

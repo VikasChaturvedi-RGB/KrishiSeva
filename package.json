@@ -4,7 +4,9 @@
   "private": true,
   "description": "Krishi Sahayak — 100% Free B2C Multilingual Farmer Guidance PWA & Android App (Google Cloud Always-Free)",
   "scripts": {
-    "build": "node -e \"const fs=require('fs'); ['public','web_app','dist','android_app/app/src/main/assets/pwa'].forEach(d => { fs.mkdirSync(d, {recursive:true}); fs.cpSync('web_simulator', d, {recursive:true}); }); console.log('Build output ready: web_app, public, dist & android_app/assets/pwa');\"",
-    "start": "cd backend && npm start"
+    "build": "node scripts/build_pwa.mjs",
+    "start": "cd backend && npm start",
+    "test": "cd backend && npm test",
+    "refresh:data": "node scripts/refresh_crop_variety_almanac.mjs"
   }
 }

@@ -1,0 +1,44 @@
+name: CI — Diagnosis, Area Intelligence & Backend Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build & test (Node 22)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 (node:sqlite)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install backend dependencies
+        run: cd backend && npm ci
+
+      - name: Type-check & compile backend
+        run: cd backend && npm run build
+
+      - name: Backend suite (DB, diagnosis, CIB&RC, PWA) + area-intelligence & leaf-vision tests
+        run: cd backend && npm test
+
+      - name: PWA build is reproducible & committed
+        run: |
+          npm run build
+          if ! git diff --quiet -- web_simulator web_app public android_app/app/src/main/assets/pwa; then
+            echo "::error::Build outputs are out of date. Run 'npm run build' at the repo root and commit."
+            git diff --stat -- web_simulator web_app public android_app/app/src/main/assets/pwa
+            exit 1
+          fi
+
+      - name: Monthly refresh script dry-run (keeps the cron job healthy)
+        run: node scripts/refresh_crop_variety_almanac.mjs --dry-run

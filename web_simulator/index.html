@@ -6,6 +6,29 @@
   <title>कृषि सहायक (Krishi Sahayak) — निःशुल्क किसान मार्गदर्शक (22 भाषाएं)</title>
   <meta name="description" content="AI-Native Plant Pathology & Nutrition-First Agronomic Advisory for Indian Farmers">
   
+  <!-- ================================================================== -->
+  <!-- Google Tag Manager (GTM-M9S2B335) + GA4 dataLayer bootstrap         -->
+  <!-- Privacy-first: no ad personalisation, no Google Signals, IP masked  -->
+  <!-- ================================================================== -->
+  <script>
+    window.KRISHI_GTM_CONTAINER_ID = 'GTM-M9S2B335';
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'granted'
+    });
+    window.dataLayer.push({
+      'gtm.start': new Date().getTime(),
+      event: 'gtm.js'
+    });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-M9S2B335"></script>
+
   <!-- Progressive Web App (PWA) Meta & Links -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#15803d">
@@ -23,6 +46,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="farmer-portal-body">
+
+  <!-- Google Tag Manager (noscript fallback for low-end / JS-restricted devices) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M9S2B335"
+    height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
 
   <!-- Main Farmer Mobile Application Wrapper (Centered on Desktop, Fullscreen on Mobile) -->
   <div class="mobile-app-stage">
@@ -346,6 +373,24 @@
                 <span class="state-drone-pill"><i class="fa-solid fa-helicopter"></i> ड्रोन/CHC</span>
               </div>
 
+              <!-- Area Intelligence: monthly crop-variety fit + area soil/nutrient atlas -->
+              <div class="area-intel-home-row">
+                <div class="area-intel-tile crop" onclick="switchView('viewCropFit')">
+                  <div class="ait-icon"><i class="fa-solid fa-wheat-awn"></i></div>
+                  <div>
+                    <strong>मेरे क्षेत्र की फसल व किस्म</strong>
+                    <p id="homeCropFitSub">मासिक अपडेट • सरकारी/ICAR किस्में</p>
+                  </div>
+                </div>
+                <div class="area-intel-tile soil" onclick="switchView('viewSoilAtlas')">
+                  <div class="ait-icon"><i class="fa-solid fa-mountain-sun"></i></div>
+                  <div>
+                    <strong>मेरी मिट्टी व पोषक कमी</strong>
+                    <p>मिट्टी का प्रकार • क्षेत्र की आम कमियाँ</p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Primary Hero Scan Action Card -->
               <div class="hero-scan-cta-card">
                 <div class="scan-cta-content">
@@ -389,10 +434,10 @@
                   <h6 id="homeTileMitra">किसान ई-मित्र रडार</h6>
                   <span class="tile-sub text-red" id="homeTileMitraSub">उज्जैन: 38 खेतों में अलर्ट</span>
                 </div>
-                <div class="quick-tile" onclick="switchNav('viewFarm', document.getElementById('navSoil'))">
+                <div class="quick-tile" onclick="switchView('viewSoilAtlas')">
                   <div class="tile-icon soil-icon"><i class="fa-solid fa-earth-asia"></i></div>
                   <h6 id="homeTileSoil">मृदा कार्ड</h6>
-                  <span class="tile-sub text-red">जिंक की कमी (0.45 ppm)</span>
+                  <span class="tile-sub text-green">क्षेत्र की मिट्टी व कमियाँ</span>
                 </div>
                 <div class="quick-tile" onclick="switchNav('viewRecommendation', document.getElementById('navRx'))">
                   <div class="tile-icon rx-icon"><i class="fa-solid fa-clipboard-prescription"></i></div>
@@ -567,6 +612,10 @@
                     </button>
                   </div>
                   <p class="capture-caption" id="captureCaptionText">रोग एवं पोषण जांच के लिए फोटो खींचें या वीडियो लें</p>
+                  <div class="ai-capture-tips">
+                    <span id="aiEngineHealthPill" class="ai-health-pill pending"><i class="fa-solid fa-circle-notch fa-spin"></i> AI इंजन जांच...</span>
+                    <small>💡 एक प्रभावित पत्ती को सादे कागज या आसमान के सामने, 20–30 cm दूरी से, दिन की रोशनी में लें</small>
+                  </div>
                 </div>
 
                 <!-- State B: Post-Capture Preview & Retake Option -->
@@ -761,8 +810,8 @@
               <!-- Diagnosis Summary Banner -->
               <div class="rx-banner">
                 <div class="rx-badge-top">
-                  <span class="confidence-pill-green"><i class="fa-solid fa-circle-check"></i> 94% <span id="rxHighConfText">उच्च सटीकता पुष्टि</span></span>
-                  <span class="cibrc-pill"><i class="fa-solid fa-award"></i> CIB&RC सत्यापित</span>
+                  <span class="confidence-pill-green" id="rxConfidencePill"><i class="fa-solid fa-circle-notch fa-spin"></i> <span id="rxHighConfText">AI जांच...</span></span>
+                  <span class="cibrc-pill" id="rxSourcePill"><i class="fa-solid fa-mobile-screen"></i> ऑन-डिवाइस AI</span>
                 </div>
                 <h2 class="rx-disease-name" id="rxDiseaseTitle">सोयाबीन: जिंक (जस्ता) की कमी</h2>
                 <p class="rx-scientific" id="rxScientificName">Zinc Deficiency (Interveinal Chlorosis) • JS 20-34</p>
@@ -789,6 +838,12 @@
                   </div>
                 </div>
               </div>
+
+              <!-- What the AI actually measured in the farmer's photo/video -->
+              <div id="rxEvidenceCard" class="rx-evidence-card hidden"></div>
+
+              <!-- Adaptive question: re-scores the same photo with the farmer's answer -->
+              <div id="rxAdaptiveQuestions" class="rx-adaptive-card hidden"></div>
 
               <!-- Acreage Dosage Slider -->
               <div class="acreage-calculator-card">
@@ -1464,6 +1519,42 @@
             </div>
           </section>
 
+          <!-- ================================================================ -->
+          <!-- Screen: Area Crop & Variety Fit (monthly refreshed almanac)       -->
+          <!-- ================================================================ -->
+          <section id="viewCropFit" class="screen-view">
+            <div class="ecosystem-screen-card">
+              <div class="view-sub-header">
+                <button class="btn-back-pill" onclick="navigateToHome()">
+                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                </button>
+                <span class="sub-header-title">मेरे क्षेत्र की फसल व किस्म</span>
+                <button class="btn-help-pill" onclick="switchView('viewSoilAtlas')" title="मेरी मिट्टी">
+                  <i class="fa-solid fa-mountain-sun"></i>
+                </button>
+              </div>
+              <div id="cropFitRoot" class="area-intel-root"></div>
+            </div>
+          </section>
+
+          <!-- ================================================================ -->
+          <!-- Screen: Area Soil Type & Nutrient Deficiency Atlas                -->
+          <!-- ================================================================ -->
+          <section id="viewSoilAtlas" class="screen-view">
+            <div class="ecosystem-screen-card">
+              <div class="view-sub-header">
+                <button class="btn-back-pill" onclick="navigateToHome()">
+                  <i class="fa-solid fa-house"></i> <span>होम</span>
+                </button>
+                <span class="sub-header-title">मेरी मिट्टी व पोषक कमी</span>
+                <button class="btn-help-pill" onclick="switchView('viewCropFit')" title="फसल व किस्म">
+                  <i class="fa-solid fa-wheat-awn"></i>
+                </button>
+              </div>
+              <div id="soilAtlasRoot" class="area-intel-root"></div>
+            </div>
+          </section>
+
         </main>
 
         <!-- Phone Bottom Navigation Bar (6 Core Indian Farmer Tabs) -->
@@ -1509,6 +1600,10 @@
   <script src="google-cloud-client.js"></script>
   <script src="b2c-consumer.js"></script>
   <script src="ga4-analytics.js"></script>
+  <script src="leaf-vision-engine.js"></script>
+  <script src="ai-diagnosis-pipeline.js"></script>
+  <script src="area-intelligence-engine.js"></script>
+  <script src="area-intelligence.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
