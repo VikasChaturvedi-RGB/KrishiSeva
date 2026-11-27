@@ -37,7 +37,7 @@ let offlineQueue = [];
 const localizations = {
   "hi": {
     "langName": "हिन्दी",
-    "appName": "कृषि स्वास्थ्य सहायक",
+    "appName": "मृदक (Mridak)",
     "home": "होम",
     "cropDoctor": "फसल जांच",
     "rxChart": "पोषण पर्चा",
@@ -263,7 +263,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -271,7 +271,7 @@ const localizations = {
   },
   "en": {
     "langName": "English",
-    "appName": "AgriScan AI (Krishi Sahayak)",
+    "appName": "Mridak — Krishi Sahayak",
     "home": "Home",
     "cropDoctor": "Crop Doctor",
     "rxChart": "Nutrition Rx",
@@ -497,7 +497,7 @@ const localizations = {
     "authBannerDesc": "Please log in first to access Crop Doctor, Nutrition Rx, Soil Card and Agri-Clinic.",
     "logout": "Logout",
     "offlineBanner": "Offline Mode - Scans will queue locally",
-    "pwaCardTitle": "AgriScan AI - Krishi Sahayak",
+    "pwaCardTitle": "Mridak (mridak.com)",
     "pwaCardSub": "Works completely offline in farm without internet",
     "pwaCardBtn": "Install",
     "langModalTitle": "Select Language / अपनी भाषा चुनें",
@@ -731,7 +731,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "ਲਾਗਆਉਟ",
     "offlineBanner": "ਆਫ਼ਲਾਈਨ ਮੋਡ - ਸਕੈਨ ਲੋਕਲ ਸਟੋਰ ਹੋਣਗੇ",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ / Select Language",
@@ -965,7 +965,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफलाइन मोड - स्कॅन स्थानिक पातळीवर सेव्ह होतील",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "आपली भाषा निवडा / Select Language",
@@ -1199,7 +1199,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -1433,7 +1433,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -1667,7 +1667,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -1901,7 +1901,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -2135,7 +2135,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -2369,7 +2369,7 @@ const localizations = {
     "authBannerDesc": "फसल डॉक्टर, पोषण पर्चा, मृदा कार्ड व क्लिनिक प्रो का उपयोग करने के लिए कृपया पहले लॉगिन करें।",
     "logout": "लॉगआउट",
     "offlineBanner": "ऑफ़लाइन मोड - स्कैन स्थानीय रूप से कतारबद्ध होंगे",
-    "pwaCardTitle": "AgriScan AI - कृषि सहायक",
+    "pwaCardTitle": "मृदक (Mridak.com)",
     "pwaCardSub": "ऑफ़लाइन खेत में बिना इंटरनेट काम करता है",
     "pwaCardBtn": "इंस्टॉल",
     "langModalTitle": "अपनी भाषा चुनें / Select Language",
@@ -2485,19 +2485,26 @@ function initPWA() {
     });
   }
 
+  // Show install/APK banner in web browsers; hide when already inside standalone PWA or native Android APK
+  const initialInstallCard = document.getElementById('inAppPwaPrompt');
+  if (initialInstallCard) {
+    const isStandalone = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+    initialInstallCard.style.display = (isStandalone || window.AndroidBridge) ? 'none' : 'flex';
+  }
+
   // Handle PWA 'beforeinstallprompt' Event
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
     const inAppPrompt = document.getElementById('inAppPwaPrompt');
-    if (inAppPrompt) inAppPrompt.style.display = 'flex';
+    if (inAppPrompt && !window.AndroidBridge) inAppPrompt.style.display = 'flex';
   });
 
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
     const inAppPrompt = document.getElementById('inAppPwaPrompt');
     if (inAppPrompt) inAppPrompt.style.display = 'none';
-    alert('🎉 कृषि स्वास्थ्य सहायक (AgriScan AI) सफलतापूर्वक इंस्टॉल हो गया है!');
+    alert('🎉 मृदक (Mridak) ऐप सफलतापूर्वक आपके फोन में इंस्टॉल हो गया है!');
   });
 
   window.addEventListener('online', () => {
@@ -2523,7 +2530,7 @@ function triggerPwaInstallPrompt() {
       if (inAppPrompt) inAppPrompt.style.display = 'none';
     });
   } else {
-    alert('📲 AgriScan AI PWA तैयार है! अपने ब्राउज़र मेनू से "Add to Home Screen" / "Install App" चुनें।');
+    alert('📲 मृदक (Mridak) ऐप: सीधे Android APK डाउनलोड करने हेतु "APK" दबाएं, या ब्राउज़र मेनू से "Add to Home Screen" चुनें।');
   }
 }
 

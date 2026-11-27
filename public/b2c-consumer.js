@@ -113,24 +113,26 @@ window.KrishiB2C = {
   // 1-Tap B2C Viral Sharing (Web Share API -> Android Native Bridge -> WhatsApp Deep Link)
   async shareGuidanceCard(contextType) {
     const isEn = (window.currentLanguage || 'hi') === 'en';
-    let title = '🌾 कृषि सहायक — निःशुल्क किसान मार्गदर्शन';
+    let title = '🌾 मृदक (Mridak.com) — निःशुल्क किसान मार्गदर्शन';
     let body = '';
 
     if (contextType === 'rx') {
       const dTitle = document.getElementById('rxDiseaseTitle')?.innerText || 'फसल पोषण सलाह';
       const s1 = document.getElementById('step1ActionText')?.innerText || '';
       const s2 = document.getElementById('step2ActionText')?.innerText || '';
-      body = `🌿 *${dTitle}*\n✅ उपाय 1: ${s1}\n🌱 उपाय 2: ${s2}\n\n(कृषि सहायक ऐप — 100% निःशुल्क, कोई बिक्री नहीं • 22 भारतीय भाषाएं)`;
+      body = `🌿 *${dTitle}*\n✅ उपाय 1: ${s1}\n🌱 उपाय 2: ${s2}\n\n(मृदक Mridak.com — 100% निःशुल्क, कोई बिक्री नहीं • 22 भारतीय भाषाएं)`;
     } else if (contextType === 'mandi') {
       const banner = document.getElementById('mandiBestNetBanner')?.innerText || 'आज का मंडी भाव';
-      body = `📊 *मंडी व MSP मार्गदर्शन*\n${banner}\n\n(कृषि सहायक — निःशुल्क किसान ऐप)`;
+      body = `📊 *मंडी व MSP मार्गदर्शन*\n${banner}\n\n(मृदक Mridak.com — निःशुल्क किसान ऐप)`;
     } else {
       body = isEn
-        ? '🌾 Try Krishi Sahayak — 100% Free, Ad-Free Farmer Guide in 22 Indian Languages (Leaf Scan, DIY Jeevamrut, Fake Fertilizer Test & Mandi Guide):'
-        : '🌾 किसान मित्रों के लिए 100% निःशुल्क "कृषि सहायक" ऐप — 22 भाषाओं में बोलकर पत्ती जांच, जीवामृत विधि, नकली खाद पहचान व मंडी मार्गदर्शन पाएं:';
+        ? '🌾 Try Mridak (mridak.com) — 100% Free, Ad-Free Farmer Guide in 22 Indian Languages (Leaf Scan, DIY Jeevamrut, Fake Fertilizer Test & Mandi Guide):'
+        : '🌾 किसान मित्रों के लिए 100% निःशुल्क "मृदक (Mridak.com)" ऐप — 22 भाषाओं में बोलकर पत्ती जांच, जीवामृत विधि, नकली खाद पहचान व मंडी मार्गदर्शन पाएं:';
     }
 
-    const shareUrl = window.location.origin || 'https://github.com/VikasChaturvedi-RGB/KisanSwasthyaSahayak';
+    const shareUrl = (window.location.origin && !window.location.origin.includes('localhost'))
+      ? window.location.origin
+      : 'https://mridak.com';
 
     if (window.AndroidBridge && typeof window.AndroidBridge.shareText === 'function') {
       window.AndroidBridge.shareText(`${body}\n${shareUrl}`);

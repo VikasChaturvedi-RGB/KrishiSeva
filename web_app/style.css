@@ -365,9 +365,9 @@ body.farmer-portal-body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* In-App PWA Banner */
+/* In-App PWA & Direct APK Banner */
 .pwa-install-card {
-  display: none;
+  display: flex;
   background: linear-gradient(135deg, #15803d 0%, #166534 100%);
   color: white;
   margin: 10px 14px;
@@ -376,6 +376,12 @@ body.farmer-portal-body {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+}
+
+@media (display-mode: standalone) {
+  .pwa-install-card {
+    display: none !important;
+  }
 }
 
 .pwa-card-left {
