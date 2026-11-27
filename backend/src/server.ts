@@ -125,6 +125,10 @@ app.use(
         res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       } else if (filePath.endsWith('manifest.json')) {
         res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+      } else if (filePath.endsWith('.apk')) {
+        res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+        res.setHeader('Content-Disposition', 'attachment; filename="krishi-sahayak.apk"');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
       }
     }
   })
@@ -137,6 +141,24 @@ app.get('/', (_req, res) => {
 
 app.get('/app', (_req, res) => {
   res.sendFile(path.join(webRootPath, 'index.html'));
+});
+
+app.get('/download', (_req, res) => {
+  res.sendFile(path.join(webRootPath, 'download.html'));
+});
+
+app.get('/krishi-sahayak.apk', (_req, res) => {
+  const directApk = path.join(webRootPath, 'krishi-sahayak.apk');
+  const downloadsApk = path.join(webRootPath, 'downloads', 'krishi-sahayak.apk');
+  if (fs.existsSync(directApk)) {
+    res.download(directApk, 'krishi-sahayak.apk');
+    return;
+  }
+  if (fs.existsSync(downloadsApk)) {
+    res.download(downloadsApk, 'krishi-sahayak.apk');
+    return;
+  }
+  res.redirect('https://github.com/VikasChaturvedi-RGB/KrishiSeva/releases/latest/download/krishi-sahayak-mlkit-release.apk');
 });
 
 app.get('/privacy', (_req, res) => {

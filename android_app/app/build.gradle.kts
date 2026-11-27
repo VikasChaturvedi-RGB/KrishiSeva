@@ -25,7 +25,7 @@ android {
         buildConfigField(
             "String",
             "PWA_HOST_URL",
-            "\"https://krishi-sahayak-india-free.web.app/index.html\""
+            "\"https://kris-seva.web.app/index.html\""
         )
         vectorDrawables {
             useSupportLibrary = true

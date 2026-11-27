@@ -43,6 +43,14 @@
         "headers": [
           { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
         ]
+      },
+      {
+        "source": "**/*.apk",
+        "headers": [
+          { "key": "Content-Type", "value": "application/vnd.android.package-archive" },
+          { "key": "Content-Disposition", "value": "attachment; filename=\"krishi-sahayak.apk\"" },
+          { "key": "Cache-Control", "value": "public, max-age=86400" }
+        ]
       }
     ],
     "rewrites": [
@@ -52,6 +60,10 @@
           "serviceId": "krishi-sahayak-api",
           "region": "asia-south1"
         }
+      },
+      {
+        "source": "/download",
+        "destination": "/download.html"
       },
       {
         "source": "/app",

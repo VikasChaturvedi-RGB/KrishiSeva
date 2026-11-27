@@ -75,6 +75,9 @@
             <button type="button" class="acc-pill-btn" onclick="window.cycleLandUnit()" title="जमीन माप इकाई (एकड़/बीघा/हेक्टेयर)">
               <i class="fa-solid fa-ruler-combined"></i> <span id="landUnitBtnLabel">एकड़</span>
             </button>
+            <a href="/download" class="acc-pill-btn" style="text-decoration:none; background:#dcfce7; color:#14532d; font-weight:700;" title="Android APK डाउनलोड करें">
+              <i class="fa-brands fa-android"></i> <span>APK</span>
+            </a>
           </div>
         </div>
 
@@ -153,9 +156,14 @@
                 <p id="pwaCardSub">ऑफ़लाइन खेत में बिना इंटरनेट काम करता है</p>
               </div>
             </div>
-            <button class="btn-install-chip" onclick="triggerPwaInstallPrompt()">
-              <i class="fa-solid fa-download"></i> <span id="pwaCardBtn">इंस्टॉल</span>
-            </button>
+            <div style="display:flex; gap:6px;">
+              <a href="/download" class="btn-install-chip" style="text-decoration:none; background:#16a34a; color:#fff;" title="Android APK डाउनलोड करें">
+                <i class="fa-brands fa-android"></i> <span>APK</span>
+              </a>
+              <button class="btn-install-chip" onclick="triggerPwaInstallPrompt()">
+                <i class="fa-solid fa-download"></i> <span id="pwaCardBtn">इंस्टॉल</span>
+              </button>
+            </div>
           </div>
 
                     <!-- ================================================================ -->

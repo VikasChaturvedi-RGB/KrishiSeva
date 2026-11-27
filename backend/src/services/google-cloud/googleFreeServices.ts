@@ -101,7 +101,7 @@ export class GoogleFreeServices {
         cloudRun: { tier: 'ALWAYS_FREE_TIER_1_INDIA (asia-south1 Mumbai, 2M req/mo, min-instances=0)', active: true },
         firebaseHosting: {
           tier: 'SPARK_ALWAYS_FREE (10GB storage, 10GB/mo CDN, free .web.app SSL domain)',
-          defaultFreeDomain: `https://${projectId || 'krishi-sahayak-india-free'}.web.app`,
+          defaultFreeDomain: `https://${projectId || 'kris-seva'}.web.app`,
           active: true
         },
         googleAnalytics: {
