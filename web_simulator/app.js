@@ -3020,7 +3020,9 @@ function reRenderActiveScreen() {
 
   if (currentView === 'viewMandi' || currentView === 'viewMandiBhav') {
     if (lastMandiPayload) {
-      renderMandiCards(lastMandiPayload.nearbyMandiPrices || [], lastMandiPayload.bestMandiRecommendation);
+      renderMandiCards(lastMandiPayload.mandis || lastMandiPayload.nearbyMandiPrices || [], lastMandiPayload.bestMandiRecommendation);
+    } else {
+      loadMandiIntelligence();
     }
   } else if (currentView === 'viewCalendar' || currentView === 'viewWeatherCalendar') {
     if (lastSprayPayload) renderSprayAdvisory(lastSprayPayload);
@@ -3935,6 +3937,240 @@ async function startPhysiologicalAnalysis() {
   }, 3400);
 }
 
+function buildCropPrescriptionReport(cropCode, acreageVal) {
+  const acres = Math.max(0.5, Number(acreageVal || currentAcreage || 2.0));
+  const c = String(cropCode || currentCrop || 'WHEAT').toUpperCase();
+
+  if (c === 'WHEAT') {
+    return {
+      crop: 'गेहूँ (Wheat HD-2967 / शरबती)',
+      diseaseTitle: 'गेहूँ: जिंक व नाइट्रोजन कमी एवं पीला रतुआ सुरक्षा',
+      scientificName: 'Micronutrient Chlorosis & Puccinia striiformis • Triticum aestivum',
+      confidence: '94.6% AI Confidence',
+      step1: {
+        title: 'चरण 1: जिंक सल्फेट 21% + यूरिया पर्णीय पोषण',
+        action: 'जिंक सल्फेट 1 किग्रा + यूरिया 2 किग्रा प्रति 200 लीटर पानी प्रति एकड़ सुबह धूप निकलने पर छिड़कें; दूधिया अवस्था में हीटवेव से बचाव हेतु 00:52:34 (1 kg/एकड़) स्प्रे करें।',
+        dose: `${(acres * 1.0).toFixed(1)} kg ZnSO4 / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: घरेलू जीवामृत एवं PSB/ZSB मृदा उपचार',
+        action: 'पहली सिंचाई (CRI अवस्था - 21 दिन) के साथ 200 लीटर छना हुआ जीवामृत या 1 किग्रा ZSB जैव-कल्चर प्रति एकड़ दें।',
+        dose: `${(acres * 1.0).toFixed(1)} किग्रा ZSB / जीवामृत`
+      },
+      step3: {
+        title: 'चरण 3: CIB&RC रसायन हस्तक्षेप (केवल रतुआ दिखने पर)',
+        action: 'केवल पीला/भूरा रतुआ (Rust पाउडर) दिखने पर ही प्रोपिकोनाजोल 25% EC @ 1 मिली/लीटर प्रयोग करें; सामान्य पीलापन में कीटनाशक कदापि न डालें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+      }
+    };
+  }
+  if (c === 'POTATO') {
+    return {
+      crop: 'आलू (Potato Kufri Jyoti / 3797)',
+      diseaseTitle: 'आलू: पछेती झुलसा (Late Blight) बचाव व पोटाश पोषण',
+      scientificName: 'Phytophthora infestans Prevention & K-Boron Nutrition',
+      confidence: '94.8% AI Confidence',
+      step1: {
+        title: 'चरण 1: कंद भराव एवं झुलसा रोधी पर्णीय पोषण',
+        action: 'सल्फेट ऑफ पोटाश (00:00:50) @ 5 ग्राम/लीटर + बोरॉन 20% @ 1 ग्राम/लीटर छिड़कें — कंद का आकार व चमक बढ़ती है और पाला सहने की शक्ति मिलती है।',
+        dose: `${(acres * 1.0).toFixed(1)} kg SOP / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: ट्राइकोडर्मा विरिडी एवं मिट्टी चढ़ाना (Earthing-up)',
+        action: 'ट्राइकोडर्मा विरिडी 2 किग्रा/एकड़ गोबर खाद में मिलाकर जड़ों के पास दें व कंदों को धूप से ढककर रखें।',
+        dose: `${(acres * 2.0).toFixed(1)} किग्रा Trichoderma`
+      },
+      step3: {
+        title: 'चरण 3: कोहरे में झुलसा सुरक्षा (आवश्यकता आधारित)',
+        action: 'लगातार घना कोहरा व नमी (>85%) रहने पर ही सुरक्षात्मक मैनकोजेब 75% WP @ 2g/L का प्रयोग करें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC अनुमोदित प्रोटोकॉल'
+      }
+    };
+  }
+  if (c === 'SUGARCANE') {
+    return {
+      crop: 'गन्ना (Sugarcane Co-0238 / CoLk-14201)',
+      diseaseTitle: 'गन्ना: लौह-जिंक पीलापन एवं लाल सड़न (Red Rot) बचाव',
+      scientificName: 'Iron-Zinc Ratoon Chlorosis & Colletotrichum falcatum Shield',
+      confidence: '93.9% AI Confidence',
+      step1: {
+        title: 'चरण 1: फेरस सल्फेट + जिंक सल्फेट पर्णीय छिड़काव',
+        action: 'पेड़ी गन्ने में सफेद-पीली पत्तियों हेतु फेरस सल्फेट 5g/L + जिंक सल्फेट 2.5g/L + नींबू रस/सिट्रिक एसिड 0.5g/L का छिड़काव करें।',
+        dose: `${(acres * 1.5).toFixed(1)} kg सूक्ष्म मिश्रण / ${Math.round(acres * 300)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: ट्राइकोडर्मा संस्कृति एवं सूखी पत्ती मल्चिंग',
+        action: 'लाल सड़न रोकने हेतु 2.5 किग्रा ट्राइकोडर्मा विरिडी 100 किग्रा सड़ी गोबर खाद के साथ जड़ों में दें।',
+        dose: `${(acres * 2.5).toFixed(1)} किग्रा Trichoderma`
+      },
+      step3: {
+        title: 'चरण 3: तना छेदक जैविक कार्ड (Zero Harsh Chemical)',
+        action: 'चोटी बेधक/अंकुर बेधक हेतु ट्राइकोग्रामा किलोनिस परजीवी कार्ड लगाएं; अनावश्यक जहरीले दानेदार रसायनों से बचें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC जैव-सुरक्षा प्रोटोकॉल'
+      }
+    };
+  }
+  if (c === 'MAIZE') {
+    return {
+      crop: 'मक्का (Maize Hybrid Yellow)',
+      diseaseTitle: 'मक्का: जिंक कमी (सफेद कली) एवं फॉल आर्मीवर्म बचाव',
+      scientificName: 'Maize White Bud (Zn Deficiency) & Spodoptera frugiperda IPM',
+      confidence: '94.1% AI Confidence',
+      step1: {
+        title: 'चरण 1: जिंक सल्फेट 21% + चूना पानी स्प्रे',
+        action: 'ऊपरी पत्तियों में सफेद धारियां दिखने पर जिंक सल्फेट 500g + बुझा चूना 250g प्रति 200L पानी छिड़कें।',
+        dose: `${Math.round(acres * 500)}g ZnSO4 / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: पोंगली में नीमास्त्र / मेटाराइजियम जैव उपचार',
+        action: 'फॉल आर्मीवर्म दिखने पर नीम तेल (1500 ppm @ 3ml/L) या मेटाराइजियम 5g/L सीधे मक्के की पोंगली (Whorl) में डालें व 8 फेरोमोन ट्रैप लगाएं।',
+        dose: `${(acres * 1.0).toFixed(1)} किग्रा बायो-कवच`
+      },
+      step3: {
+        title: 'चरण 3: रासायनिक कीटनाशक आवश्यकता आधारित',
+        action: 'प्रारंभिक अवस्था में नीम व जैव-एजेंट 85% प्रभावी हैं — महंगे रसायन पर खर्च बचाएं।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC IPM प्रमाणित'
+      }
+    };
+  }
+  if (c === 'TOMATO' || c === 'CHILLI') {
+    const isChilli = c === 'CHILLI';
+    return {
+      crop: isChilli ? 'लाल मिर्च (Chilli Teja Hybrid)' : 'टमाटर (Tomato Hybrid)',
+      diseaseTitle: isChilli ? 'मिर्च: पत्ती मरोड़ (Leaf Curl) व बोरॉन कमी' : 'टमाटर: कैल्शियम-बोरॉन कमी व अगेती झुलसा बचाव',
+      scientificName: isChilli ? 'Thrips/Mite Curl Complex & Boron Deficiency' : 'Blossom-End Rot (Ca-B) & Alternaria Shield',
+      confidence: '94.3% AI Confidence',
+      step1: {
+        title: 'चरण 1: कैल्शियम नाइट्रेट + बोरॉन पर्णीय पोषण',
+        action: 'फूल झड़ना व फल फटना रोकने हेतु कैल्शियम नाइट्रेट 3g/L + बोरॉन (20%) 1g/L का सुबह छिड़काव करें।',
+        dose: `${Math.round(acres * 600)}g Ca + ${Math.round(acres * 200)}g बोरॉन`
+      },
+      step2: {
+        title: 'चरण 2: नीले/पीले चिपचिपे ट्रैप + नीमास्त्र स्प्रे',
+        action: 'रसचूसक थ्रिप्स व सफेद मक्खी रोकने हेतु 15-20 पीले/नीले चिपचिपे ट्रैप/एकड़ लगाएं और शाम को नीमास्त्र या नीम तेल (3ml/L) छिड़कें।',
+        dose: `${Math.round(acres * 16)} चिपचिपे ट्रैप`
+      },
+      step3: {
+        title: 'चरण 3: निर्यात सुरक्षित MRL प्रोटोकॉल',
+        action: 'सब्जी व मिर्च तुड़ाई के करीब तेज रासायनिक कीटनाशक बिल्कुल न छिड़कें; ब्यूवेरिया बेसियाना 5g/L का प्रयोग करें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC सुरक्षित अवशेष मानक'
+      }
+    };
+  }
+  if (c === 'BANANA') {
+    return {
+      crop: 'केला (Banana Grand Naine / हाजीपुर चिनिया)',
+      diseaseTitle: 'केला: सिगाटोका पर्ण धब्बा एवं पोटाश-जिंक पोषण',
+      scientificName: 'Sigatoka (Pseudocercospora) & K-Zn Bunch Nutrition',
+      confidence: '95.4% AI Confidence',
+      step1: {
+        title: 'चरण 1: घुलनशील पोटाश (00:00:50) + चिलेटेड जिंक',
+        action: 'घार की लंबाई व चमक हेतु 00:00:50 @ 5g/L + चिलेटेड जिंक 1g/L का छिड़काव करें और नीचे की सूखी पत्तियां काटकर हटाएं।',
+        dose: `${(acres * 1.0).toFixed(1)} kg SOP / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: ट्राइकोडर्मा विरिडी एवं बैसिलस सबटिलिस',
+        action: 'ट्राइकोडर्मा विरिडी 2.5 किग्रा/एकड़ गोबर खाद के साथ पौधों के तने के पास दें।',
+        dose: `${(acres * 2.5).toFixed(1)} किग्रा Trichoderma`
+      },
+      step3: {
+        title: 'चरण 3: CIB&RC फफूंदनाशी (केवल तीव्र संक्रमण पर)',
+        action: 'अधिक आर्द्रता में धब्बे बढ़ने पर ही प्रोपिकोनाजोल 25% EC @ 1 मिली/लीटर + खनिज तेल प्रयोग करें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+      }
+    };
+  }
+  if (c === 'PADDY') {
+    return {
+      crop: 'धान (Paddy सांभा मंसूरी / PR-126)',
+      diseaseTitle: 'धान: खैरा रोग (जिंक कमी) व शीथ/नेक ब्लास्ट सुरक्षा',
+      scientificName: 'Zinc Deficiency (Khaira) & Sheath/Neck Blight Shield',
+      confidence: '93.8% AI Confidence',
+      step1: {
+        title: 'चरण 1: जिंक सल्फेट 21% + बुझा चूना पर्णीय छिड़काव',
+        action: 'कत्थई धब्बे व खैरा लक्षण दिखने पर यूरिया रोकें और जिंक सल्फेट 1 kg + बुझा चूना 500g प्रति 200L पानी प्रति एकड़ छिड़कें।',
+        dose: `${(acres * 1.0).toFixed(1)} kg ZnSO4 / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: स्यूडोमोनास फ्लूरोसेंस जैव उपचार',
+        action: 'स्यूडोमोनास फ्लूरोसेंस 1 किग्रा/एकड़ 50 किग्रा गोबर खाद के साथ खेत में दें तथा अतिरिक्त खड़ा पानी 3 दिन निकालें।',
+        dose: `${(acres * 1.0).toFixed(1)} किग्रा बायो-एजेंट`
+      },
+      step3: {
+        title: 'चरण 3: राज्य MRL सुरक्षित दिशानिर्देश',
+        action: 'बासमती/निर्यात धान में प्रतिबंधित रसायनों से बचें; आवश्यकता होने पर ही अनुमोदित फफूंदनाशी प्रयोग करें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC स्वीकृत प्रोटोकॉल'
+      }
+    };
+  }
+  if (c === 'COTTON') {
+    return {
+      crop: 'कपास (Bt Cotton Hybrid)',
+      diseaseTitle: 'कपास: मैग्नीशियम कमी (लाल पत्ती) व गुलाबी सुंडी बचाव',
+      scientificName: 'Magnesium Chlorosis (Lal Patti) & Pink Bollworm IPM',
+      confidence: '92.6% AI Confidence',
+      step1: {
+        title: 'चरण 1: मैग्नीशियम सल्फेट 1% + 13:00:45 पोषण',
+        action: 'पत्तियां लाल पड़ने व पाते झड़ने से रोकने हेतु MgSO4 (10g/L) + पोटेशियम नाइट्रेट 13:00:45 (10g/L) छिड़कें।',
+        dose: `${(acres * 2.0).toFixed(1)} kg MgSO4 / ${Math.round(acres * 200)}L पानी`
+      },
+      step2: {
+        title: 'चरण 2: फेरोमोन ट्रैप + नीमास्त्र / नीम तेल',
+        action: 'गुलाबी सुंडी निगरानी हेतु 8 फेरोमोन ट्रैप/एकड़ लगाएं और नीम तेल (10000 PPM @ 2ml/L) का छिड़काव करें।',
+        dose: `${Math.round(acres * 8)} फेरोमोन ट्रैप`
+      },
+      step3: {
+        title: 'चरण 3: रासायनिक कीटनाशक आवश्यकता आधारित',
+        action: 'सिंथेटिक पायरेथ्रॉइड के अंधाधुंध मिश्रण से सफेद मक्खी बढ़ती है — केवल ETL पार होने पर ही अनुशंसित अणु चुनें।',
+        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC अनुशंसित'
+      }
+    };
+  }
+
+  return {
+    crop: 'सोयाबीन (Soybean JS 20-34)',
+    diseaseTitle: 'सोयाबीन: जिंक (जस्ता) की कमी',
+    scientificName: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
+    confidence: '94.2% AI Confidence',
+    step1: {
+      title: 'चरण 1: सूक्ष्म पोषक तत्व पर्णीय छिड़काव (Foliar Mineral)',
+      action: 'जिंक सल्फेट 500 ग्राम + 250 ग्राम बुझा हुआ चूना (या चिलेटेड जिंक 1g/L) प्रति 200 लीटर पानी प्रति एकड़ छिड़कें।',
+      dose: `${Math.round(acres * 500)}g / ${Math.round(acres * 200)}L पानी`
+    },
+    step2: {
+      title: 'चरण 2: जैविक एवं मृदा सुधार (Soil Biology)',
+      action: '1 किग्रा ZSB प्रति एकड़ 50 किग्रा सड़ी गोबर खाद (FYM) या 200L जीवामृत के साथ मृदा में दें।',
+      dose: `${(acres * 1.0).toFixed(1)} किग्रा ZSB`
+    },
+    step3: {
+      title: 'चरण 3: रासायनिक कीटनाशक हस्तक्षेप (Zero Chemical)',
+      action: 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।',
+      tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
+    }
+  };
+}
+
+window.syncDefaultPrescriptionCard = function(ctx) {
+  const report = buildCropPrescriptionReport(ctx.crop, ctx.areaAcres);
+  report._autoSynced = true;
+  activeDiagnosisReport = report;
+  window.activeDiagnosisReport = report;
+  const setT = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+  setT('rxDiseaseTitle', report.diseaseTitle);
+  setT('rxScientificName', report.scientificName);
+  setT('step1Title', report.step1.title);
+  setT('step1ActionText', report.step1.action);
+  setT('step1Dose', report.step1.dose);
+  setT('step2Title', report.step2.title);
+  setT('step2ActionText', report.step2.action);
+  setT('step2Dose', report.step2.dose);
+  setT('step3Title', report.step3.title);
+  setT('step3ActionText', report.step3.action);
+  const tagEl = document.getElementById('step3ComplianceTag');
+  if (tagEl) tagEl.innerHTML = report.step3.tag;
+  updateAcreage(ctx.areaAcres);
+};
+
 // Dynamically Render Recommendation View
 function renderDynamicRecommendation(apiResult) {
   const rxDiseaseTitle = document.getElementById('rxDiseaseTitle');
@@ -3949,100 +4185,12 @@ function renderDynamicRecommendation(apiResult) {
   const step3Action = document.getElementById('step3ActionText');
   const step3ComplianceTag = document.getElementById('step3ComplianceTag');
 
-  let report = {};
-
-  if (currentCrop === 'BANANA') {
-    report = {
-      crop: 'केला (Banana Grand Naine / G9)',
-      diseaseTitle: 'केला: ब्लैक सिगाटोका पर्ण धब्बा रोग',
-      scientificName: 'Black Sigatoka (Pseudocercospora fijiensis) • Grand Naine (G9)',
-      confidence: '95.4% AI Confidence',
-      step1: {
-        title: 'पर्णीय फफूंदनाशी एवं खनिज तेल (Foliar Fungicide)',
-        action: 'प्रोपिकोनाजोल 25% EC @ 1 मिली/लीटर अथवा एजोक्सीस्ट्रोबिन + डाइफेनोकोनाजोल @ 1 मिली/लीटर + खनिज तेल (1%) का पर्णीय छिड़काव करें।',
-        dose: `${Math.round(currentAcreage * 200)} मिली / ${Math.round(currentAcreage * 200)}L पानी`
-      },
-      step2: {
-        title: 'जैविक कवकनाशी एवं मृदा जैव उपचार (Soil Biology & Trichoderma)',
-        action: 'ट्राइकोडर्मा विरिडी (Trichoderma viride 1.5% WP) @ 2.5 किग्रा/एकड़ सड़ी हुई गोबर खाद के साथ मिलाकर पौधों की जड़ों के पास दें।',
-        dose: `${(currentAcreage * 2.5).toFixed(1)} किग्रा Trichoderma`
-      },
-      step3: {
-        title: 'CIB&RC पंजीकृत रासायनिक हस्तक्षेप (Registered Fungicides)',
-        action: 'एजोक्सीस्ट्रोबिन 18.2% + डाइफेनोकोनाजोल 11.4% SC @ 1 मिली/लीटर पानी (CIB&RC स्वीकृत)।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
-      }
-    };
-  } else if (currentCrop === 'PADDY') {
-    report = {
-      crop: 'धान (Paddy PB 1121)',
-      diseaseTitle: 'धान: खैरा रोग व पर्ण झुलसा (Khaira Disease)',
-      scientificName: 'Zinc Deficiency & Magnaporthe oryzae • PB 1121',
-      confidence: '93.8% AI Confidence',
-      step1: {
-        title: 'चरण 1: जिंक सल्फेट 21% + यूरिया पर्णीय छिड़काव',
-        action: 'जिंक सल्फेट 5 किग्रा + 2.5 किग्रा बुझा हुआ चूना या 1% यूरिया प्रति 500L पानी छिड़कें।',
-        dose: `${Math.round(currentAcreage * 5)} किग्रा / ${Math.round(currentAcreage * 500)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: स्यूडोमोनास फ्लूरोसेंस जैव उपचार (Pseudomonas)',
-        action: 'स्यूडोमोनास फ्लूरोसेंस 1 किग्रा/एकड़ मृदा में 50 किग्रा FYM के साथ दें।',
-        dose: `${(currentAcreage * 1.0).toFixed(1)} किग्रा बायो-एजेंट`
-      },
-      step3: {
-        title: 'चरण 3: CIB&RC ट्राईसाइक्लाजोल 75% WP',
-        action: 'आवश्यकतानुसार ट्राईसाइक्लाजोल 75% WP @ 120 ग्राम प्रति एकड़ प्रयोग करें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC स्वीकृत'
-      }
-    };
-  } else if (currentCrop === 'COTTON') {
-    report = {
-      crop: 'कपास (Bt Cotton RCH-2)',
-      diseaseTitle: 'कपास: मैग्नीशियम की कमी (लाल पत्ती) व बॉलवर्म',
-      scientificName: 'Magnesium Chlorosis (Lal Patti) • Bt Cotton RCH-2',
-      confidence: '92.6% AI Confidence',
-      step1: {
-        title: 'चरण 1: मैग्नीशियम सल्फेट 1% पर्णीय पोषण',
-        action: 'मैग्नीशियम सल्फेट (MgSO4) 1 किग्रा + डीएपी 2 किग्रा प्रति 100 लीटर पानी का छिड़काव करें।',
-        dose: `${Math.round(currentAcreage * 1000)}g / ${Math.round(currentAcreage * 100)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: नीम तेल 10000 PPM जैव कीटनाशक',
-        action: 'नीम का तेल (Azadirachtin 10000 PPM) @ 2 मिली/लीटर पानी छिड़कें।',
-        dose: `${Math.round(currentAcreage * 400)} मिली नीम तेल`
-      },
-      step3: {
-        title: 'चरण 3: रासायनिक कीटनाशक आवश्यकता आधारित',
-        action: 'ईटीएल स्तर पार होने पर ही अनुशंसित रसायन का छिड़काव करें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC अनुशंसित'
-      }
-    };
-  } else {
-    // Default Soybean / Other
-    report = {
-      crop: 'सोयाबीन (Soybean JS 20-34)',
-      diseaseTitle: 'सोयाबीन: जिंक (जस्ता) की कमी',
-      scientificName: 'Zinc Deficiency (Interveinal Chlorosis) • JS 20-34',
-      confidence: '94.2% AI Confidence',
-      step1: {
-        title: 'चरण 1: सूक्ष्म पोषक तत्व पर्णीय छिड़काव (Foliar Mineral)',
-        action: 'जिंक सल्फेट 500 ग्राम + 250 ग्राम बुझा हुआ चूना (या 1 किग्रा यूरिया) प्रति 200 लीटर पानी प्रति एकड़ छिड़कें।',
-        dose: `${Math.round(currentAcreage * 500)}g / ${Math.round(currentAcreage * 200)}L पानी`
-      },
-      step2: {
-        title: 'चरण 2: जैविक एवं मृदा सुधार (Soil Biology)',
-        action: '1 किग्रा ZSB प्रति एकड़ 50 किग्रा सड़ी हुई गोबर की खाद (FYM) के साथ मिलाकर मृदा में दें।',
-        dose: `${(currentAcreage * 1.0).toFixed(1)} किग्रा ZSB`
-      },
-      step3: {
-        title: 'चरण 3: रासायनिक कीटनाशक हस्तक्षेप (Chemical)',
-        action: 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।',
-        tag: '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल'
-      }
-    };
-  }
+  const report = (apiResult && apiResult.step1 && apiResult.diseaseTitle)
+    ? apiResult
+    : buildCropPrescriptionReport(currentCrop, currentAcreage);
 
   activeDiagnosisReport = report;
+  window.activeDiagnosisReport = report;
 
   if (rxDiseaseTitle) rxDiseaseTitle.innerText = report.diseaseTitle;
   if (rxScientificName) rxScientificName.innerText = report.scientificName;
@@ -4056,6 +4204,7 @@ function renderDynamicRecommendation(apiResult) {
   if (step3Action) step3Action.innerText = report.step3.action;
   if (step3ComplianceTag) step3ComplianceTag.innerHTML = report.step3.tag;
 
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { stateLabelHi: 'भारत', hubDistrictHi: 'क्षेत्र' };
   if (currentUser) {
     currentUser.crop = report.crop;
     currentUser.healthStatus = report.confidence + ' - ' + report.diseaseTitle;
@@ -4066,7 +4215,7 @@ function renderDynamicRecommendation(apiResult) {
       healthStatus: report.confidence,
       deficiencies: report.diseaseTitle,
       suggestions: report.step1.action,
-      location: 'ग्राम धरमपुरी, धार (म.प्र.) [GPS: 22.7196° N, 75.8577° E]'
+      location: `${ctx.stateLabelHi} (${ctx.hubDistrictHi})`
     });
   }
 
@@ -4074,7 +4223,7 @@ function renderDynamicRecommendation(apiResult) {
   const leafPreview = document.getElementById('leafPreviewImg');
   saveDiagnosisToHistory({
     id: `diag-${Date.now()}`,
-    cropSpecies: currentCrop || 'SOYBEAN',
+    cropSpecies: currentCrop || ctx.crop || 'WHEAT',
     cropName: report.crop || currentCrop,
     diseaseTitle: report.diseaseTitle || 'फसल जांच',
     scientificName: report.scientificName || '',
@@ -4146,6 +4295,10 @@ function switchStateBan(stateName, btnElement) {
   document.querySelectorAll('.state-buttons .btn-state').forEach(b => b.classList.remove('active'));
   if (btnElement) btnElement.classList.add('active');
 
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { stateLabelHi: 'आपका राज्य', bannedChemHi: 'मोनोक्रोटोफॉस (सब्जियों पर), एंडोसल्फान' };
+
   const step3Card = document.getElementById('step3Card');
   const step3Title = document.getElementById('step3Title');
   const step3ActionText = document.getElementById('step3ActionText');
@@ -4154,48 +4307,29 @@ function switchStateBan(stateName, btnElement) {
   if (stateName === 'Punjab') {
     if (step3Card) step3Card.style.borderColor = '#ef4444';
     if (step3Title) {
-      step3Title.innerText = 'क्लोरोपायरीफॉस 20% EC (पंजाब राज्य में प्रतिबंधित)';
+      step3Title.innerText = 'बासमती/सब्जी प्रतिबंधित अणु (पंजाब गजट द्वारा अवरुद्ध)';
       step3Title.style.color = '#ef4444';
     }
     if (step3ActionText) {
-      step3ActionText.innerText = 'पंजाब सरकार गजट अधिसूचना 2026 के अंतर्गत यह कीटनाशक पूर्णतः प्रतिबंधित है। केवल जैविक अथवा पोषण उपचार का उपयोग करें।';
+      step3ActionText.innerText = 'पंजाब गजट अधिसूचना के अंतर्गत ट्राईसाइक्लाजोल, क्लोरोपायरीफॉस व थायमेथॉक्सम सहित 10 रसायन प्रतिबंधित हैं। केवल जैविक व पोषण उपचार अपनाएं।';
     }
     if (step3ComplianceTag) {
       step3ComplianceTag.className = 'compliance-status-tag red';
-      step3ComplianceTag.innerHTML = '<i class="fa-solid fa-ban text-red"></i> पंजाब राज्य प्रतिबंध नियम 2026 द्वारा अवरुद्ध';
+      step3ComplianceTag.innerHTML = '<i class="fa-solid fa-ban text-red"></i> पंजाब राज्य प्रतिबंध नियम द्वारा अवरुद्ध';
     }
-    
-    logToConsole('Regulatory Enforcement: State Ban Triggered', {
-      state: 'Punjab',
-      molecule: 'Chlorpyrifos 20% EC',
-      status: 'BLOCKED_BY_STATE_MANDATE'
-    });
   } else {
     if (step3Card) step3Card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-    if (activeDiagnosisReport && activeDiagnosisReport.step3) {
-      if (step3Title) {
-        step3Title.innerText = activeDiagnosisReport.step3.title;
-        step3Title.style.color = '#ffffff';
-      }
-      if (step3ActionText) {
-        step3ActionText.innerText = activeDiagnosisReport.step3.action;
-      }
-      if (step3ComplianceTag) {
-        step3ComplianceTag.className = 'compliance-status-tag';
-        step3ComplianceTag.innerHTML = activeDiagnosisReport.step3.tag;
-      }
-    } else {
-      if (step3Title) {
-        step3Title.innerText = 'रासायनिक कीटनाशक की आवश्यकता नहीं (Zero Chemical)';
-        step3Title.style.color = '#ffffff';
-      }
-      if (step3ActionText) {
-        step3ActionText.innerText = 'यह एक शुद्ध सूक्ष्म पोषक तत्व विकार है। अनावश्यक कीटनाशक रसायनों के प्रयोग से बचें।';
-      }
-      if (step3ComplianceTag) {
-        step3ComplianceTag.className = 'compliance-status-tag';
-        step3ComplianceTag.innerHTML = '<i class="fa-solid fa-circle-check text-green"></i> CIB&RC प्रमाणित पोषण-प्रथम प्रोटोकॉल';
-      }
+    const rep = activeDiagnosisReport || buildCropPrescriptionReport(currentCrop, currentAcreage);
+    if (step3Title) {
+      step3Title.innerText = rep.step3.title;
+      step3Title.style.color = '#ffffff';
+    }
+    if (step3ActionText) {
+      step3ActionText.innerText = `${rep.step3.action} (${ctx.stateLabelHi} प्रतिबंधित रसायन ध्यान रखें: ${ctx.bannedChemHi})`;
+    }
+    if (step3ComplianceTag) {
+      step3ComplianceTag.className = 'compliance-status-tag';
+      step3ComplianceTag.innerHTML = `<i class="fa-solid fa-circle-check text-green"></i> ${ctx.stateLabelHi} CIB&RC सत्यापित`;
     }
   }
 }
@@ -4524,60 +4658,36 @@ async function loadMandiIntelligence() {
   const listEl = document.getElementById('mandiCardsList');
   if (!listEl) return;
 
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', stateLabelHi: 'मध्य प्रदेश', hubDistrictHi: 'इंदौर / उज्जैन', crop: 'SOYBEAN' };
+
+  const stateNameEl = document.getElementById('mandiStateNameText');
+  if (stateNameEl) {
+    stateNameEl.innerText = currentLanguage === 'en'
+      ? `${ctx.stateLabelEn} (${ctx.hubDistrictEn})`
+      : `${ctx.stateLabelHi} (${ctx.hubDistrictHi})`;
+  }
+
   try {
-    const res = await fetch(`${API_BASE}/market/mandi-prices?crop=${encodeURIComponent(currentMandiCropFilter)}&quantityQtl=${currentMandiLotQuintals}`);
+    const res = await fetch(`${API_BASE}/market/mandi-prices?state=${encodeURIComponent(ctx.state)}&crop=${encodeURIComponent(currentMandiCropFilter)}&quantityQtl=${currentMandiLotQuintals}`);
     if (!res.ok) throw new Error('Mandi API error');
     const data = await res.json();
     lastMandiPayload = data;
     renderMandiCards(data.mandis || data.records || [], data.bestMandiRecommendation || data.bestRealizationMandi);
     updateJsonConsole(data);
   } catch (err) {
-    // Fallback offline calculation if backend unreachable
-    const fallbackRecords = [
-      {
-        mandi_name: 'Indore APMC Mandi (e-NAM)',
-        crop_name_hi: 'सोयाबीन (Yellow)',
-        crop_name_en: 'Soybean (Yellow)',
-        modal_price_qtl: 5240,
-        msp_price_qtl: 4892,
-        mspDiffInr: 348,
-        price_change_24h: 115,
-        distance_km: 48.0,
-        arrival_tonnes: 1920,
-        sell_hold_signal: 'STRONG_SELL',
-        advisory_hi: 'एमएसपी से ₹348 ऊपर एवं मजबूत मांग — तुरंत बिक्री हेतु उत्तम।',
-        advisory_en: '₹348 above MSP with strong mill demand — optimal to sell now.',
-        lotCalculation: {
-          transportAndHamaliInr: Math.round(48 * 18 + currentMandiLotQuintals * 15),
-          netRealizationInr: Math.round(5240 * currentMandiLotQuintals - (48 * 18 + currentMandiLotQuintals * 15))
-        }
-      },
-      {
-        mandi_name: 'Ujjain APMC Mandi (e-NAM)',
-        crop_name_hi: 'सोयाबीन (JS 20-34)',
-        crop_name_en: 'Soybean (JS 20-34)',
-        modal_price_qtl: 5120,
-        msp_price_qtl: 4892,
-        mspDiffInr: 228,
-        price_change_24h: 85,
-        distance_km: 14.5,
-        arrival_tonnes: 1450,
-        sell_hold_signal: 'STRONG_SELL',
-        advisory_hi: 'भाव एमएसपी (₹4,892) से ₹228 अधिक है। 10% से कम नमी पर बेचने का सही समय।',
-        advisory_en: 'Modal price is ₹228 above MSP (₹4,892). Ideal window to sell at <10% moisture.',
-        lotCalculation: {
-          transportAndHamaliInr: Math.round(14.5 * 18 + currentMandiLotQuintals * 15),
-          netRealizationInr: Math.round(5120 * currentMandiLotQuintals - (14.5 * 18 + currentMandiLotQuintals * 15))
-        }
-      }
-    ];
-    renderMandiCards(fallbackRecords, {
-      mandiName: fallbackRecords[0].mandi_name,
-      netRealizationInr: fallbackRecords[0].lotCalculation.netRealizationInr,
-      cropNameHi: fallbackRecords[0].crop_name_hi,
-      modalPriceQtl: fallbackRecords[0].modal_price_qtl,
-      summaryHi: `${currentMandiLotQuintals} क्विंटल बेचने पर भाड़ा घटाकर ₹${fallbackRecords[0].lotCalculation.netRealizationInr.toLocaleString('en-IN')} शुद्ध प्राप्त होंगे।`
-    });
+    const fallbackRecords = typeof window.getRegionalOfflineMandis === 'function'
+      ? window.getRegionalOfflineMandis(ctx.state, currentMandiCropFilter, currentMandiLotQuintals)
+      : [];
+    const bestRec = [...fallbackRecords].sort((a, b) => (b.lotCalculation?.netRealizationInr || 0) - (a.lotCalculation?.netRealizationInr || 0))[0];
+    renderMandiCards(fallbackRecords, bestRec ? {
+      mandiName: bestRec.mandi_name,
+      netRealizationInr: bestRec.lotCalculation.netRealizationInr,
+      cropNameHi: bestRec.crop_name_hi,
+      modalPriceQtl: bestRec.modal_price_qtl,
+      summaryHi: `${currentMandiLotQuintals} क्विंटल हेतु ${bestRec.mandi_name} सर्वोत्तम है — भाड़ा घटाकर ₹${bestRec.lotCalculation.netRealizationInr.toLocaleString('en-IN')} शुद्ध प्राप्त होंगे।`
+    } : null);
   }
 }
 
@@ -4664,7 +4774,8 @@ function renderMandiCards(records, bestMandi) {
 function speakMandiSummary() {
   const best = lastMandiPayload?.bestMandiRecommendation || lastMandiPayload?.bestRealizationMandi;
   if (!best) {
-    speakHindiText('आज इंदौर और उज्जैन मंडी में सोयाबीन का भाव एमएसपी से ऊपर चल रहा है।');
+    const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { stateLabelHi: 'आपके राज्य', cropLabelHi: 'फसल' };
+    speakHindiText(`आज ${ctx.stateLabelHi} की मंडियों में ${ctx.cropLabelHi} का भाव सरकारी एमएसपी से ऊपर चल रहा है।`);
     return;
   }
   speakHindiText(best.summaryHi || `${best.mandiName} में मॉडल भाव ${best.modalPriceQtl} रुपये प्रति क्विंटल है।`);
@@ -4674,13 +4785,27 @@ function speakMandiSummary() {
 // MODULE 2 & 3: Spray Weather Window, NPK Bag Calculator & Crop Calendar
 // ----------------------------------------------------------------------------
 async function loadSprayWeatherAndCalendar() {
+  if (typeof window.getFarmerContext === 'function') {
+    const ctx = window.getFarmerContext();
+    const cropSel = document.getElementById('npkCropSelect');
+    if (cropSel && !cropSel.dataset.userChanged) cropSel.value = ctx.crop;
+    const acreSlider = document.getElementById('npkAcreSlider');
+    if (acreSlider && !acreSlider.dataset.userChanged) {
+      acreSlider.value = Math.min(15, Math.max(0.5, ctx.areaAcres));
+      const disp = document.getElementById('npkAcreDisplay');
+      if (disp) disp.innerText = typeof window.formatLandArea === 'function' ? window.formatLandArea(ctx.areaAcres) : `${ctx.areaAcres} एकड़`;
+    }
+  }
   await Promise.all([fetchSprayAdvisory(), refreshCropCalendarAndNpk()]);
 }
 
 async function fetchSprayAdvisory(presetOverride) {
   const preset = presetOverride || WEATHER_SIM_PRESETS[currentWeatherSimIndex];
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', hubDistrictEn: 'Ujjain', crop: 'SOYBEAN' };
   try {
-    const url = `${API_BASE}/weather/spray-advisory?windSpeedKmh=${preset.windKmh}&rainProbPct=${preset.rainProb}&tempC=${preset.tempC}&humidityPct=${preset.humidity}`;
+    const url = `${API_BASE}/weather/spray-advisory?state=${encodeURIComponent(ctx.state)}&district=${encodeURIComponent(ctx.hubDistrictEn)}&crop=${encodeURIComponent(ctx.crop)}&windSpeedKmh=${preset.windKmh}&rainProbPct=${preset.rainProb}&tempC=${preset.tempC}&humidityPct=${preset.humidity}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error('Weather API error');
     const data = await res.json();
@@ -4693,7 +4818,7 @@ async function fetchSprayAdvisory(presetOverride) {
         sprayScore: 92,
         sprayStatus: 'OPTIMAL_SPRAY_WINDOW',
         statusBadgeHi: 'छिड़काव के लिए उत्तम समय (Safe to Spray)',
-        reasonHi: 'हवा की गति (9.5 km/h < 12 km/h) और वर्षा संभावना कम है। पत्तियों के रंध्र खुले हैं, पर्णीय पोषण (ZnSO4) 95% अवशोषित होगा।'
+        reasonHi: `${ctx.stateLabelHi || ctx.state}: हवा की गति (${preset.windKmh} km/h < 12 km/h) और वर्षा संभावना कम है। पत्तियों के रंध्र खुले हैं, पर्णीय पोषण 95% अवशोषित होगा।`
       },
       hourlySpraySlots: [
         { timeSlot: '06:30 - 09:30 AM', windKmh: 7, rainProbPct: 10, status: 'SAFE', labelHi: 'उत्तम (Ideal)' },
@@ -4754,26 +4879,52 @@ function cycleSprayWeatherSimulation() {
 }
 
 function onNpkAcreInput(val) {
+  const slider = document.getElementById('npkAcreSlider');
+  if (slider) slider.dataset.userChanged = '1';
   const disp = document.getElementById('npkAcreDisplay');
-  if (disp) disp.innerText = `${parseFloat(val).toFixed(1)} एकड़`;
+  if (disp) disp.innerText = typeof window.formatLandArea === 'function' ? window.formatLandArea(parseFloat(val)) : `${parseFloat(val).toFixed(1)} एकड़`;
   refreshCropCalendarAndNpk();
 }
 
 async function refreshCropCalendarAndNpk() {
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', crop: 'SOYBEAN', areaAcres: 2.0, soil: { n: 195, p: 22, k: 340, zn: 0.45, ph: 7.6 } };
   const cropSel = document.getElementById('npkCropSelect');
   const acreSlider = document.getElementById('npkAcreSlider');
-  const cropKey = cropSel ? cropSel.value : 'SOYBEAN';
-  const acres = acreSlider ? parseFloat(acreSlider.value) : 2.0;
+  const cropKey = cropSel ? cropSel.value : ctx.crop;
+  const acres = acreSlider ? parseFloat(acreSlider.value) : ctx.areaAcres;
 
   try {
-    const res = await fetch(`${API_BASE}/advisory/crop-calendar?crop=${encodeURIComponent(cropKey)}&acreage=${acres}&soilZn=0.45`);
+    const qs = `state=${encodeURIComponent(ctx.state)}&crop=${encodeURIComponent(cropKey)}&acreage=${acres}&soilN=${ctx.soil.n}&soilP=${ctx.soil.p}&soilK=${ctx.soil.k}&soilZn=${ctx.soil.zn}&soilPh=${ctx.soil.ph}`;
+    const res = await fetch(`${API_BASE}/advisory/crop-calendar?${qs}`);
     if (!res.ok) throw new Error('Calendar API error');
     const data = await res.json();
     lastCalendarPayload = data;
     renderNpkAndCalendar(data);
     updateJsonConsole(data);
   } catch (err) {
-    // Offline fallback
+    // Offline fallback calculation using regional soil & crop targets
+    const dapBags = Number((acres * 0.9).toFixed(1));
+    const ureaBags = Number((acres * 1.6).toFixed(1));
+    const mopBags = Number((acres * 0.5).toFixed(1));
+    const znKg = Math.round(acres * 9);
+    renderNpkAndCalendar({
+      acreage: acres,
+      fertilizerCalculator: {
+        commercialBagsRequired: [
+          { code: 'DAP_50KG', nameHi: 'डी.ए.पी. (DAP 18:46:0) - 50 kg बोरी', bags: dapBags, timingHi: 'बुवाई के समय (Basal Dose)' },
+          { code: 'UREA_45KG', nameHi: 'नीम लेपित यूरिया (46% N) - 45 kg बोरी', bags: ureaBags, timingHi: '2 बराबर किस्तों में (25 व 45 दिन पर)' },
+          { code: 'MOP_50KG', nameHi: 'म्यूरेट ऑफ पोटाश (MOP) - 50 kg बोरी', bags: mopBags, timingHi: 'बुवाई + फूल अवस्था में 00:00:50 स्प्रे' },
+          { code: 'ZINC_21', nameHi: 'जिंक सल्फेट 21% + ZSB जैव उर्वरक', totalKg: znKg, timingHi: `मृदा कार्ड (pH ${ctx.soil.ph}, Zn ${ctx.soil.zn}) सुधार` }
+        ]
+      },
+      cropCalendarStages: [
+        { dasRange: 'Day 0 (बुवाई व बीज उपचार)', status: 'COMPLETED', titleHi: '1. बीज उपचार एवं बेसल खाद', tasksHi: ['बीजामृत / ट्राइकोडर्मा विरिडी (5g/kg) से बीज उपचार करें।', `बुवाई में ${dapBags} बोरी DAP + ${mopBags} बोरी MOP दें।`] },
+        { dasRange: 'Day 20 - 35 (सक्रिय अवस्था)', status: 'CURRENT_ACTIVE', titleHi: '2. वानस्पतिक वृद्धि एवं सूक्ष्म पोषक तत्व सुधार', tasksHi: [`${ctx.stateLabelHi} मृदा (Zn ${ctx.soil.zn} ppm) हेतु जिंक सल्फेट या चिलेटेड जिंक छिड़कें।`] },
+        { dasRange: 'Day 45 - 65 (फूल व दाना भराव)', status: 'UPCOMING', titleHi: '3. फूल एवं दाना वजन सुरक्षा', tasksHi: ['घुलनशील 00:52:34 (1 kg/एकड़) + नीमास्त्र सुरक्षा स्प्रे करें।'] }
+      ]
+    });
   }
 }
 
@@ -4835,16 +4986,57 @@ function speakCalendarSummary() {
 // ----------------------------------------------------------------------------
 // MODULE 4: Sarkari Yojana, KCC 4% Credit & PMFBY 72-Hour Claim Hub
 // ----------------------------------------------------------------------------
+const STATE_FLAGSHIP_SCHEMES_FALLBACK = {
+  UP_BR: { code: 'UP_BR_TUBEWELL_SUB', badge: '100% मुफ्त नलकूप बिजली + इनपुट अनुदान', titleHi: 'उ.प्र. निःशुल्क निजी नलकूप बिजली एवं बिहार कृषि इनपुट अनुदान', descHi: 'उत्तर प्रदेश में निजी कृषि नलकूपों को 100% मुफ्त बिजली तथा बिहार में कृषि इनपुट अनुदान (₹6,800–₹13,500/हेक्टेयर) व ई-गन्ना पर्ची भुगतान।', annualBenefitInr: 12000, actionLabelHi: 'राज्य योजना पावती' },
+  MP: { code: 'MP_KISAN_KALYAN', badge: 'अतिरिक्त ₹6,000/वर्ष', titleHi: 'मुख्यमंत्री किसान कल्याण योजना (मध्य प्रदेश)', descHi: 'मध्य प्रदेश सरकार द्वारा PM-KISAN के अतिरिक्त ₹6,000/वर्ष (कुल ₹12,000/वर्ष DBT) एवं ई-कृषि यंत्र 50% अनुदान।', annualBenefitInr: 6000, actionLabelHi: 'राज्य योजना पावती' },
+  PB_HR: { code: 'PB_HR_DSR_SUB', badge: '₹1,500–₹7,000/एकड़ प्रोत्साहन', titleHi: 'धान सीधी बुवाई (DSR) एवं मेरा पानी-मेरी विरासत प्रोत्साहन', descHi: 'पंजाब में DSR पर ₹1,500/एकड़, हरियाणा में फसल विविधीकरण पर ₹7,000/एकड़ व सुपर सीडर पर 50–80% अनुदान।', annualBenefitInr: 7000, actionLabelHi: 'राज्य योजना पावती' },
+  MH: { code: 'MH_NAMO_SHETKARI', badge: 'अतिरिक्त ₹6,000/वर्ष + महाडीबीटी', titleHi: 'नमो शेतकरी महासन्मान निधि एवं मागेल त्याला शेततळे (महाराष्ट्र)', descHi: 'महाराष्ट्र में PM-KISAN के अतिरिक्त ₹6,000/वर्ष DBT एवं ड्रिप/शेततळे पर 80% तक महाडीबीटी अनुदान।', annualBenefitInr: 6000, actionLabelHi: 'राज्य योजना पावती' },
+  SOUTH: { code: 'SOUTH_RYTHU_BHAROSA', badge: '₹13,500–₹15,000/वर्ष सहायता', titleHi: 'रायथु भरोसा / अन्नदाता सुखीभव एवं कृषि भाग्य योजना', descHi: 'आंध्र प्रदेश व तेलंगाना में ₹13,500–₹15,000 वार्षिक कृषि निवेश सहायता एवं कर्नाटक कृषि भाग्य सिंचाई अनुदान।', annualBenefitInr: 13500, actionLabelHi: 'राज्य योजना पावती' },
+  GJ_RJ: { code: 'GJ_RJ_SURYA_SUB', badge: '70% ड्रिप व तारबंदी अनुदान', titleHi: 'किसान सूर्योदय दिन-बिजली (गुजरात) एवं तारबंदी/डिग्गी अनुदान (राजस्थान)', descHi: 'गुजरात में दिन में सिंचाई बिजली व GGRC ड्रिप तथा राजस्थान में खेत तारबंदी पर ₹48,000 तक अनुदान।', annualBenefitInr: 15000, actionLabelHi: 'राज्य योजना पावती' },
+  EAST: { code: 'EAST_KRISHAK_KALIA', badge: '₹10,000/वर्ष कृषक बंधु / कालिया', titleHi: 'कृषक बंधु (बंगाल) एवं कालिया / समृद्ध कृषक योजना (ओडिशा)', descHi: 'बंगाल में ₹10,000/एकड़ वार्षिक सहायता + निःशुल्क बीमा तथा ओडिशा में धान ₹3,100/क्विंटल बोनस खरीद।', annualBenefitInr: 10000, actionLabelHi: 'राज्य योजना पावती' },
+  HILLS: { code: 'HILLS_ANTIHAIL_SUB', badge: '80% एंटी-हेल नेट व बेस प्राइस', titleHi: 'हिमाचल 80% एंटी-हेल नेट अनुदान एवं केरल सुभिक्षा मिशन', descHi: 'हिमाचल में ओलावृष्टि रोधी एंटी-हेल नेट पर 80% सब्सिडी तथा केरल में सब्जियों पर आधार मूल्य सुरक्षा।', annualBenefitInr: 18000, actionLabelHi: 'राज्य योजना पावती' }
+};
+
 async function loadGovernmentSchemes() {
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { uid: 'anon', state: 'Madhya Pradesh', stateCode: 'MP', stateLabelHi: 'मध्य प्रदेश', hubDistrictEn: 'Ujjain', crop: 'SOYBEAN', cropLabelHi: 'सोयाबीन', areaAcres: 3.5, mobileNumber: '' };
+  const localAppsKey = `mridak_scheme_apps_${ctx.uid || 'anon'}`;
+  const localApps = JSON.parse(localStorage.getItem(localAppsKey) || '[]');
   try {
-    const res = await fetch(`${API_BASE}/schemes/eligibility?acreage=3.5&crop=SOYBEAN`);
+    const qs = `state=${encodeURIComponent(ctx.state)}&district=${encodeURIComponent(ctx.hubDistrictEn)}&acreage=${ctx.areaAcres}&crop=${encodeURIComponent(ctx.crop)}&mobileNumber=${encodeURIComponent(ctx.mobileNumber || '')}`;
+    const res = await fetch(`${API_BASE}/schemes/eligibility?${qs}`);
     if (!res.ok) throw new Error('Schemes API error');
     const data = await res.json();
+    if (!data || !Array.isArray(data.schemes)) throw new Error('Invalid schemes payload');
+    if (localApps.length > 0) {
+      const seen = new Set((data.submittedApplications || []).map((a) => a.reference_no));
+      data.submittedApplications = [...localApps.filter((a) => !seen.has(a.reference_no)), ...(data.submittedApplications || [])];
+    }
     lastSchemesPayload = data;
     renderGovernmentSchemes(data);
     updateJsonConsole(data);
   } catch (err) {
-    // Handled gracefully
+    const kccLim = Math.round(ctx.areaAcres * 28000 * 1.1);
+    const pmfbyCov = Math.round(ctx.areaAcres * 28000);
+    const stScheme = STATE_FLAGSHIP_SCHEMES_FALLBACK[ctx.stateCode] || STATE_FLAGSHIP_SCHEMES_FALLBACK.UP_BR;
+    const fallbackData = {
+      summaryMetrics: {
+        kccEligibleCreditLimitInr: kccLim,
+        pmfbyCoverageInr: pmfbyCov,
+        totalDirectAnnualSupportInr: 6000 + stScheme.annualBenefitInr
+      },
+      submittedApplications: localApps,
+      schemes: [
+        stScheme,
+        { code: 'PM_KISAN', badge: 'DBT ₹6,000/वर्ष', titleHi: 'प्रधानमंत्री किसान सम्मान निधि (PM-KISAN)', descHi: `${ctx.stateLabelHi} के भूमिधारक किसानों को ₹2,000 की 3 किस्तों में ₹6,000/वर्ष DBT सहायता।`, annualBenefitInr: 6000, actionLabelHi: 'पात्रता / पावती दर्ज करें' },
+        { code: 'KCC_4PCT_CREDIT', badge: '4% ब्याज ऋण', titleHi: 'किसान क्रेडिट कार्ड (KCC - 4% ब्याज अनुदान)', descHi: `${ctx.areaAcres} एकड़ ${ctx.cropLabelHi} हेतु ₹${kccLim.toLocaleString('en-IN')} की स्वीकृत KCC ऋण सीमा।`, annualBenefitInr: kccLim, actionLabelHi: 'KCC आवेदन दर्ज करें' },
+        { code: 'PMFBY_CROP_INSURANCE', badge: '72h फसल बीमा', titleHi: 'प्रधानमंत्री फसल बीमा योजना (PMFBY)', descHi: `${ctx.areaAcres} एकड़ ${ctx.cropLabelHi} हेतु ₹${pmfbyCov.toLocaleString('en-IN')} बीमा सुरक्षा कवर।`, annualBenefitInr: pmfbyCov, actionLabelHi: '72h बीमा दावा करें' },
+        { code: 'PM_KUSUM_SOLAR', badge: '60% सोलर पंप सब्सिडी', titleHi: 'पीएम-कुसुम सोलर पंप अनुदान (PM-KUSUM)', descHi: '3 HP से 5 HP सोलर पंप पर 60% सरकारी अनुदान (लगभग ₹1,45,000 छूट)।', annualBenefitInr: 145000, actionLabelHi: 'सोलर अनुदान पावती' }
+      ]
+    };
+    lastSchemesPayload = fallbackData;
+    renderGovernmentSchemes(fallbackData);
   }
 }
 
@@ -4914,24 +5106,45 @@ function renderGovernmentSchemes(data) {
   }
 }
 
+function saveLocalSchemeDocket(ctx, schemeName, estimatedBenefitInr) {
+  const refNo = `MRD-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
+  const key = `mridak_scheme_apps_${ctx.uid || 'anon'}`;
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  arr.unshift({
+    reference_no: refNo,
+    scheme_name: schemeName,
+    estimated_benefit_inr: estimatedBenefitInr,
+    status: 'SUBMITTED_SAVED'
+  });
+  localStorage.setItem(key, JSON.stringify(arr.slice(0, 20)));
+  return refNo;
+}
+
 async function submitInstantPmfbyClaim() {
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { uid: 'anon', name: 'किसान मित्र', mobileNumber: '', state: 'Madhya Pradesh', stateLabelHi: 'आपके राज्य', hubDistrictHi: 'उज्जैन', crop: 'SOYBEAN', areaAcres: 3.5 };
   const sel = document.getElementById('claimReasonSelect');
-  const claimReason = sel ? sel.value : 'अतिवृष्टि एवं जलभराव से सोयाबीन क्षति';
+  const claimReason = sel ? sel.value : 'अतिवृष्टि एवं जलभराव से फसल क्षति';
+  const estBenefit = lastSchemesPayload?.summaryMetrics?.pmfbyCoverageInr || Math.round(ctx.areaAcres * 28000);
   try {
     const res = await fetch(`${API_BASE}/schemes/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        farmerName: ctx.name,
+        mobileNumber: ctx.mobileNumber,
+        state: ctx.state,
+        district: ctx.hubDistrictHi,
         schemeCode: 'PMFBY_CROP_INSURANCE',
         schemeName: 'प्रधानमंत्री फसल बीमा (72-घंटे फसल नुकसान दावा)',
         applicationType: 'PMFBY_72H_CLAIM',
-        cropName: 'SOYBEAN',
-        acreage: 3.5,
+        cropName: ctx.crop,
+        acreage: ctx.areaAcres,
         claimReason,
-        diagnosisId: '1da85f64-5717-4562-b3fc-2c963f66af77',
-        estimatedBenefitInr: 85750
+        diagnosisId: currentDiagnosisData?.diagnosisId || 'mridak-ai-scan',
+        estimatedBenefitInr: estBenefit
       })
     });
+    if (!res.ok) throw new Error('Claim offline');
     const data = await res.json();
     if (data && data.messageHi) {
       speakHindiText(data.messageHi);
@@ -4940,25 +5153,35 @@ async function submitInstantPmfbyClaim() {
       updateJsonConsole(data);
     }
   } catch (err) {
-    alert('आपका PMFBY 72-घंटे फसल बीमा दावा सफलतापूर्वक दर्ज हो गया है!');
+    const refNo = saveLocalSchemeDocket(ctx, 'प्रधानमंत्री फसल बीमा (72-घंटे फसल नुकसान दावा)', estBenefit);
+    const msg = `आपका PMFBY 72-घंटे फसल बीमा दावा (${ctx.stateLabelHi || ctx.state}) दर्ज हो गया है! पावती क्रमांक: ${refNo}`;
+    speakHindiText(msg);
+    alert(msg);
+    loadGovernmentSchemes();
   }
 }
 
 async function applyForScheme(schemeCode, schemeName, estimatedBenefitInr) {
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { uid: 'anon', name: 'किसान मित्र', mobileNumber: '', state: 'Madhya Pradesh', stateLabelHi: 'आपके राज्य', hubDistrictHi: 'उज्जैन', crop: 'SOYBEAN', areaAcres: 3.5 };
   try {
     const res = await fetch(`${API_BASE}/schemes/claim`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        farmerName: ctx.name,
+        mobileNumber: ctx.mobileNumber,
+        state: ctx.state,
+        district: ctx.hubDistrictHi,
         schemeCode,
         schemeName,
         applicationType: 'SCHEME_ENROLLMENT',
-        cropName: 'SOYBEAN',
-        acreage: 3.5,
+        cropName: ctx.crop,
+        acreage: ctx.areaAcres,
         claimReason: 'ऑनलाइन पात्रता सत्यापन एवं अनुदान आवेदन',
         estimatedBenefitInr
       })
     });
+    if (!res.ok) throw new Error('Scheme offline');
     const data = await res.json();
     if (data && data.messageHi) {
       speakHindiText(data.messageHi);
@@ -4967,12 +5190,19 @@ async function applyForScheme(schemeCode, schemeName, estimatedBenefitInr) {
       updateJsonConsole(data);
     }
   } catch (err) {
-    alert(`${schemeName} में आपका आवेदन दर्ज कर लिया गया है।`);
+    const refNo = saveLocalSchemeDocket(ctx, schemeName, estimatedBenefitInr);
+    const msg = `${schemeName} (${ctx.stateLabelHi || ctx.state}) में आपका आवेदन दर्ज हो गया है! पावती क्रमांक: ${refNo}`;
+    speakHindiText(msg);
+    alert(msg);
+    loadGovernmentSchemes();
   }
 }
 
 function speakSchemesSummary() {
-  speakHindiText('आपकी 3.5 एकड़ भूमि पर किसान क्रेडिट कार्ड के तहत 4 प्रतिशत ब्याज पर 94 हजार 325 रुपये का ऋण और प्रधानमंत्री फसल बीमा योजना के तहत 85 हजार 750 रुपये का बीमा सुरक्षा कवर उपलब्ध है।');
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { stateLabelHi: 'आपके राज्य', areaAcres: 3.5 };
+  const kcc = lastSchemesPayload?.summaryMetrics?.kccEligibleCreditLimitInr || Math.round(ctx.areaAcres * 30800);
+  const pmfby = lastSchemesPayload?.summaryMetrics?.pmfbyCoverageInr || Math.round(ctx.areaAcres * 28000);
+  speakHindiText(`${ctx.stateLabelHi} में आपकी ${ctx.areaAcres} एकड़ भूमि पर किसान क्रेडिट कार्ड के तहत ${kcc.toLocaleString('en-IN')} रुपये का ऋण और फसल बीमा योजना में ${pmfby.toLocaleString('en-IN')} रुपये का सुरक्षा कवर उपलब्ध है।`);
 }
 
 // ----------------------------------------------------------------------------
@@ -4982,14 +5212,21 @@ async function loadOutbreakRadar() {
   const listEl = document.getElementById('outbreakRadarList');
   if (!listEl) return;
 
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', region: { offlineOutbreak: null } };
+
   try {
-    const res = await fetch(`${API_BASE}/community/outbreaks?state=${encodeURIComponent('Madhya Pradesh')}`);
+    const res = await fetch(`${API_BASE}/community/outbreaks?state=${encodeURIComponent(ctx.state)}`);
     if (!res.ok) throw new Error('Outbreaks API error');
     const data = await res.json();
-    renderOutbreakRadar(data.outbreaks || data.alerts || []);
+    const items = data.outbreaks || data.alerts || [];
+    renderOutbreakRadar(items.length ? items : (ctx.region?.offlineOutbreak ? [ctx.region.offlineOutbreak] : []));
     updateJsonConsole(data);
   } catch (err) {
-    // Fallback
+    if (ctx.region?.offlineOutbreak) {
+      renderOutbreakRadar([ctx.region.offlineOutbreak]);
+    }
   }
 }
 
@@ -5020,9 +5257,12 @@ function renderOutbreakRadar(alerts) {
 }
 
 async function reportNewVillageOutbreak() {
-  const village = prompt('अपने गाँव का नाम दर्ज करें (Village Name):', 'तराना (Tarana)');
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', hubDistrictHi: 'उज्जैन', sampleVillageHi: 'ग्राम क्लस्टर', crop: 'SOYBEAN', cropLabelHi: 'फसल' };
+  const village = prompt('अपने गाँव / ब्लॉक का नाम दर्ज करें (Village Name):', ctx.sampleVillageHi || ctx.hubDistrictHi);
   if (!village) return;
-  const diseaseNameHi = prompt('रोग या कीट का लक्षण लिखें:', 'सोयाबीन पीला मोज़ेक एवं सफेद मक्खी प्रकोप');
+  const diseaseNameHi = prompt('रोग या कीट का लक्षण लिखें:', `${ctx.cropLabelHi} में पत्ती पीलापन एवं कीट प्रकोप`);
   if (!diseaseNameHi) return;
 
   try {
@@ -5030,10 +5270,10 @@ async function reportNewVillageOutbreak() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        state: 'Madhya Pradesh',
-        district: 'Ujjain',
+        state: ctx.state,
+        district: ctx.hubDistrictHi,
         village,
-        cropCode: 'SOYBEAN',
+        cropCode: ctx.crop,
         diseaseNameHi
       })
     });
@@ -5044,14 +5284,51 @@ async function reportNewVillageOutbreak() {
       loadOutbreakRadar();
     }
   } catch (err) {
-    alert('आपकी क्षेत्रीय रोग चेतावनी 15 किमी के किसानों को भेज दी गई है।');
+    alert(`आपकी क्षेत्रीय रोग चेतावनी (${ctx.stateLabelHi || ctx.state}) 15 किमी के किसानों को भेज दी गई है।`);
   }
 }
 
 async function askMitraQuestion(queryText) {
   const input = document.getElementById('mitraQueryInput');
-  if (input) input.value = queryText;
+  if (input) {
+    input.value = queryText;
+    input.dataset.userEdited = '1';
+  }
   await submitMitraInput();
+}
+
+function buildOfflineMitraReply(query, ctx) {
+  const q = String(query || '').toLowerCase();
+  const isEn = currentLanguage === 'en';
+  if (q.includes('मौसम') || q.includes('बारिश') || q.includes('स्प्रे') || q.includes('छिड़काव') || q.includes('सिंचाई') || q.includes('weather') || q.includes('spray')) {
+    return isEn
+      ? `${ctx.stateLabelEn} (${ctx.hubDistrictEn}): Optimal Spray Window (Score 92/100). Low wind drift; best foliar spray hours are 6:30–9:30 AM and 4:30–6:30 PM.`
+      : `${ctx.stateLabelHi} (${ctx.hubDistrictHi}): आज छिड़काव हेतु उत्तम समय (स्प्रे स्कोर 92/100) है। सुबह 6:30 से 9:30 बजे या शाम 4:30 से 6:30 बजे स्प्रे करें।`;
+  }
+  if (q.includes('खाद') || q.includes('यूरिया') || q.includes('डीएपी') || q.includes('पोटाश') || q.includes('जिंक') || q.includes('npk') || q.includes('urea') || q.includes('dap')) {
+    const dap = Number((ctx.areaAcres * 0.9).toFixed(1));
+    const urea = Number((ctx.areaAcres * 1.6).toFixed(1));
+    const mop = Number((ctx.areaAcres * 0.5).toFixed(1));
+    const zn = Math.round(ctx.areaAcres * 9);
+    return isEn
+      ? `For ${ctx.areaAcres} acres of ${ctx.cropLabelEn} in ${ctx.stateLabelEn} (pH ${ctx.soil.ph}): ${dap} bags DAP, ${urea} bags Neem Urea, ${mop} bags MOP, and ${zn} kg Zinc Sulphate + ZSB.`
+      : `${ctx.stateLabelHi} की मिट्टी (pH ${ctx.soil.ph}) व ${ctx.areaAcres} एकड़ ${ctx.cropLabelHi} हेतु संतुलित खाद: डीएपी ${dap} बोरी, नीम यूरिया ${urea} बोरी, पोटाश ${mop} बोरी तथा जिंक सल्फेट + ZSB ${zn} किग्रा।`;
+  }
+  if (q.includes('योजना') || q.includes('बीमा') || q.includes('सब्सिडी') || q.includes('पीएम') || q.includes('लोन') || q.includes('kcc') || q.includes('scheme')) {
+    const stSch = STATE_FLAGSHIP_SCHEMES_FALLBACK[ctx.stateCode] || STATE_FLAGSHIP_SCHEMES_FALLBACK.UP_BR;
+    const kcc = Math.round(ctx.areaAcres * 28000 * 1.1);
+    return isEn
+      ? `For your ${ctx.areaAcres} acre farm in ${ctx.stateLabelEn}: PM-KISAN ₹6,000/yr + State Flagship Scheme, 4% KCC limit ₹${kcc.toLocaleString('en-IN')}, and 72h PMFBY crop insurance.`
+      : `${ctx.stateLabelHi} में आपके ${ctx.areaAcres} एकड़ खेत हेतु: 1) ${stSch.titleHi}, 2) पीएम-किसान ₹6,000/वर्ष, 3) 4% ब्याज पर KCC ऋण सीमा ₹${kcc.toLocaleString('en-IN')}, तथा PMFBY फसल बीमा उपलब्ध है।`;
+  }
+  const offM = typeof window.getRegionalOfflineMandis === 'function' ? window.getRegionalOfflineMandis(ctx.state, ctx.crop, 25)[0] : null;
+  if (offM && (q.includes('मंडी') || q.includes('भाव') || q.includes('रेट') || q.includes('कीमत') || q.includes('बेच') || q.includes('mandi') || q.includes('price') || q.includes('rate'))) {
+    return isEn
+      ? `Today at ${offM.mandi_name}, ${offM.crop_name_en} modal rate is ₹${offM.modal_price_qtl}/qtl (+₹${offM.mspDiffInr} vs MSP ₹${offM.msp_price_qtl}). ${offM.advisory_en}`
+      : `आज ${offM.mandi_name} में ${offM.crop_name_hi} का मॉडल भाव ₹${offM.modal_price_qtl.toLocaleString('en-IN')}/क्विंटल है, जो सरकारी MSP (₹${offM.msp_price_qtl.toLocaleString('en-IN')}) से ₹${offM.mspDiffInr} अधिक है। ${offM.advisory_hi}`;
+  }
+  const rep = buildCropPrescriptionReport(ctx.crop, ctx.areaAcres);
+  return `${ctx.stateLabelHi} (${ctx.cropLabelHi}) सलाह: ${rep.step1.action} निःशुल्क विशेषज्ञ सहायता हेतु 1800-180-1551 पर कॉल करें।`;
 }
 
 async function submitMitraInput() {
@@ -5059,6 +5336,10 @@ async function submitMitraInput() {
   const ansText = document.getElementById('mitraAnswerText');
   const query = input ? input.value.trim() : '';
   if (!query) return;
+
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { state: 'Madhya Pradesh', stateCode: 'MP', stateLabelHi: 'मध्य प्रदेश', stateLabelEn: 'Madhya Pradesh', hubDistrictHi: 'इंदौर', hubDistrictEn: 'Indore', crop: 'SOYBEAN', cropLabelHi: 'सोयाबीन', cropLabelEn: 'Soybean', areaAcres: 3.5, soil: { ph: 7.5 } };
 
   if (ansText) ansText.innerText = 'किसान ई-मित्र सोच रहा है...';
 
@@ -5069,21 +5350,29 @@ async function submitMitraInput() {
       body: JSON.stringify({
         query,
         language: LANG_VOICE_MAP[currentLanguage] || 'hi-IN',
-        crop: 'SOYBEAN',
-        acres: 3.5
+        state: ctx.state,
+        crop: ctx.crop,
+        acreage: ctx.areaAcres,
+        acres: ctx.areaAcres
       })
     });
+    if (!res.ok) throw new Error('Assistant API offline');
     const data = await res.json();
     const reply = currentLanguage === 'en' ? (data.answerEn || data.answerHi) : (data.answerHi || data.answerEn);
-    if (ansText) ansText.innerText = reply;
+    if (!reply) throw new Error('Empty reply');
+    if (ansText) {
+      ansText.innerText = reply;
+      ansText.dataset.liveAnswered = '1';
+    }
     lastMitraSpokenText = data.ttsSpeechTextHi || reply;
     speakVoiceText(lastMitraSpokenText, currentLanguage);
     updateJsonConsole(data);
   } catch (err) {
-    const fallback = currentLanguage === 'en'
-      ? 'Today soybean model rate in Indore is ₹5,240/qtl and Ujjain is ₹5,120/qtl, which is higher than MSP (₹4,892).'
-      : 'आज इंदौर मंडी में सोयाबीन का मॉडल भाव ₹5,240/क्विंटल और उज्जैन मंडी में ₹5,120/क्विंटल है, जो सरकारी MSP (₹4,892) से ऊपर है।';
-    if (ansText) ansText.innerText = fallback;
+    const fallback = buildOfflineMitraReply(query, ctx);
+    if (ansText) {
+      ansText.innerText = fallback;
+      ansText.dataset.liveAnswered = '1';
+    }
     lastMitraSpokenText = fallback;
     speakVoiceText(fallback, currentLanguage);
   }
@@ -5103,11 +5392,12 @@ function startMitraVoiceRecognition() {
     if (micBtn) micBtn.classList.add('listening');
     setTimeout(() => {
       if (micBtn) micBtn.classList.remove('listening');
+      const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { stateLabelHi: 'मेरे राज्य', cropLabelHi: 'मेरी फसल', areaAcres: 3 };
       const sampleQuestions = [
-        'आज सोयाबीन का मंडी भाव क्या है और कहाँ बेचें?',
+        `आज ${ctx.stateLabelHi} में ${ctx.cropLabelHi} का मंडी भाव क्या है और कहाँ बेचें?`,
         'क्या आज खेत में स्प्रे करने का सही मौसम है?',
-        '3 एकड़ सोयाबीन में कितनी डीएपी, यूरिया व जिंक खाद डालें?',
-        'पीएम किसान, KCC लोन और फसल बीमा दावा कैसे मिलेगा?'
+        `${ctx.areaAcres} एकड़ ${ctx.cropLabelHi} में कितनी डीएपी, यूरिया व जिंक खाद डालें?`,
+        'पीएम किसान, KCC लोन और राज्य योजना का लाभ कैसे मिलेगा?'
       ];
       const picked = sampleQuestions[Math.floor(Math.random() * sampleQuestions.length)];
       if (input) input.value = picked;
@@ -5173,16 +5463,42 @@ function toggleTorch() {
 }
 
 function simulatePushNotification() {
-  alert('🔔 किसान अलर्ट: उज्जैन मंडी में सोयाबीन का भाव ₹5,120/क्विंटल (MSP से +₹228 ऊपर) पहुँच गया है!');
+  const ctx = typeof window.getFarmerContext === 'function' ? window.getFarmerContext() : { state: 'Madhya Pradesh', crop: 'SOYBEAN', stateLabelHi: 'आपके राज्य' };
+  const top = typeof window.getRegionalOfflineMandis === 'function' ? window.getRegionalOfflineMandis(ctx.state, ctx.crop, 25)[0] : null;
+  if (top) {
+    alert(`🔔 किसान अलर्ट (${ctx.stateLabelHi}): ${top.mandi_name} में ${top.crop_name_hi} का भाव ₹${top.modal_price_qtl}/क्विंटल (MSP से +₹${top.mspDiffInr} ऊपर) चल रहा है!`);
+  }
 }
 
 // ----------------------------------------------------------------------------
 // MODULE 6: State-Wise Farmer Challenges & Tech Intervention Hub (viewStateMatrix)
 // ----------------------------------------------------------------------------
-let currentSelectedStateCode = 'MP';
+let currentSelectedStateCode = 'UP_BR';
+let stateMatrixManuallySelected = false;
 let lastStateChallengePayload = null;
 
 const OFFLINE_STATE_CHALLENGES_MAP = {
+  UP_BR: {
+    state_code: 'UP_BR',
+    state_name_hi: 'उत्तर प्रदेश एवं बिहार (गंगा-यमुना जलोढ़ मैदानी क्षेत्र)',
+    state_name_en: 'Uttar Pradesh & Bihar (Middle & Lower Gangetic Plains)',
+    agro_climatic_zone_hi: 'गंगा-यमुना जलोढ़ दोमट मिट्टी (Gangetic Alluvial Loam, pH 7.1 - 7.6)',
+    dominant_crops_hi: 'गेहूँ (HD-2967), धान (सांभा मंसूरी/सोनम), गन्ना (Co-0238), आलू, मक्का',
+    soil_water_challenge_hi: 'सघन धान-गेहूँ चक्र से मिट्टी में जिंक (0.51 ppm) व बोरॉन की कमी तथा पूर्वी उ.प्र./उत्तर बिहार में जलभराव व मार्च में अचानक गर्म पछुआ हवा (Terminal Heat) से गेहूँ सिकुड़ना।',
+    pest_disease_challenge_hi: 'गन्ने में लाल सड़न (Red Rot), आलू में कोहरे से पछेती झुलसा (Late Blight) एवं धान में शीथ झुलसा व भूरा फुदका (BPH) का प्रकोप।',
+    banned_pesticides_list: 'Monocrotophos (Vegetables), Endosulfan, Carbofuran 50% SP',
+    tech_solution_title_hi: 'गेहूँ हीट-शील्ड (00:52:34 स्प्रे) + आलू झुलसा पूर्व-चेतावनी + ट्राइकोडर्मा पेड़ी गन्ना प्रबंधन',
+    tech_solution_steps_hi: [
+      '1. मार्च हीटवेव सुरक्षा: गेहूँ की दूधिया अवस्था में तापमान >33°C होते ही घुलनशील 00:52:34 (1 kg/एकड़) का शाम को छिड़काव — दाना सिकुड़ने से 18% बचाव।',
+      '2. आलू एवं धान सुरक्षा: कोहरे से पहले आलू पर ट्राइकोडर्मा/पोटेशियम फॉस्फोनेट सुरक्षा कवच तथा धान में BPH रोकने हेतु यूरिया की जगह 00:00:50 + नीमास्त्र प्रयोग।',
+      '3. गन्ना लाल सड़न निवारण: Co-0238 के स्थान पर CoLk-14201 / Co-0118 किस्म व ट्राइकोडर्मा समृद्ध गोबर खाद का प्रयोग।'
+    ],
+    chc_equipment_name_hi: 'लेजर लैंड लेवलर + जीरो-टिल सीड ड्रिल',
+    chc_subsidy_pct: 50,
+    chc_rent_per_acre_inr: 400,
+    estimated_roi_per_acre_inr: 4100,
+    state_scheme_highlight_hi: 'उ.प्र. निजी कृषि नलकूप 100% मुफ्त बिजली + बिहार कृषि इनपुट अनुदान एवं गन्ना पर्ची ई-गन्ना भुगतान'
+  },
   MP: {
     state_code: 'MP',
     state_name_hi: 'मध्य प्रदेश (मालवा एवं निमाड़ काली मिट्टी क्षेत्र)',
@@ -5190,15 +5506,15 @@ const OFFLINE_STATE_CHALLENGES_MAP = {
     agro_climatic_zone_hi: 'काली चिकनी मिट्टी (Deep Black Vertisol, pH 7.6 - 8.2)',
     dominant_crops_hi: 'सोयाबीन (JS 20-34), शरबती गेहूँ, चना, लहसुन, मक्का',
     soil_water_challenge_hi: 'क्षारीय काली मिट्टी (pH > 7.6) में जिंक (0.45 ppm) व सल्फर लॉक हो जाता है तथा अतिवृष्टि में जलभराव से जड़ गलन (Root Rot) होती है।',
-    pest_disease_challenge_hi: 'जिंक की कमी से होने वाले पीलापन (Chlorosis) को स्थानीय डीलर पीला मोज़ेक वायरस (YMV) समझकर ₹2,200/एकड़ के अनावश्यक कीटनाशक बिकवा देते हैं।',
+    pest_disease_challenge_hi: 'जिंक की कमी से होने वाले पीलापन (Chlorosis) को स्थानीय डीलर पीला मोज़ेक वायरस (YMV) समझकर अनावश्यक कीटनाशक बिकवा देते हैं।',
     banned_pesticides_list: 'Monocrotophos (Vegetables), Endosulfan, Methyl Parathion',
     tech_solution_title_hi: 'AI पीलापन विभेदक + चिलेटेड जिंक-EDTA स्प्रे + BBF (चौड़ी क्यारी-नाली) प्लांटर',
     tech_solution_steps_hi: [
       '1. AI पत्ती स्कैन: सममित शिरा-मध्य पीलापन (Zinc कमी) और विषम मोज़ेक (YMV) को 3 सेकंड में अलग कर अनावश्यक कीटनाशक खर्च रोकता है।',
-      '2. क्षारीय मृदा बाईपास: मिट्टी में साधारण जिंक लॉक होने के कारण पत्तियों पर चिलेटेड जिंक (Zn-EDTA 12% @ 1g/L) + ZSB जैव-उर्वरक का किसान ड्रोन से स्प्रे।',
-      '3. जल निकासी तकनीक: बुवाई में BBF (Broad-Bed Furrow) ट्रैक्टर प्लांटर का उपयोग कर अतिवृष्टि जल निकासी एवं 25% बीज बचत।'
+      '2. क्षारीय मृदा बाईपास: पत्तियों पर चिलेटेड जिंक (Zn-EDTA 12% @ 1g/L) + ZSB जैव-उर्वरक का छिड़काव।',
+      '3. जल निकासी तकनीक: बुवाई में BBF (Broad-Bed Furrow) प्लांटर से अतिवृष्टि जल निकासी एवं 25% बीज बचत।'
     ],
-    chc_equipment_name_hi: 'किसान ड्रोन स्प्रे + BBF (चौड़ी क्यारी) ट्रैक्टर प्लांटर',
+    chc_equipment_name_hi: 'BBF (चौड़ी क्यारी) ट्रैक्टर प्लांटर',
     chc_subsidy_pct: 50,
     chc_rent_per_acre_inr: 450,
     estimated_roi_per_acre_inr: 3450,
@@ -5210,25 +5526,127 @@ const OFFLINE_STATE_CHALLENGES_MAP = {
     state_name_en: 'Punjab & Haryana (Indo-Gangetic Plains)',
     agro_climatic_zone_hi: 'जलोढ़ सिंचित मैदान (Trans-Gangetic Alluvial Plains)',
     dominant_crops_hi: 'धान (PR-126 / बासमती 1121), गेहूँ (HD-3086), सरसों, आलू',
-    soil_water_challenge_hi: '78% ब्लॉकों में भूजल स्तर प्रतिवर्ष >1 मीटर गिर रहा है; यूरिया के अत्यधिक प्रयोग से NPK अनुपात 31:8:1 हो गया है व जैविक कार्बन <0.35% है।',
-    pest_disease_challenge_hi: 'धान कटाई व गेहूँ बुवाई के बीच मात्र 18 दिन मिलने से पराली (Stubble) संकट; बासमती में 10 प्रतिबंधित कीटनाशकों के अवशेष (MRL) से निर्यात रिजेक्शन।',
-    banned_pesticides_list: 'Tricyclazole, Buprofezin, Acephate, Chlorpyrifos, Propiconazole, Thiamethoxam, Profenofos, Carbendazim, Triazophos, Methomyl (Punjab Basmati Ban)',
-    tech_solution_title_hi: 'हैप्पी सीडर / पूसा डीकंपोजर CHC बुकिंग + बासमती MRL-सुरक्षित बायो प्रोटोकॉल + DSR',
+    soil_water_challenge_hi: '78% ब्लॉकों में भूजल स्तर गिर रहा है; यूरिया के अत्यधिक प्रयोग से NPK अनुपात असंतुलित व जैविक कार्बन <0.35% है।',
+    pest_disease_challenge_hi: 'धान-गेहूँ के बीच पराली संकट एवं बासमती में 10 प्रतिबंधित रसायनों के अवशेष (MRL) से निर्यात रिजेक्शन जोखिम।',
+    banned_pesticides_list: 'Tricyclazole, Buprofezin, Acephate, Chlorpyrifos, Propiconazole, Thiamethoxam, Profenofos, Carbendazim, Triazophos, Methomyl',
+    tech_solution_title_hi: 'हैप्पी सीडर / पूसा डीकंपोजर + बासमती MRL-सुरक्षित बायो प्रोटोकॉल + DSR',
     tech_solution_steps_hi: [
-      '1. CIB&RC पंजाब ऑटो-गार्डरेल: बासमती में प्रतिबंधित सभी 10 रसायनों को ब्लॉक कर ट्राइकोडर्मा + स्यूडोमोनास + ऑर्थो-सिलिकिक एसिड सुझाता है।',
-      '2. पराली समाधान: ऐप से नजदीकी कस्टम हायरिंग सेंटर (CHC) से सुपर सीडर / हैप्पी सीडर व पूसा बायो-डीकंपोजर कैप्सूल बुकिंग + कार्बन क्रेडिट लाभ।',
-      '3. भूजल बचत: धान की सीधी बुवाई (DSR) एवं AWD पाइप तकनीक से 35% पानी बचत व ₹1,500/एकड़ सरकारी प्रोत्साहन।'
+      '1. बासमती MRL सुरक्षा: प्रतिबंधित रसायनों के स्थान पर ट्राइकोडर्मा + स्यूडोमोनास + ऑर्थो-सिलिकिक एसिड प्रयोग।',
+      '2. पराली समाधान: सुपर सीडर / हैप्पी सीडर व पूसा बायो-डीकंपोजर से पराली को खाद में बदलना।',
+      '3. भूजल बचत: धान की सीधी बुवाई (DSR) से 35% पानी बचत व सरकारी प्रोत्साहन।'
     ],
-    chc_equipment_name_hi: 'सुपर सीडर / हैप्पी सीडर + पूसा बायो-डीकंपोजर स्प्रे',
+    chc_equipment_name_hi: 'सुपर सीडर / हैप्पी सीडर',
     chc_subsidy_pct: 65,
     chc_rent_per_acre_inr: 550,
     estimated_roi_per_acre_inr: 4800,
-    state_scheme_highlight_hi: 'पंजाब/हरियाणा DSR ₹1,500/एकड़ प्रोत्साहन + CRM पराली प्रबंधन मशीनरी पर 50%-80% सब्सिडी'
+    state_scheme_highlight_hi: 'पंजाब/हरियाणा DSR ₹1,500–₹7,000/एकड़ प्रोत्साहन + CRM मशीनरी पर 50%-80% सब्सिडी'
+  },
+  MH: {
+    state_code: 'MH',
+    state_name_hi: 'महाराष्ट्र (विदर्भ, मराठवाड़ा व खानदेश पट्टी)',
+    state_name_en: 'Maharashtra (Vidarbha, Marathwada & Khandesh)',
+    agro_climatic_zone_hi: 'दक्कन बेसाल्ट काली मिट्टी (Medium-Deep Black Regur)',
+    dominant_crops_hi: 'कपास, सोयाबीन, केला (जलगाँव), गन्ना, टमाटर, प्याज',
+    soil_water_challenge_hi: 'वर्षा आधारित क्षेत्रों में 15-20 दिन मानसून खंड (Dry Spell) से कपास/सोयाबीन के फूल व पाते झड़ना।',
+    pest_disease_challenge_hi: 'कपास में गुलाबी सुंडी (Pink Bollworm) व लाल पत्ती (Mg कमी) तथा केले में सिगाटोका धब्बा।',
+    banned_pesticides_list: 'Monocrotophos, Unapproved Synthetic Pyrethroid Cocktails',
+    tech_solution_title_hi: 'सूखा-रोधी 13:00:45 पर्णीय कवच + गुलाबी सुंडी फेरोमोन/ट्राइकोग्रामा IPM',
+    tech_solution_steps_hi: [
+      '1. सूखा सुरक्षा: मानसून खंड में 13:00:45 (10g/L) स्प्रे व कोल्पा गुड़ाई से नमी संरक्षण।',
+      '2. कपास लाल पत्ती व सुंडी रोकथाम: MgSO4 (1%) स्प्रे + 8 फेरोमोन ट्रैप/एकड़।',
+      '3. केला सिगाटोका नियंत्रण: निचली सूखी पत्तियां हटाकर बैसिलस सबटिलिस बायो-स्प्रे।'
+    ],
+    chc_equipment_name_hi: 'सोलर ड्रिप व मल्चिंग तकनीक',
+    chc_subsidy_pct: 60,
+    chc_rent_per_acre_inr: 450,
+    estimated_roi_per_acre_inr: 4500,
+    state_scheme_highlight_hi: 'नमो शेतकरी महासन्मान निधि (₹6,000 अतिरिक्त) + महाडीबीटी 80% ड्रिप व शेततळे अनुदान'
+  },
+  SOUTH: {
+    state_code: 'SOUTH',
+    state_name_hi: 'आंध्र प्रदेश, तेलंगाना एवं कर्नाटक',
+    state_name_en: 'Andhra Pradesh, Telangana & Karnataka',
+    agro_climatic_zone_hi: 'लाल दोमट एवं काली मिट्टी (Red Alfisol & Vertisol)',
+    dominant_crops_hi: 'लाल मिर्च (गुंटूर/वारंगल), धान (सोना मसूरी), टमाटर (कोलार), कपास',
+    soil_water_challenge_hi: 'बोरवेल निर्भरता एवं सूक्ष्म पोषक तत्व (बोरॉन व कैल्शियम) न्यूनता से फल फटना व झड़ना।',
+    pest_disease_challenge_hi: 'मिर्च में विदेशी ब्लैक थ्रिप्स (Thrips parvispinus) एवं लीफ कर्ल वायरस का तीव्र प्रसार।',
+    banned_pesticides_list: 'Chlorpyrifos, Triazophos, Monocrotophos (Export Chilli MRL Ban)',
+    tech_solution_title_hi: '20 नीले चिपचिपे ट्रैप + ब्यूवेरिया बेसियाना बायो-स्टैक + ड्रिप फर्टिगेशन',
+    tech_solution_steps_hi: [
+      '1. ब्लैक थ्रिप्स नियंत्रण: 20 नीले स्टिकी ट्रैप/एकड़ + ब्यूवेरिया बेसियाना (5g/L) व नीम तेल (10000 ppm) का रोटेशन।',
+      '2. निर्यात ग्रेड गुणवत्ता: रासायनिक अवशेष रहित उत्पादन से गुंटूर/वारंगल मंडी में ₹1,500+/क्विं प्रीमियम।'
+    ],
+    chc_equipment_name_hi: 'बायो-IPM किट व माइक्रो फर्टिगेशन',
+    chc_subsidy_pct: 55,
+    chc_rent_per_acre_inr: 450,
+    estimated_roi_per_acre_inr: 6200,
+    state_scheme_highlight_hi: 'रायथु भरोसा / अन्नदाता सुखीभव (₹13,500–₹15,000/वर्ष) + कृषि भाग्य सिंचाई अनुदान'
+  },
+  GJ_RJ: {
+    state_code: 'GJ_RJ',
+    state_name_hi: 'गुजरात एवं राजस्थान (शुष्क एवं अर्ध-शुष्क पट्टी)',
+    state_name_en: 'Gujarat & Rajasthan (Arid & Semi-Arid Zone)',
+    agro_climatic_zone_hi: 'रेतीली दोमट एवं लवणीय-क्षारीय मिट्टी (pH 7.8 - 8.4)',
+    dominant_crops_hi: 'कपास (शंकर-6), मूंगफली, गेहूँ, जीरा, सरसों, आलू (डीसा)',
+    soil_water_challenge_hi: 'कम वर्षा, लवणीय भूजल एवं पाला/शीतलहर से जीरा व सरसों में क्षति।',
+    pest_disease_challenge_hi: 'मूंगफली में सफेद लट (White Grub), कपास में सफेद मक्खी व जीरा झुलसा (Blight)।',
+    banned_pesticides_list: 'Chlorpyrifos & Profenofos on Export Cumin (IPM Mandatory)',
+    tech_solution_title_hi: 'सोलर ड्रिप + मेटाराइजियम सफेद लट बायो-कवच + पाला गंधक सुरक्षा',
+    tech_solution_steps_hi: [
+      '1. सफेद लट नियंत्रण: बुवाई में मेटाराइजियम एनीसोप्ली (2 kg/एकड़) गोबर खाद के साथ।',
+      '2. पाला सुरक्षा: शीतलहर की रात हल्की सिंचाई + घुलनशील गंधक (80% WP @ 2g/L) छिड़काव।'
+    ],
+    chc_equipment_name_hi: 'पीएम-कुसुम सोलर ड्रिप व स्प्रिंकलर',
+    chc_subsidy_pct: 70,
+    chc_rent_per_acre_inr: 400,
+    estimated_roi_per_acre_inr: 4900,
+    state_scheme_highlight_hi: 'गुजरात किसान सूर्योदय दिन-बिजली + राजस्थान तारबंदी/डिग्गी सब्सिडी'
+  },
+  EAST: {
+    state_code: 'EAST',
+    state_name_hi: 'पश्चिम बंगाल, ओडिशा एवं असम',
+    state_name_en: 'West Bengal, Odisha & Assam (Humid Eastern Zone)',
+    agro_climatic_zone_hi: 'अम्लीय जलोढ़ एवं लेटराइट मिट्टी (pH 5.2 - 6.0)',
+    dominant_crops_hi: 'धान (स्वर्णा/गोविंदभोग), आलू (ज्योति), टमाटर, मक्का, सब्जियां',
+    soil_water_challenge_hi: 'अम्लीय मिट्टी (pH < 5.8) में फॉस्फोरस लॉक होना तथा चक्रवाती अतिवृष्टि जलभराव।',
+    pest_disease_challenge_hi: 'उच्च आर्द्रता (>80%) के कारण धान में पीला तना छेदक व आलू में पछेती झुलसा।',
+    banned_pesticides_list: 'Monocrotophos, Phorate, Endosulfan',
+    tech_solution_title_hi: 'अम्लीय मृदा डोलोमाइट सुधार + ट्राइकोग्रामा जैविक कार्ड + जल-सहिष्णु धान',
+    tech_solution_steps_hi: [
+      '1. मृदा pH सुधार: बुवाई से पूर्व 100-150 kg कृषि चूना / डोलोमाइट प्रति एकड़।',
+      '2. जैविक तना छेदक नियंत्रण: 8 फेरोमोन ट्रैप + ट्राइकोग्रामा जैपोनिकम परजीवी कार्ड।'
+    ],
+    chc_equipment_name_hi: 'पावर टिलर व सोलर जल पंप',
+    chc_subsidy_pct: 60,
+    chc_rent_per_acre_inr: 350,
+    estimated_roi_per_acre_inr: 3900,
+    state_scheme_highlight_hi: 'कृषक बंधु ₹10,000/वर्ष (बंगाल) + ओडिशा धान ₹3,100/क्विंटल समृद्ध कृषक खरीद'
+  },
+  HILLS: {
+    state_code: 'HILLS',
+    state_name_hi: 'केरल एवं हिमाचल प्रदेश (पर्वतीय व तटीय बागवानी)',
+    state_name_en: 'Kerala & Himachal Pradesh (Hill & Spice Belt)',
+    agro_climatic_zone_hi: 'पर्वतीय ह्यूमस एवं तटीय लेटराइट मिट्टी (pH 5.2 - 5.9)',
+    dominant_crops_hi: 'पहाड़ी टमाटर, सेब/आलू (हिमाचल), नेन्द्रन केला, काली मिर्च व सब्जी (केरल)',
+    soil_water_challenge_hi: 'ढलान वाली भूमि में पोषक तत्व बहना (Leaching) एवं हिमाचल में ओलावृष्टि संकट।',
+    pest_disease_challenge_hi: 'केरल में क्विक विल्ट/प्रकंद गलन एवं हिमाचल में टमाटर फल सड़न।',
+    banned_pesticides_list: 'Chlorpyrifos, Profenofos, Glyphosate, Imidacloprid on Spices (Kerala)',
+    tech_solution_title_hi: '80% अनुदानित एंटी-हेल नेट + केरल IISR ट्राइकोडर्मा बायो-कैप्सूल',
+    tech_solution_steps_hi: [
+      '1. जैविक जड़ कवच: IISR ट्राइकोडर्मा बायो-कैप्सूल एवं स्यूडोमोनास 5g/L जड़ ड्रेंचिंग।',
+      '2. ओलावृष्टि बचाव: बागवानी फसलों पर सरकारी अनुदानित एंटी-हेल नेट व मल्चिंग।'
+    ],
+    chc_equipment_name_hi: 'एंटी-हेल नेट व बायो-किट',
+    chc_subsidy_pct: 80,
+    chc_rent_per_acre_inr: 350,
+    estimated_roi_per_acre_inr: 7500,
+    state_scheme_highlight_hi: 'हिमाचल 80% एंटी-हेल नेट अनुदान + केरल सुभिक्षा सब्जी आधार मूल्य सुरक्षा'
   }
 };
 
 function selectStateChallenge(stateCode, chipBtn) {
   currentSelectedStateCode = stateCode;
+  stateMatrixManuallySelected = true;
   const bar = document.getElementById('stateMatrixSelectorBar');
   if (bar) {
     bar.querySelectorAll('.crop-chip').forEach(b => b.classList.remove('active'));
@@ -5241,35 +5659,43 @@ async function loadStateChallengeMatrix() {
   const detailBox = document.getElementById('stateChallengeDetailBox');
   if (!detailBox) return;
 
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { stateCode: 'MP', areaAcres: 3.5 };
+
+  if (!stateMatrixManuallySelected && ctx.stateCode) {
+    currentSelectedStateCode = ctx.stateCode;
+  }
+  const bar = document.getElementById('stateMatrixSelectorBar');
+  if (bar) {
+    bar.querySelectorAll('.crop-chip').forEach((btn) => {
+      const m = (btn.getAttribute('onclick') || '').match(/'([A-Z_]+)'/);
+      btn.classList.toggle('active', Boolean(m && m[1] === currentSelectedStateCode));
+    });
+  }
+
   try {
-    const res = await fetch(`${API_BASE}/states/challenges?state=${encodeURIComponent(currentSelectedStateCode)}&acreage=3.5`);
+    const res = await fetch(`${API_BASE}/states/challenges?state=${encodeURIComponent(currentSelectedStateCode)}&acreage=${ctx.areaAcres}`);
     if (!res.ok) throw new Error('State Challenges API error');
     const data = await res.json();
     lastStateChallengePayload = data;
-    renderStateChallengeMatrix(data.selectedState, data.activeChcBookings || []);
+    renderStateChallengeMatrix(data.selectedState, data.activeChcBookings || [], ctx.areaAcres);
     updateJsonConsole(data);
   } catch (err) {
-    const fallbackState = OFFLINE_STATE_CHALLENGES_MAP[currentSelectedStateCode] || OFFLINE_STATE_CHALLENGES_MAP.MP;
-    renderStateChallengeMatrix(fallbackState, [
-      {
-        booking_ref: 'CHC-MP-849201',
-        equipment_name_hi: fallbackState.chc_equipment_name_hi,
-        state_name_hi: fallbackState.state_name_hi,
-        net_farmer_payable_inr: 1575,
-        status: 'CONFIRMED_CHC_ALLOCATED'
-      }
-    ]);
+    const fallbackState = OFFLINE_STATE_CHALLENGES_MAP[currentSelectedStateCode] || OFFLINE_STATE_CHALLENGES_MAP.UP_BR;
+    renderStateChallengeMatrix(fallbackState, [], ctx.areaAcres);
   }
 }
 
-function renderStateChallengeMatrix(st, bookings) {
+function renderStateChallengeMatrix(st, bookings, acresOverride) {
   const detailBox = document.getElementById('stateChallengeDetailBox');
   const bookingsBox = document.getElementById('chcBookingsListContainer');
   if (!detailBox || !st) return;
 
+  const acres = acresOverride || (typeof window.getFarmerContext === 'function' ? window.getFarmerContext().areaAcres : 3.5);
+  const fmtArea = typeof window.formatLandArea === 'function' ? window.formatLandArea(acres) : `${acres} एकड़`;
   const steps = Array.isArray(st.tech_solution_steps_hi) ? st.tech_solution_steps_hi : [];
-  const netPayable = st.farmCalculation?.netPayableInr ?? Math.round(st.chc_rent_per_acre_inr * 3.5);
-  const totalRoi = st.farmCalculation?.totalEstimatedRoiInr ?? Math.round(st.estimated_roi_per_acre_inr * 3.5);
+  const totalRoi = st.farmCalculation?.totalEstimatedRoiInr ?? Math.round(st.estimated_roi_per_acre_inr * acres);
 
   detailBox.innerHTML = `
     <div class="state-challenge-hero">
@@ -5294,10 +5720,10 @@ function renderStateChallengeMatrix(st, bookings) {
     </div>
 
     <div class="tech-resolution-card">
-      <h5><i class="fa-solid fa-microchip text-green"></i> तकनीकी समाधान: ${st.tech_solution_title_hi}</h5>
+      <h5><i class="fa-solid fa-microchip text-green"></i> वैज्ञानिक समाधान: ${st.tech_solution_title_hi}</h5>
       ${steps.map(step => `<div class="tech-step-row" data-translatable="true">${step}</div>`).join('')}
       <div style="margin-top:8px; font-size:11px; color:#166534; font-weight:700;">
-        💰 किसान आर्थिक लाभ (ROI): <strong>₹${Number(st.estimated_roi_per_acre_inr).toLocaleString('en-IN')}/एकड़</strong> (3.5 एकड़ कुल बचत: <strong>₹${Number(totalRoi).toLocaleString('en-IN')}</strong>)
+        💰 अनुमानित लागत बचत व उपज लाभ: <strong>₹${Number(st.estimated_roi_per_acre_inr).toLocaleString('en-IN')}/एकड़</strong> (${fmtArea} कुल बचत: <strong>₹${Number(totalRoi).toLocaleString('en-IN')}</strong>)
       </div>
     </div>
 
@@ -6031,66 +6457,56 @@ const DEFAULT_SEED_DIAGNOSES = [
   }
 ];
 
-// 20.1 Load Diagnosis & Crop Search History
-async function loadDiagnosisHistory() {
-  let serverItems = [];
-  try {
-    const res = await fetch(`${API_BASE}/diagnosis/history`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && Array.isArray(data.history) && data.history.length > 0) {
-        serverItems = data.history.map(row => {
-          const pd = row.primary_diagnosis || {};
-          const ctx = row.context_data || {};
-          return {
-            id: row.id,
-            cropSpecies: ctx.cropSpecies || pd.cropSpecies || 'SOYBEAN',
-            cropName: pd.cropSpecies ? `${pd.cropSpecies}` : (ctx.cropSpecies || 'सोयाबीन'),
-            diseaseTitle: pd.diseaseNameLocalized || pd.commonNameHi || pd.commonNameEn || 'फसल जांच',
-            scientificName: pd.scientificName || '',
-            confidence: `${Math.round((row.confidence_score || 0.94) * 100)}% AI Confidence`,
-            accuracyPct: Math.round((row.confidence_score || 0.94) * 100),
-            imageUrl: row.image_url || 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
-            date: row.submitted_at || new Date().toISOString(),
-            symptoms: pd.descriptionLocalized || 'पत्ती लक्षण विश्लेषण पूर्ण'
-          };
-        });
-      }
-    }
-  } catch (e) {
-    // Offline / Sandboxed mode fallback
-  }
+// 20.1 Load Diagnosis & Crop Search History (Scoped Per Logged-In Customer & Selected Crop)
+function getCustomerHistoryStorageKey() {
+  const uid = (typeof window.getFarmerContext === 'function' && window.getFarmerContext()?.uid) || 'default';
+  return `agriscan_search_history_${uid}`;
+}
 
-  // Load from LocalStorage
+async function loadDiagnosisHistory() {
+  const ctx = typeof window.getFarmerContext === 'function'
+    ? window.getFarmerContext()
+    : { uid: 'default', crop: 'WHEAT', areaAcres: 3.5 };
+
   let localItems = [];
   try {
-    const stored = localStorage.getItem('agriscan_search_history');
+    const stored = localStorage.getItem(getCustomerHistoryStorageKey());
     if (stored) localItems = JSON.parse(stored);
   } catch (e) {}
 
-  // Merge items by id
+  // Build contextual starter guide card for the farmer's own selected crop(s) if they haven't scanned yet
   const map = new Map();
-  // 1. Seed defaults
-  DEFAULT_SEED_DIAGNOSES.forEach(d => map.set(d.id, d));
-  // 2. Server items
-  serverItems.forEach(d => map.set(d.id, d));
-  // 3. Local user items (highest priority)
+  if (localItems.length === 0) {
+    const rep = buildCropPrescriptionReport(ctx.crop, ctx.areaAcres);
+    const starterId = `diag-starter-${ctx.crop.toLowerCase()}`;
+    map.set(starterId, {
+      id: starterId,
+      cropSpecies: ctx.crop,
+      cropName: rep.crop,
+      diseaseTitle: rep.diseaseTitle,
+      scientificName: rep.scientificName,
+      confidence: rep.confidence,
+      accuracyPct: 94.4,
+      imageUrl: 'https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?w=600&auto=format&fit=crop&q=80',
+      date: new Date().toISOString(),
+      symptoms: rep.step1.action,
+      report: rep
+    });
+  }
   localItems.forEach(d => map.set(d.id, d));
 
   allDiagnosisHistory = Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  // Render recent 4 items on Home Screen
   renderRecentDiagnosesList();
-  // Render full search history screen if active
   renderSearchHistoryScreen();
 }
 
 // 20.2 Save New Diagnosis to History
 function saveDiagnosisToHistory(item) {
   if (!item || !item.id) return;
-  allDiagnosisHistory = [item, ...allDiagnosisHistory.filter(d => d.id !== item.id)];
+  allDiagnosisHistory = [item, ...allDiagnosisHistory.filter(d => d.id !== item.id && !String(d.id).startsWith('diag-starter-'))];
   try {
-    localStorage.setItem('agriscan_search_history', JSON.stringify(allDiagnosisHistory));
+    localStorage.setItem(getCustomerHistoryStorageKey(), JSON.stringify(allDiagnosisHistory));
   } catch (e) {}
   renderRecentDiagnosesList();
   renderSearchHistoryScreen();

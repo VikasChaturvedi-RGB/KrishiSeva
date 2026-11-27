@@ -236,45 +236,52 @@
                   </div>
                 </div>
 
-                <!-- 3. Optional First-Time Registration Profile Details -->
+                <!-- 3. Farmer State & Primary Crop (Prominent so e-NAM Mandi, Weather, Soil & Schemes match 100%) -->
+                <div class="form-row-2" style="text-align:left; margin-top:12px;">
+                  <div class="form-group">
+                    <label for="loginStateSelect" class="login-field-label">
+                      <i class="fa-solid fa-location-dot text-green"></i> राज्य / क्षेत्र (State) *
+                    </label>
+                    <select id="loginStateSelect" class="form-select" onchange="window.KrishiGoogleCloud.onLoginStateChanged(this.value)" required>
+                      <option value="">-- राज्य चुनें --</option>
+                      <option value="Uttar Pradesh & Bihar">उ.प्र. एवं बिहार (UP & Bihar)</option>
+                      <option value="Madhya Pradesh">मध्य प्रदेश (MP)</option>
+                      <option value="Maharashtra">महाराष्ट्र (MH)</option>
+                      <option value="Punjab & Haryana">पंजाब एवं हरियाणा</option>
+                      <option value="Gujarat & Rajasthan">गुजरात एवं राजस्थान</option>
+                      <option value="Andhra, Telangana & Karnataka">आंध्र, तेलंगाना व कर्नाटक</option>
+                      <option value="West Bengal, Odisha & Assam">बंगाल, ओडिशा व असम</option>
+                      <option value="Kerala & Himachal">केरल एवं हिमाचल</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="loginCropSelect" class="login-field-label">
+                      <i class="fa-solid fa-wheat-awn text-green"></i> मुख्य फसल *
+                    </label>
+                    <select id="loginCropSelect" class="form-select">
+                      <option value="WHEAT">गेहूँ (Wheat)</option>
+                      <option value="PADDY">धान (Paddy)</option>
+                      <option value="SOYBEAN">सोयाबीन (Soybean)</option>
+                      <option value="POTATO">आलू (Potato)</option>
+                      <option value="SUGARCANE">गन्ना (Sugarcane)</option>
+                      <option value="MAIZE">मक्का (Maize)</option>
+                      <option value="COTTON">कपास (Cotton)</option>
+                      <option value="TOMATO">टमाटर (Tomato)</option>
+                      <option value="CHILLI">मिर्च (Chilli)</option>
+                      <option value="BANANA">केला (Banana)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 4. Optional Farmer Name -->
                 <details class="new-customer-opt-details">
                   <summary>
-                    <i class="fa-solid fa-user-plus text-green"></i> नए ग्राहक? अपना नाम, राज्य व फसल जोड़ें (वैकल्पिक)
+                    <i class="fa-solid fa-user-plus text-green"></i> अपना नाम जोड़ें (वैकल्पिक)
                   </summary>
                   <div class="opt-details-body">
-                    <div class="form-group mb-2">
+                    <div class="form-group">
                       <label style="font-size:11.5px; font-weight:700; color:#1e293b;">आपका नाम (Full Name):</label>
-                      <input type="text" id="loginNameInput" class="form-control" maxlength="80" placeholder="उदा. रामेश्वर पाटीदार">
-                    </div>
-                    <div class="form-row-2">
-                      <div class="form-group">
-                        <label style="font-size:11.5px; font-weight:700; color:#1e293b;">राज्य (State):</label>
-                        <select id="loginStateSelect" class="form-select">
-                          <option value="Madhya Pradesh">मध्य प्रदेश</option>
-                          <option value="Uttar Pradesh & Bihar">उ.प्र. एवं बिहार</option>
-                          <option value="Maharashtra">महाराष्ट्र</option>
-                          <option value="Punjab & Haryana">पंजाब एवं हरियाणा</option>
-                          <option value="Gujarat & Rajasthan">गुजरात एवं राजस्थान</option>
-                          <option value="Andhra, Telangana & Karnataka">आंध्र, तेलंगाना व कर्नाटक</option>
-                          <option value="West Bengal, Odisha & Assam">बंगाल, ओडिशा व असम</option>
-                          <option value="Kerala & Himachal">केरल एवं हिमाचल</option>
-                        </select>
-                      </div>
-                      <div class="form-group">
-                        <label style="font-size:11.5px; font-weight:700; color:#1e293b;">मुख्य फसल:</label>
-                        <select id="loginCropSelect" class="form-select">
-                          <option value="SOYBEAN">सोयाबीन</option>
-                          <option value="WHEAT">गेहूँ</option>
-                          <option value="PADDY">धान</option>
-                          <option value="COTTON">कपास</option>
-                          <option value="CHILLI">मिर्च</option>
-                          <option value="TOMATO">टमाटर</option>
-                          <option value="MAIZE">मक्का</option>
-                          <option value="POTATO">आलू</option>
-                          <option value="SUGARCANE">गन्ना</option>
-                          <option value="BANANA">केला</option>
-                        </select>
-                      </div>
+                      <input type="text" id="loginNameInput" class="form-control" maxlength="80" placeholder="उदा. रामेश्वर प्रसाद">
                     </div>
                   </div>
                 </details>
@@ -446,8 +453,8 @@
                       </button>
                     </div>
                   </div>
-                  <h3 class="farmer-name" id="homeFarmerName">रामेश्वर पाटीदार</h3>
-                  <p class="farmer-farm-meta"><i class="fa-solid fa-location-dot text-green"></i> <span id="homeLocationMeta">ग्राम धरमपुरी, धार (म.प्र.) • <strong>3.5 एकड़</strong></span></p>
+                  <h3 class="farmer-name" id="homeFarmerName">किसान मित्र</h3>
+                  <p class="farmer-farm-meta"><i class="fa-solid fa-location-dot text-green"></i> <span id="homeLocationMeta">अपना राज्य एवं रकबा • <strong>3.5 एकड़</strong></span></p>
                   <div class="farmer-phone-pill" id="googleCloudStatusPill"><i class="fa-brands fa-google"></i> ऑफ़लाइन + Google नि:शुल्क गाइड</div>
                 </div>
               </div>
@@ -532,7 +539,7 @@
                 <div class="quick-tile" onclick="openEcosystemView('viewMandi')">
                   <div class="tile-icon mandi-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
                   <h6 id="homeTileMandi">मंडी भाव (e-NAM)</h6>
-                  <span class="tile-sub text-green" id="homeTileMandiSub">सोयाबीन ₹5,120/क्विं (+MSP)</span>
+                  <span class="tile-sub text-green" id="homeTileMandiSub">लाइव क्षेत्रीय मंडी भाव</span>
                 </div>
                 <div class="quick-tile" onclick="openEcosystemView('viewCalendar')">
                   <div class="tile-icon cal-icon"><i class="fa-solid fa-calendar-check"></i></div>
@@ -542,22 +549,22 @@
                 <div class="quick-tile" onclick="openEcosystemView('viewSchemes')">
                   <div class="tile-icon scheme-icon"><i class="fa-solid fa-landmark-dome"></i></div>
                   <h6 id="homeTileSchemes">सरकारी योजना व बीमा</h6>
-                  <span class="tile-sub text-green" id="homeTileSchemesSub">PM-KISAN • 72h बीमा दावा</span>
+                  <span class="tile-sub text-green" id="homeTileSchemesSub">PM-KISAN • राज्य अनुदान</span>
                 </div>
                 <div class="quick-tile" onclick="openEcosystemView('viewMitra')">
                   <div class="tile-icon mitra-icon"><i class="fa-solid fa-microphone"></i></div>
                   <h6 id="homeTileMitra">किसान ई-मित्र रडार</h6>
-                  <span class="tile-sub text-red" id="homeTileMitraSub">उज्जैन: 38 खेतों में अलर्ट</span>
+                  <span class="tile-sub text-red" id="homeTileMitraSub">15km क्षेत्रीय रोग अलर्ट</span>
                 </div>
                 <div class="quick-tile" onclick="switchNav('viewFarm', document.getElementById('navSoil'))">
                   <div class="tile-icon soil-icon"><i class="fa-solid fa-earth-asia"></i></div>
                   <h6 id="homeTileSoil">मृदा कार्ड</h6>
-                  <span class="tile-sub text-red">जिंक की कमी (0.45 ppm)</span>
+                  <span class="tile-sub text-red" id="homeTileSoilSub">जिंक व pH स्थिति</span>
                 </div>
                 <div class="quick-tile" onclick="switchNav('viewRecommendation', document.getElementById('navRx'))">
                   <div class="tile-icon rx-icon"><i class="fa-solid fa-clipboard-prescription"></i></div>
                   <h6 id="homeTileRx">सक्रिय पर्चा</h6>
-                  <span class="tile-sub text-green">जिंक सल्फेट 21%</span>
+                  <span class="tile-sub text-green" id="homeTileRxSub">पोषण-प्रथम सलाह</span>
                 </div>
                 <div class="quick-tile" onclick="switchNav('viewClinic', null)">
                   <div class="tile-icon clinic-icon"><i class="fa-solid fa-mortar-pestle"></i></div>
@@ -631,15 +638,16 @@
 
               <!-- Sample Crop Selector Bar -->
               <div class="crop-bar" id="cropSelectionBar">
-                <button class="crop-chip active" onclick="selectCrop('SOYBEAN', this)">सोयाबीन (Soybean)</button>
-                <button class="crop-chip" onclick="selectCrop('BANANA', this)">केला (Banana)</button>
+                <button class="crop-chip active" onclick="selectCrop('WHEAT', this)">गेहूँ (Wheat)</button>
                 <button class="crop-chip" onclick="selectCrop('PADDY', this)">धान (Paddy)</button>
-                <button class="crop-chip" onclick="selectCrop('COTTON', this)">कपास (Cotton)</button>
-                <button class="crop-chip" onclick="selectCrop('TOMATO', this)">टमाटर (Tomato)</button>
-                <button class="crop-chip" onclick="selectCrop('CHILLI', this)">मिर्च (Chilli)</button>
+                <button class="crop-chip" onclick="selectCrop('SOYBEAN', this)">सोयाबीन (Soybean)</button>
+                <button class="crop-chip" onclick="selectCrop('POTATO', this)">आलू (Potato)</button>
                 <button class="crop-chip" onclick="selectCrop('SUGARCANE', this)">गन्ना (Sugarcane)</button>
                 <button class="crop-chip" onclick="selectCrop('MAIZE', this)">मक्का (Maize)</button>
-                <button class="crop-chip" onclick="selectCrop('POTATO', this)">आलू (Potato)</button>
+                <button class="crop-chip" onclick="selectCrop('COTTON', this)">कपास (Cotton)</button>
+                <button class="crop-chip" onclick="selectCrop('BANANA', this)">केला (Banana)</button>
+                <button class="crop-chip" onclick="selectCrop('TOMATO', this)">टमाटर (Tomato)</button>
+                <button class="crop-chip" onclick="selectCrop('CHILLI', this)">मिर्च (Chilli)</button>
               </div>
 
               <!-- Viewfinder Wrapper: Hardware Camera Feed & Captured Preview -->
@@ -964,10 +972,10 @@
 
               <!-- State Ban Dynamic Filter Toggle -->
               <div class="state-filter-box">
-                <span class="state-filter-label"><i class="fa-solid fa-location-dot"></i> <span id="stateRegLabel">किसान राज्य (State Regulations):</span></span>
-                <div class="state-buttons">
-                  <button class="btn-state active" onclick="switchStateBan('Madhya Pradesh', this)">मध्य प्रदेश (MP)</button>
-                  <button class="btn-state" onclick="switchStateBan('Punjab', this)">पंजाब (PB - Banned Chem)</button>
+                <span class="state-filter-label"><i class="fa-solid fa-location-dot"></i> <span id="stateRegLabel">किसान राज्य विनियम (CIB&amp;RC):</span></span>
+                <div class="state-buttons" id="rxStateBanButtons">
+                  <button class="btn-state active" id="rxActiveStateBtn" onclick="switchStateBan('CURRENT_STATE', this)">आपका राज्य</button>
+                  <button class="btn-state" onclick="switchStateBan('Punjab', this)">पंजाब बासमती प्रतिबंध जांच</button>
                 </div>
               </div>
 
@@ -1073,8 +1081,8 @@
                   <i class="fa-solid fa-user-tie"></i>
                 </div>
                 <div class="ag-info">
-                  <h4>डॉ. सुरेश वर्मा (Dr. Suresh Verma)</h4>
-                  <p>वरिष्ठ कृषि वैज्ञानिक (KVK, इंदौर)</p>
+                  <h4 id="escScientistName">डॉ. राजेश कुमार त्रिपाठी</h4>
+                  <p id="escKvkLocation">वरिष्ठ कृषि वैज्ञानिक (क्षेत्रीय ICAR-KVK केंद्र)</p>
                   <span class="badge-specialist">पादप रोग एवं पोषण विशेषज्ञ</span>
                 </div>
               </div>
@@ -1213,34 +1221,34 @@
               <div class="soil-radar-grid">
                 <div class="soil-metric-pill alert-deficiency">
                   <span class="soil-label" id="soilLabelZn">जिंक (Zn - जस्ता)</span>
-                  <strong class="soil-val">0.45 ppm</strong>
-                  <span class="soil-status text-red" id="soilStatusZn"><i class="fa-solid fa-circle-down"></i> अत्यधिक कमी (&lt;0.60)</span>
+                  <strong class="soil-val" id="soilValZn">0.51 ppm</strong>
+                  <span class="soil-status text-red" id="soilStatusZn"><i class="fa-solid fa-circle-down"></i> सूक्ष्म कमी (&lt;0.60)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
                   <span class="soil-label" id="soilLabelPh">पीएच मान (pH Level)</span>
-                  <strong class="soil-val">7.4</strong>
+                  <strong class="soil-val" id="soilValPh">7.3</strong>
                   <span class="soil-status text-green" id="soilStatusPh"><i class="fa-solid fa-circle-check"></i> सामान्य (Neutral)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
                   <span class="soil-label" id="soilLabelN">नाइट्रोजन (N)</span>
-                  <strong class="soil-val">210 kg/ha</strong>
+                  <strong class="soil-val" id="soilValN">215 kg/ha</strong>
                   <span class="soil-status text-amber" id="soilStatusN">मध्यम (Medium)</span>
                 </div>
 
                 <div class="soil-metric-pill alert-ok">
                   <span class="soil-label" id="soilLabelK">पोटाश (K)</span>
-                  <strong class="soil-val">340 kg/ha</strong>
-                  <span class="soil-status text-green" id="soilStatusK">पर्याप्त (High)</span>
+                  <strong class="soil-val" id="soilValK">265 kg/ha</strong>
+                  <span class="soil-status text-green" id="soilStatusK">पर्याप्त (Adequate)</span>
                 </div>
               </div>
 
               <div class="farm-details-card">
                 <h5 id="farmParcelHeading">खेत का विवरण (Linked Farm Parcel)</h5>
-                <p>खसरा क्रमांक: <strong>241/2</strong> | रकबा: <strong>3.5 एकड़</strong></p>
-                <p id="soilTypeDesc">मिट्टी का प्रकार: <strong>काली चिकनी मिट्टी (Medium Black Clay)</strong></p>
-                <p id="irrigationDesc">सिंचाई साधन: <strong>ट्यूबवेल + ड्रिप सिंचाई</strong></p>
+                <p id="farmParcelMeta">क्षेत्र: <strong>उत्तर प्रदेश एवं बिहार</strong> | रकबा: <strong>3.5 एकड़</strong></p>
+                <p id="soilTypeDesc">मिट्टी का प्रकार: <strong>गंगा-यमुना जलोढ़ दोमट मिट्टी (Gangetic Alluvial Loam)</strong></p>
+                <p id="irrigationDesc">सिंचाई साधन: <strong>निःशुल्क कृषि नलकूप (ट्यूबवेल) + नहर</strong></p>
               </div>
             </div>
           </section>
@@ -1260,18 +1268,25 @@
                 </button>
               </div>
 
+              <!-- Active Farmer State e-NAM Indicator -->
+              <div id="mandiActiveStateBanner" style="display:flex; align-items:center; justify-content:space-between; gap:8px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:7px 10px; margin-bottom:8px; font-size:11.5px; color:#14532d;">
+                <span><i class="fa-solid fa-location-dot text-green"></i> क्षेत्र: <strong id="mandiStateNameText">आपका चुना हुआ राज्य</strong> (e-NAM मंडियां)</span>
+                <button type="button" class="btn-link text-green" style="font-size:11px; font-weight:700;" onclick="switchView('viewAuth')">राज्य बदलें</button>
+              </div>
+
               <!-- Crop Filter Bar for Mandi -->
               <div class="crop-bar" id="mandiCropBar">
                 <button class="crop-chip active" id="mandiCropAllBtn" onclick="filterMandiByCrop('ALL', this)">सभी फसलें (All)</button>
-                <button class="crop-chip" onclick="filterMandiByCrop('SOYBEAN', this)">सोयाबीन</button>
-                <button class="crop-chip" onclick="filterMandiByCrop('PADDY', this)">धान (Paddy)</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('WHEAT', this)">गेहूँ (Wheat)</button>
+                <button class="crop-chip" onclick="filterMandiByCrop('PADDY', this)">धान (Paddy)</button>
+                <button class="crop-chip" onclick="filterMandiByCrop('POTATO', this)">आलू (Potato)</button>
+                <button class="crop-chip" onclick="filterMandiByCrop('SUGARCANE', this)">गन्ना (Sugarcane)</button>
+                <button class="crop-chip" onclick="filterMandiByCrop('MAIZE', this)">मक्का</button>
+                <button class="crop-chip" onclick="filterMandiByCrop('SOYBEAN', this)">सोयाबीन</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('COTTON', this)">कपास (Cotton)</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('BANANA', this)">केला (Banana)</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('TOMATO', this)">टमाटर</button>
                 <button class="crop-chip" onclick="filterMandiByCrop('CHILLI', this)">लाल मिर्च</button>
-                <button class="crop-chip" onclick="filterMandiByCrop('MAIZE', this)">मक्का</button>
-                <button class="crop-chip" onclick="filterMandiByCrop('POTATO', this)">आलू</button>
               </div>
 
               <!-- Harvest Lot Size & Net Realization Calculator -->
@@ -1282,7 +1297,7 @@
                 </div>
                 <input type="range" id="mandiQtySlider" min="5" max="100" step="5" value="25" class="slider" oninput="updateMandiLotQuantity(this.value)">
                 <div class="calc-result-summary" id="mandiBestNetBanner">
-                  सर्वोत्तम शुद्ध प्राप्ति: <strong>इंदौर मंडी — ₹1,29,652</strong> (भाड़ा व हमाली घटाकर)
+                  सर्वोत्तम शुद्ध प्राप्ति की गणना आपके राज्य की मंडी के अनुसार की जा रही है...
                 </div>
               </div>
 
@@ -1413,9 +1428,9 @@
                 </p>
                 <div class="pmfby-form-row">
                   <select id="claimReasonSelect" class="eco-select">
-                    <option value="अतिवृष्टि एवं जलभराव से सोयाबीन पीलापन व जड़ गलन (Excess Rain & Waterlogging)">अतिवृष्टि एवं जलभराव (Excess Rain)</option>
-                    <option value="महामारी फफूंद/रतुआ रोग प्रकोप - AI पुष्टि 94% (Severe Rust/Fungal Outbreak)">महामारी रोग प्रकोप (AI Verified Disease)</option>
-                    <option value="ओलावृष्टि एवं तेज आंधी से फसल क्षति (Hailstorm & Lodging Damage)">ओलावृष्टि व आंधी (Hailstorm)</option>
+                    <option value="अतिवृष्टि एवं जलभराव से फसल पीलापन व जड़ गलन (Excess Rain & Waterlogging)">अतिवृष्टि एवं जलभराव (Excess Rain)</option>
+                    <option value="महामारी फफूंद/झुलसा रोग प्रकोप - AI पुष्टि (Severe Blight/Fungal Outbreak)">महामारी रोग प्रकोप (AI Verified Disease)</option>
+                    <option value="ओलावृष्टि, पाला एवं तेज आंधी से फसल क्षति (Hailstorm, Frost & Lodging)">ओलावृष्टि, पाला व आंधी (Hailstorm/Frost)</option>
                   </select>
                   <button class="btn btn-primary btn-block mt-1" onclick="submitInstantPmfbyClaim()">
                     <i class="fa-solid fa-file-shield"></i> <span id="btnSubmitClaimText">तुरंत 72-घंटे बीमा दावा दर्ज करें</span>
@@ -1467,16 +1482,16 @@
 
                 <!-- Quick Voice Prompt Chips -->
                 <div class="mitra-prompt-chips">
-                  <button class="prompt-chip" id="mitraChip1" onclick="askMitraQuestion('आज सोयाबीन का मंडी भाव क्या है और कहाँ बेचें?')">
-                    💰 <span id="mitraChip1Text">सोयाबीन मंडी भाव?</span>
+                  <button class="prompt-chip" id="mitraChip1" onclick="askMitraQuestion('आज मेरी फसल का मंडी भाव क्या है और कहाँ बेचें?')">
+                    💰 <span id="mitraChip1Text">आज का मंडी भाव?</span>
                   </button>
                   <button class="prompt-chip" id="mitraChip2" onclick="askMitraQuestion('क्या आज खेत में स्प्रे (छिड़काव) करने का सही मौसम है?')">
                     🌦️ <span id="mitraChip2Text">आज स्प्रे करें या नहीं?</span>
                   </button>
-                  <button class="prompt-chip" id="mitraChip3" onclick="askMitraQuestion('3 एकड़ सोयाबीन में कितनी डीएपी, यूरिया व जिंक खाद डालें?')">
-                    🌱 <span id="mitraChip3Text">3 एकड़ खाद मात्रा?</span>
+                  <button class="prompt-chip" id="mitraChip3" onclick="askMitraQuestion('मेरे खेत में कितनी डीएपी, यूरिया व जिंक खाद डालें?')">
+                    🌱 <span id="mitraChip3Text">संतुलित खाद मात्रा?</span>
                   </button>
-                  <button class="prompt-chip" id="mitraChip4" onclick="askMitraQuestion('पीएम किसान, KCC लोन और फसल बीमा दावा कैसे मिलेगा?')">
+                  <button class="prompt-chip" id="mitraChip4" onclick="askMitraQuestion('पीएम किसान, KCC लोन और राज्य योजना का लाभ कैसे मिलेगा?')">
                     🏛️ <span id="mitraChip4Text">सरकारी योजना व बीमा?</span>
                   </button>
                 </div>
@@ -1486,7 +1501,7 @@
                   <button id="mitraMicBtn" class="btn-mic-circle" onclick="startMitraVoiceRecognition()" title="बोलकर पूछें">
                     <i class="fa-solid fa-microphone"></i>
                   </button>
-                  <input type="text" id="mitraQueryInput" placeholder="यहाँ लिखें या माइक दबाकर बोलें..." value="आज सोयाबीन का मंडी भाव क्या है?">
+                  <input type="text" id="mitraQueryInput" placeholder="यहाँ लिखें या माइक दबाकर बोलें..." value="आज मेरी फसल का मंडी भाव क्या है?">
                   <button class="btn-send-mitra" onclick="submitMitraInput()">
                     <i class="fa-solid fa-paper-plane"></i>
                   </button>
@@ -1496,7 +1511,7 @@
                 <div id="mitraAnswerBox" class="mitra-answer-bubble">
                   <div class="mitra-ans-tag" id="mitraAnsTag"><i class="fa-solid fa-sparkles"></i> <span id="mitraAnsTagText">किसान ई-मित्र उत्तर:</span></div>
                   <p id="mitraAnswerText">
-                    आज उज्जैन मंडी में सोयाबीन का मॉडल भाव ₹5,120/क्विंटल है, जो सरकारी MSP (₹4,892) से ₹228 अधिक है। 10% से कम नमी वाला माल बेचने का उत्तम समय है।
+                    नमस्ते किसान मित्र! ऊपर दिए गए बटन दबाएं या माइक बोलकर अपने राज्य की मंडी भाव, खाद मात्रा, स्प्रे मौसम व सरकारी योजनाओं की सटीक जानकारी पाएं।
                   </p>
                 </div>
               </div>
@@ -1585,10 +1600,14 @@
                 <!-- Crop Filter Chips -->
                 <div class="history-filter-chips" id="historyCropFilterChips">
                   <button class="crop-chip active" id="histChipAll" onclick="filterHistoryByCrop('ALL', this)">सभी (All)</button>
-                  <button class="crop-chip" onclick="filterHistoryByCrop('SOYBEAN', this)">सोयाबीन</button>
-                  <button class="crop-chip" onclick="filterHistoryByCrop('BANANA', this)">केला</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('WHEAT', this)">गेहूँ</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('PADDY', this)">धान</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('POTATO', this)">आलू</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('SUGARCANE', this)">गन्ना</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('MAIZE', this)">मक्का</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('SOYBEAN', this)">सोयाबीन</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('COTTON', this)">कपास</button>
+                  <button class="crop-chip" onclick="filterHistoryByCrop('BANANA', this)">केला</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('CHILLI', this)">मिर्च</button>
                   <button class="crop-chip" onclick="filterHistoryByCrop('TOMATO', this)">टमाटर</button>
                 </div>

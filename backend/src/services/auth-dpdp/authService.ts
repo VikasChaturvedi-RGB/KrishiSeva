@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken';
-import { UserRepository, ConsentRepository, FarmRepository, AuditRepository, UserRecord } from '../../db/repositories';
+import { UserRepository, ConsentRepository, FarmRepository, AuditRepository, UserRecord, resolveAgroRegion } from '../../db/repositories';
 import { GoogleFreeServices } from '../google-cloud/googleFreeServices';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'agriscan-krishi-secret-key-2026';
@@ -644,7 +644,8 @@ export class AuthService {
       const dobSha256 = 'sha256:' + crypto.createHash('sha256').update(`mridak-dob:${cleanMobile}:${normalizedDob}`).digest('hex');
       const chosenName = String(params.fullName || '').trim() || `किसान मित्र (+91-${cleanMobile.slice(-4)})`;
       const chosenState = String(params.state || '').trim() || 'Madhya Pradesh';
-      const chosenCrop = String(params.crop || '').trim() || 'SOYBEAN';
+      const regMeta = resolveAgroRegion(chosenState);
+      const chosenCrop = String(params.crop || '').trim() || regMeta.defaultCrop;
       const chosenArea = Number(params.areaAcres) > 0 && Number(params.areaAcres) <= 500 ? Number(params.areaAcres) : 3.5;
       const chosenUnit = ['ACRE', 'BIGHA', 'HECTARE'].includes(String(params.landUnit || '')) ? String(params.landUnit) : 'ACRE';
       const chosenLang = String(params.preferredLanguage || 'hi').trim() || 'hi';
@@ -677,10 +678,10 @@ export class AuthService {
           full_name: chosenName,
           role: 'FARMER',
           state: chosenState,
-          district: 'District',
+          district: regMeta.hubDistrictEn,
           taluka: 'Block',
           village: 'Village',
-          pin_code: '456001',
+          pin_code: regMeta.defaultPinCode,
           preferred_language: chosenLang,
           is_profile_complete: 1
         });
@@ -715,10 +716,43 @@ export class AuthService {
       }
       this.dobAttemptBuckets.delete(mobileLockKey);
       existing.updatedAt = nowIso;
+      let profileChanged = false;
+      if (params.fullName && String(params.fullName).trim()) {
+        existing.fullName = String(params.fullName).trim().slice(0, 80);
+        profileChanged = true;
+      }
+      if (params.state && String(params.state).trim()) {
+        existing.state = String(params.state).trim().slice(0, 60);
+        profileChanged = true;
+      }
+      if (params.crop && String(params.crop).trim()) {
+        const nextCrop = String(params.crop).trim().slice(0, 60);
+        existing.crop = nextCrop;
+        if (!Array.isArray(existing.crops) || !existing.crops.includes(nextCrop)) {
+          existing.crops = [nextCrop, ...(existing.crops || []).filter((c) => c !== nextCrop)].slice(0, 10);
+        }
+        profileChanged = true;
+      }
+      if (Array.isArray(params.crops) && params.crops.length > 0) {
+        existing.crops = params.crops.slice(0, 10);
+        profileChanged = true;
+      }
       if (params.preferredLanguage) {
         existing.preferredLanguage = String(params.preferredLanguage);
       }
       this.persistCustomerVaultToDisk();
+      if (profileChanged) {
+        void GoogleFreeServices.saveCustomerAuthVault(cleanMobile, existing);
+        void GoogleFreeServices.syncFarmerProfile({
+          uid: existing.uid,
+          name: existing.fullName,
+          state: existing.state,
+          crop: existing.crop,
+          areaAcres: existing.areaAcres,
+          landUnit: existing.landUnit,
+          language: existing.preferredLanguage
+        });
+      }
     }
 
     // Issue long-lived 365-day JWT so once logged in on a phone, they stay signed in automatically

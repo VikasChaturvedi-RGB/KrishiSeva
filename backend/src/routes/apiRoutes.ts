@@ -653,6 +653,7 @@ router.get('/weather/spray-advisory', (req: Request, res: Response) => {
 router.get('/advisory/crop-calendar', (req: Request, res: Response) => {
   try {
     const result = FarmerEcosystemService.getCropCalendarAndNpkCalculator({
+      state: req.query.state ? String(req.query.state) : undefined,
       crop: req.query.crop ? String(req.query.crop) : undefined,
       acreage: req.query.acreage ? Number(req.query.acreage) : undefined,
       sowingDate: req.query.sowingDate ? String(req.query.sowingDate) : undefined,

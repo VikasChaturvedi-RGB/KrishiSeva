@@ -27,16 +27,27 @@ class InMemorySqliteFallback implements SqlDatabaseLike {
 
     return {
       run: (...params: any[]) => {
-        const insertMatch = normalized.match(/INSERT\s+(?:OR\s+\w+\s+)?INTO\s+([a-zA-Z0-9_]+)\s*\(([^)]+)\)/i);
+        const insertMatch = normalized.match(/INSERT\s+(?:OR\s+(\w+)\s+)?INTO\s+([a-zA-Z0-9_]+)\s*\(([^)]+)\)/i);
         if (insertMatch) {
-          const tableName = insertMatch[1];
-          const cols = insertMatch[2].split(',').map((c) => c.trim());
+          const conflictMode = (insertMatch[1] || '').toUpperCase();
+          const tableName = insertMatch[2];
+          const cols = insertMatch[3].split(',').map((c) => c.trim());
           const row: Record<string, any> = {};
           cols.forEach((col, idx) => {
             row[col] = idx < params.length ? params[idx] : null;
           });
           if (!tables.has(tableName)) tables.set(tableName, []);
           const list = tables.get(tableName)!;
+          if (row.id !== undefined && row.id !== null) {
+            const existingIdx = list.findIndex((r) => r.id === row.id);
+            if (existingIdx >= 0) {
+              if (conflictMode === 'IGNORE') {
+                return { changes: 0, lastInsertRowid: existingIdx + 1 };
+              }
+              list[existingIdx] = row;
+              return { changes: 1, lastInsertRowid: existingIdx + 1 };
+            }
+          }
           list.push(row);
           return { changes: 1, lastInsertRowid: list.length };
         }

@@ -72,13 +72,6 @@
     ],
     "rewrites": [
       {
-        "source": "/v1/**",
-        "run": {
-          "serviceId": "krishi-sahayak-api",
-          "region": "asia-south1"
-        }
-      },
-      {
         "source": "/download",
         "destination": "/download.html"
       },

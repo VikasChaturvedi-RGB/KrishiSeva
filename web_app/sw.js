@@ -1,5 +1,5 @@
 // Krishi Sahayak - Offline-First Google-First PWA Service Worker
-const CACHE_NAME = 'mridak-krishi-sahayak-pwa-v2026.11-prod-v9';
+const CACHE_NAME = 'mridak-krishi-sahayak-pwa-v2026.11-prod-v10';
 const STATIC_ASSETS = [
   './',
   './index.html',

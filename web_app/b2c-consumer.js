@@ -70,7 +70,8 @@ window.KrishiB2C = {
   completeQuickOnboarding() {
     const stateSel = document.getElementById('b2cOnboardState');
     const chosenState = stateSel ? stateSel.value : 'Madhya Pradesh';
-    const primaryCrop = this.selectedCrops[0] || 'SOYBEAN';
+    const primaryCrop = this.selectedCrops[0] || (window.resolveMridakRegion ? window.resolveMridakRegion(chosenState).defaultCrop : 'WHEAT');
+    const nowIso = new Date().toISOString();
 
     const existing = JSON.parse(localStorage.getItem('krishi_farmer_profile_v2') || '{}');
     const updated = Object.assign({
@@ -82,18 +83,64 @@ window.KrishiB2C = {
       crop: primaryCrop,
       crops: this.selectedCrops,
       language: window.currentLanguage || 'hi',
-      updatedAt: new Date().toISOString()
+      updatedAt: nowIso
     });
 
     localStorage.setItem('krishi_farmer_profile_v2', JSON.stringify(updated));
     localStorage.setItem('krishi_b2c_onboarded_v1', 'true');
 
+    // Keep customerSession & deviceVault in sync so hydrateSavedFarmProfile never reverts state!
+    if (window.KrishiGoogleCloud && window.KrishiGoogleCloud.customerSession?.user) {
+      window.KrishiGoogleCloud.customerSession.user = Object.assign(
+        {},
+        window.KrishiGoogleCloud.customerSession.user,
+        {
+          state: chosenState,
+          crop: primaryCrop,
+          crops: this.selectedCrops,
+          updatedAt: nowIso
+        }
+      );
+      localStorage.setItem('mridak_customer_session_v1', JSON.stringify(window.KrishiGoogleCloud.customerSession));
+      const mob = window.KrishiGoogleCloud.customerSession.user.mobileNumber;
+      if (mob) {
+        const dv = JSON.parse(localStorage.getItem('mridak_device_accounts_v1') || '{}');
+        if (dv[mob]) {
+          dv[mob].user = window.KrishiGoogleCloud.customerSession.user;
+          localStorage.setItem('mridak_device_accounts_v1', JSON.stringify(dv));
+        }
+      }
+      const apiBase = typeof API_BASE !== 'undefined' ? API_BASE : '/v1';
+      if (window.KrishiGoogleCloud.customerSession.token && !window.KrishiGoogleCloud.customerSession.firebaseIdToken) {
+        fetch(`${apiBase}/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${window.KrishiGoogleCloud.customerSession.token}`
+          },
+          body: JSON.stringify({ state: chosenState, crop: primaryCrop, crops: this.selectedCrops })
+        }).catch(() => {});
+      }
+    }
+
+    const mitraAns = document.getElementById('mitraAnswerText');
+    if (mitraAns) delete mitraAns.dataset.liveAnswered;
+    const mitraIn = document.getElementById('mitraQueryInput');
+    if (mitraIn) delete mitraIn.dataset.userEdited;
+
     if (typeof currentCrop !== 'undefined') currentCrop = primaryCrop;
-    if (window.KrishiGoogleCloud) window.KrishiGoogleCloud.hydrateSavedFarmProfile();
+    if (typeof window.syncAllModulesToFarmerContext === 'function') {
+      window.syncAllModulesToFarmerContext();
+    } else if (window.KrishiGoogleCloud) {
+      window.KrishiGoogleCloud.hydrateSavedFarmProfile();
+    }
     this.updatePersonalizedDailyBrief();
 
     const modal = document.getElementById('b2cOnboardingModal');
     if (modal) modal.classList.add('hidden');
+    if (typeof reRenderActiveScreen === 'function') reRenderActiveScreen();
+    if (typeof loadDiagnosisHistory === 'function') loadDiagnosisHistory();
+    this.showToast(`✅ क्षेत्र व फसल अपडेट: ${window.getFarmerContext ? window.getFarmerContext().stateLabelHi : chosenState}`);
   },
 
   dismissOnboarding() {

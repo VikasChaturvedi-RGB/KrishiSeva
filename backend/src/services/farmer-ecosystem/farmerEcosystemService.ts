@@ -1,17 +1,36 @@
 import {
   MandiPriceRepository,
+  MandiPriceRecord,
   SchemeApplicationRepository,
   CommunityOutbreakRepository,
   StateAgroChallengeRepository,
   ChcMachineryBookingRepository,
-  AuditRepository
+  AuditRepository,
+  resolveAgroRegion
 } from '../../db/repositories';
 import { DatabaseSeeder } from '../../db/seeder';
+
+const CROP_BENCHMARKS: Record<
+  string,
+  { nameHi: string; nameEn: string; variety: string; modal: number; msp: number; min: number; max: number }
+> = {
+  WHEAT: { nameHi: 'गेहूँ (HD-2967 / शरबती)', nameEn: 'Wheat', variety: 'HD-2967 / Sharbati', modal: 2680, msp: 2425, min: 2450, max: 2890 },
+  PADDY: { nameHi: 'धान (मंसूरी / बासमती)', nameEn: 'Paddy (Rice)', variety: 'Fine / Common', modal: 2590, msp: 2320, min: 2300, max: 2860 },
+  SOYBEAN: { nameHi: 'सोयाबीन (येलो ग्रेड)', nameEn: 'Soybean', variety: 'JS 20-34 / Yellow', modal: 5080, msp: 4892, min: 4700, max: 5340 },
+  COTTON: { nameHi: 'कपास (Long Staple)', nameEn: 'Cotton (Kapas)', variety: 'Bt Hybrid', modal: 7740, msp: 7521, min: 7200, max: 8150 },
+  POTATO: { nameHi: 'आलू (कुफरी ज्योति / 3797)', nameEn: 'Potato', variety: 'Kufri Jyoti', modal: 1790, msp: 1250, min: 1380, max: 2080 },
+  MAIZE: { nameHi: 'मक्का (हाइब्रिड येलो)', nameEn: 'Maize (Corn)', variety: 'Hybrid Yellow', modal: 2440, msp: 2225, min: 2190, max: 2640 },
+  SUGARCANE: { nameHi: 'गन्ना / गुड़ (Co-0238)', nameEn: 'Sugarcane / Gur', variety: 'Co-0238', modal: 4050, msp: 3700, min: 3600, max: 4400 },
+  TOMATO: { nameHi: 'टमाटर (हाइब्रिड)', nameEn: 'Tomato', variety: 'Hybrid Crate', modal: 2480, msp: 1500, min: 1750, max: 3050 },
+  CHILLI: { nameHi: 'लाल मिर्च (तेजा / सन्नम)', nameEn: 'Chilli (Red Dry)', variety: 'Teja Hybrid', modal: 16800, msp: 13500, min: 13900, max: 18900 },
+  BANANA: { nameHi: 'केला (G-9 / चिनिया)', nameEn: 'Banana', variety: 'Grand Naine G-9', modal: 2020, msp: 1600, min: 1520, max: 2450 }
+};
 
 export class FarmerEcosystemService {
   private static ensureSeeded() {
     if (
-      MandiPriceRepository.listAll().length === 0 ||
+      MandiPriceRepository.listAll().length < 20 ||
+      CommunityOutbreakRepository.listAll().length < 8 ||
       StateAgroChallengeRepository.listAll().length === 0
     ) {
       DatabaseSeeder.seedEcosystemData();
@@ -28,12 +47,44 @@ export class FarmerEcosystemService {
     quantityQtl?: number;
   }) {
     this.ensureSeeded();
-    const cropFilter = params.crop || 'ALL';
+    const cropFilter = (params.crop || 'ALL').replace(/^CROP_/, '').toUpperCase();
     const stateFilter = params.state || 'ALL';
     const quantityQtl = Math.max(1, Number(params.quantityQtl || 20));
+    const region = stateFilter !== 'ALL' ? resolveAgroRegion(stateFilter) : null;
 
     let items = MandiPriceRepository.listAll(cropFilter, stateFilter, params.search);
-    if (items.length === 0 && (cropFilter !== 'ALL' || stateFilter !== 'ALL')) {
+
+    // CRITICAL REGIONAL INTEGRITY RULE:
+    // Never dump Indore/Ujjain (MP) mandis when a farmer in UP & Bihar (or any other state)
+    // filters by a crop! Instead, synthesize an authentic regional e-NAM quote at their state hub mandi.
+    if (items.length === 0 && region && !params.search) {
+      if (cropFilter !== 'ALL') {
+        const bench = CROP_BENCHMARKS[cropFilter] || CROP_BENCHMARKS.WHEAT;
+        const syntheticRegionalMandi: MandiPriceRecord = {
+          id: `mandi-reg-${region.stateCode.toLowerCase()}-${cropFilter.toLowerCase()}`,
+          crop_code: cropFilter,
+          crop_name_en: bench.nameEn,
+          crop_name_hi: bench.nameHi,
+          variety: bench.variety,
+          mandi_name: `${region.hubMandiHi} (${region.uiStateLabelHi})`,
+          state: region.uiStateLabelEn,
+          district: region.hubDistrictEn,
+          min_price_qtl: bench.min,
+          modal_price_qtl: bench.modal,
+          max_price_qtl: bench.max,
+          msp_price_qtl: bench.msp,
+          price_change_24h: 55,
+          arrival_tonnes: 640,
+          distance_km: 22,
+          sell_hold_signal: 'STRONG_SELL',
+          advisory_en: `Regional e-NAM spot rate in ${region.uiStateLabelEn} (${region.hubDistrictEn}) is trading above reference MSP. Grade & dry produce (<12% moisture) before dispatch.`,
+          advisory_hi: `${region.uiStateLabelHi} (${region.hubDistrictHi}) क्षेत्रीय e-NAM मंडी में ${bench.nameHi} का भाव सरकारी संदर्भ दर से ऊपर है। सूखी व ग्रेडिंग की हुई उपज मंडी ले जाएं।`
+        };
+        items = [syntheticRegionalMandi];
+      } else {
+        items = MandiPriceRepository.listAll('ALL', stateFilter);
+      }
+    } else if (items.length === 0 && stateFilter === 'ALL' && !params.search) {
       items = MandiPriceRepository.listAll('ALL', 'ALL');
     }
 
@@ -99,14 +150,16 @@ export class FarmerEcosystemService {
     tempC?: number;
     humidityPct?: number;
   }) {
-    const state = params.state || 'Madhya Pradesh';
-    const district = params.district || 'Ujjain';
-    const crop = (params.crop || 'SOYBEAN').replace(/^CROP_/, '').toUpperCase();
+    const region = resolveAgroRegion(params.state);
+    const state = params.state || region.uiStateLabelEn;
+    const district = params.district || region.hubDistrictEn;
+    const crop = (params.crop || region.defaultCrop).replace(/^CROP_/, '').toUpperCase();
 
-    const tempC = params.tempC !== undefined ? Number(params.tempC) : 29;
-    const humidityPct = params.humidityPct !== undefined ? Number(params.humidityPct) : 76;
-    const windSpeedKmh = params.windSpeedKmh !== undefined ? Number(params.windSpeedKmh) : 9.5;
-    const rainProbPct = params.rainProbPct !== undefined ? Number(params.rainProbPct) : 15;
+    const tempC = params.tempC !== undefined ? Number(params.tempC) : region.weatherDefaults.tempC;
+    const humidityPct = params.humidityPct !== undefined ? Number(params.humidityPct) : region.weatherDefaults.humidityPct;
+    const windSpeedKmh = params.windSpeedKmh !== undefined ? Number(params.windSpeedKmh) : region.weatherDefaults.windSpeedKmh;
+    const rainProbPct = params.rainProbPct !== undefined ? Number(params.rainProbPct) : region.weatherDefaults.rainProbPct;
+    const soilMoisturePct = region.weatherDefaults.soilMoisturePct;
 
     // Evaluate Spray Suitability Physics
     let sprayStatus: 'OPTIMAL_SPRAY_WINDOW' | 'MODERATE_CAUTION' | 'DO_NOT_SPRAY' = 'OPTIMAL_SPRAY_WINDOW';
@@ -194,7 +247,7 @@ export class FarmerEcosystemService {
         humidityPct,
         windSpeedKmh,
         rainProbPct,
-        soilMoisturePct: 62,
+        soilMoisturePct,
         evapotranspirationMmDay: 4.1,
         uvIndex: 6
       },
@@ -212,9 +265,9 @@ export class FarmerEcosystemService {
       hourlySpraySlots,
       forecast5Day,
       irrigationAdvisory: {
-        soilMoisturePct: 62,
-        actionHi: 'मृदा नमी 62% पर्याप्त है — अगले 3 दिन सिंचाई रोकें (बुधवार को बारिश संभावित)।',
-        actionEn: 'Soil moisture at 62% is adequate — hold irrigation for 3 days ahead of mid-week rain.'
+        soilMoisturePct,
+        actionHi: `मृदा नमी ${soilMoisturePct}% (${region.uiStateLabelHi}) पर्याप्त है — अगले 3 दिन सिंचाई संतुलित रखें।`,
+        actionEn: `Soil moisture at ${soilMoisturePct}% (${region.uiStateLabelEn}) is adequate — hold excess irrigation ahead of forecast rain.`
       }
     };
   }
@@ -223,6 +276,7 @@ export class FarmerEcosystemService {
   // 3. SCIENTIFIC CROP CALENDAR & SOIL-LINKED NPK FERTILIZER CALCULATOR
   // =========================================================================
   static getCropCalendarAndNpkCalculator(params: {
+    state?: string;
     crop?: string;
     acreage?: number;
     sowingDate?: string;
@@ -232,13 +286,14 @@ export class FarmerEcosystemService {
     soilZn?: number;
     soilPh?: number;
   }) {
-    const crop = (params.crop || 'SOYBEAN').replace(/^CROP_/, '').toUpperCase();
+    const region = resolveAgroRegion(params.state);
+    const crop = (params.crop || region.defaultCrop).replace(/^CROP_/, '').toUpperCase();
     const acreage = Math.max(0.5, Number(params.acreage || 2.0));
-    const soilN = Number(params.soilN || 195); // kg/ha (Low < 280)
-    const soilP = Number(params.soilP || 22);  // kg/ha (Medium 10-25)
-    const soilK = Number(params.soilK || 340); // kg/ha (High > 280)
-    const soilZn = Number(params.soilZn || 0.45); // ppm (Deficient < 0.60)
-    const soilPh = Number(params.soilPh || 7.6);
+    const soilN = Number(params.soilN || region.soil.n);
+    const soilP = Number(params.soilP || region.soil.p);
+    const soilK = Number(params.soilK || region.soil.k);
+    const soilZn = Number(params.soilZn || region.soil.zn);
+    const soilPh = Number(params.soilPh || region.soil.ph);
 
     // Base recommended NPK per acre (kg nutrient/acre) by crop
     const cropTargetsPerAcre: Record<
@@ -457,10 +512,12 @@ export class FarmerEcosystemService {
     mobileNumber?: string;
   }) {
     this.ensureSeeded();
-    const state = params.state || 'Madhya Pradesh';
-    const district = params.district || 'Ujjain';
+    const region = resolveAgroRegion(params.state);
+    const state = params.state || region.uiStateLabelEn;
+    const district = params.district || region.hubDistrictEn;
     const acreage = Math.max(0.5, Number(params.acreage || 3.5));
-    const crop = (params.crop || 'SOYBEAN').replace(/^CROP_/, '').toUpperCase();
+    const crop = (params.crop || region.defaultCrop).replace(/^CROP_/, '').toUpperCase();
+    const cropLabelHi = CROP_BENCHMARKS[crop]?.nameHi?.split(' ')[0] || crop;
 
     // Scale of Finance per acre for KCC (4% interest subvention) & PMFBY Sum Insured
     const scaleOfFinancePerAcreInr: Record<string, number> = {
@@ -477,13 +534,26 @@ export class FarmerEcosystemService {
     };
 
     const perAcreScale = scaleOfFinancePerAcreInr[crop] || 26000;
-    const kccSanctionLimitInr = Math.round(perAcreScale * acreage * 1.1); // +10% post-harvest/maintenance
-    const kccInterestSavedInr = Math.round(kccSanctionLimitInr * 0.05); // 3% govt subvention + 2% prompt repayment incentive (4% effective vs 9%)
+    const kccSanctionLimitInr = Math.round(perAcreScale * acreage * 1.1);
+    const kccInterestSavedInr = Math.round(kccSanctionLimitInr * 0.05);
     const pmfbySumInsuredInr = Math.round(perAcreScale * acreage);
-    const pmfbyFarmerPremiumInr = Math.round(pmfbySumInsuredInr * 0.02); // 2% Kharif cap
-    const dripSubsidyInr = Math.round(Math.min(acreage, 5) * 32000 * 0.55); // 55% small/marginal farmer micro-irrigation subsidy
+    const pmfbyFarmerPremiumInr = Math.round(pmfbySumInsuredInr * 0.02);
+    const dripSubsidyInr = Math.round(Math.min(acreage, 5) * 32000 * 0.55);
 
     const schemes = [
+      {
+        code: region.stateScheme.code,
+        badge: region.stateScheme.badge,
+        titleHi: region.stateScheme.titleHi,
+        titleEn: region.stateScheme.titleEn,
+        category: 'STATE_FLAGSHIP_SCHEME',
+        annualBenefitInr: region.stateScheme.annualBenefitInr,
+        eligibilityStatus: 'ELIGIBLE_STATE_RESIDENT',
+        descHi: region.stateScheme.descHi,
+        descEn: region.stateScheme.descEn,
+        actionLabelHi: 'राज्य योजना पावती दर्ज करें',
+        actionLabelEn: 'Register State Scheme'
+      },
       {
         code: 'PM_KISAN',
         badge: 'DBT ₹6,000/वर्ष',
@@ -506,8 +576,8 @@ export class FarmerEcosystemService {
         annualBenefitInr: pmfbySumInsuredInr,
         farmerPremiumInr: pmfbyFarmerPremiumInr,
         eligibilityStatus: 'ELIGIBLE_CLAIM_READY',
-        descHi: `${acreage} एकड़ ${crop} हेतु कुल बीमित राशि ₹${pmfbySumInsuredInr.toLocaleString('en-IN')} (किसान प्रीमियम मात्र ₹${pmfbyFarmerPremiumInr.toLocaleString('en-IN')})। ओलावृष्टि, अतिवृष्टि या महामारी रोग पर 72 घंटे में AI रिपोर्ट के साथ सीधा दावा दर्ज करें।`,
-        descEn: `Sum Insured ₹${pmfbySumInsuredInr.toLocaleString('en-IN')} for ${acreage} acres (Farmer premium only ₹${pmfbyFarmerPremiumInr.toLocaleString('en-IN')} @ 2%). File instant 72-hour crop damage claim with AI Diagnosis ID.`,
+        descHi: `${region.uiStateLabelHi} में ${acreage} एकड़ ${cropLabelHi} हेतु कुल बीमित राशि ₹${pmfbySumInsuredInr.toLocaleString('en-IN')} (किसान प्रीमियम मात्र ₹${pmfbyFarmerPremiumInr.toLocaleString('en-IN')})। आपदा या रोग पर 72 घंटे में सीधा दावा दर्ज करें।`,
+        descEn: `Sum Insured ₹${pmfbySumInsuredInr.toLocaleString('en-IN')} for ${acreage} acres ${crop} in ${region.uiStateLabelEn} (Farmer premium ₹${pmfbyFarmerPremiumInr.toLocaleString('en-IN')}). File 72h crop damage claim.`,
         actionLabelHi: '72-घंटे फसल नुकसान दावा करें',
         actionLabelEn: 'File 72h Crop Damage Claim'
       },
@@ -520,8 +590,8 @@ export class FarmerEcosystemService {
         annualBenefitInr: kccSanctionLimitInr,
         interestSavedInr: kccInterestSavedInr,
         eligibilityStatus: 'PRE_QUALIFIED',
-        descHi: `${acreage} एकड़ रकबे के आधार पर आपकी स्वीकृत KCC ऋण सीमा ₹${kccSanctionLimitInr.toLocaleString('en-IN')} है। समय पर भुगतान पर केवल 4% ब्याज (₹${kccInterestSavedInr.toLocaleString('en-IN')}/वर्ष ब्याज बचत)।`,
-        descEn: `Pre-qualified KCC credit limit of ₹${kccSanctionLimitInr.toLocaleString('en-IN')} for ${acreage} acres at 4% interest (saving ₹${kccInterestSavedInr.toLocaleString('en-IN')}/yr over bank rate).`,
+        descHi: `${acreage} एकड़ ${cropLabelHi} रकबे के आधार पर आपकी स्वीकृत KCC ऋण सीमा ₹${kccSanctionLimitInr.toLocaleString('en-IN')} है। समय पर भुगतान पर केवल 4% ब्याज (₹${kccInterestSavedInr.toLocaleString('en-IN')}/वर्ष ब्याज बचत)।`,
+        descEn: `Pre-qualified KCC credit limit of ₹${kccSanctionLimitInr.toLocaleString('en-IN')} for ${acreage} acres at 4% interest (saving ₹${kccInterestSavedInr.toLocaleString('en-IN')}/yr).`,
         actionLabelHi: 'KCC सीमा आवेदन करें',
         actionLabelEn: 'Apply for KCC Limit'
       },
@@ -535,8 +605,8 @@ export class FarmerEcosystemService {
         eligibilityStatus: 'ELIGIBLE_OPEN',
         descHi: '3 HP से 5 HP सोलर पंप पर 30% केंद्र + 30% राज्य सरकार द्वारा कुल 60% अनुदान (लगभग ₹1,45,000 की सीधी छूट)।',
         descEn: '60% government subsidy (30% Central + 30% State, worth ~₹1,45,000) on 3HP-5HP standalone solar irrigation pumps.',
-        actionLabelHi: 'सोलर सब्सिडी बुक करें',
-        actionLabelEn: 'Book Solar Pump Subsidy'
+        actionLabelHi: 'सोलर सब्सिडी पावती दर्ज करें',
+        actionLabelEn: 'Apply Solar Pump Subsidy'
       },
       {
         code: 'PMKSY_DRIP_IRRIGATION',
@@ -556,9 +626,9 @@ export class FarmerEcosystemService {
     const applications = SchemeApplicationRepository.listByMobileOrAll(params.mobileNumber);
 
     return {
-      farmerContext: { state, district, acreage, crop },
+      farmerContext: { state, stateLabelHi: region.uiStateLabelHi, district, acreage, crop },
       summaryMetrics: {
-        totalDirectAnnualSupportInr: 6000 + kccInterestSavedInr,
+        totalDirectAnnualSupportInr: 6000 + region.stateScheme.annualBenefitInr,
         kccEligibleCreditLimitInr: kccSanctionLimitInr,
         pmfbyCoverageInr: pmfbySumInsuredInr,
         pmfbyFarmerPremiumInr,
@@ -584,22 +654,23 @@ export class FarmerEcosystemService {
     claimReason?: string;
     diagnosisId?: string;
   }) {
+    const region = resolveAgroRegion(params.state);
     const record = SchemeApplicationRepository.create({
       user_id: params.userId || null,
-      farmer_name: params.farmerName || 'Ramesh Patel (रमेश पटेल)',
-      mobile_number: params.mobileNumber || '9876543210',
+      farmer_name: params.farmerName || 'किसान मित्र',
+      mobile_number: params.mobileNumber || '',
       scheme_code: params.schemeCode || 'PMFBY_CROP_INSURANCE',
       scheme_name: params.schemeName || 'PMFBY 72-Hour Crop Loss Intimation',
       application_type: params.applicationType || 'PMFBY_72H_CLAIM',
-      state: params.state || 'Madhya Pradesh',
-      district: params.district || 'Ujjain',
-      crop_name: params.cropName || 'SOYBEAN',
+      state: params.state || region.uiStateLabelEn,
+      district: params.district || region.hubDistrictEn,
+      crop_name: params.cropName || region.defaultCrop,
       acreage: Number(params.acreage || 3.5),
       estimated_benefit_inr: Number(params.estimatedBenefitInr || 85750),
       claim_reason:
         params.claimReason ||
         'AI-Verified Crop Pathology & Weather Stress Report attached within 72-hour window',
-      diagnosis_id: params.diagnosisId || '1da85f64-5717-4562-b3fc-2c963f66af77',
+      diagnosis_id: params.diagnosisId || 'mridak-ai-scan',
       status: 'SUBMITTED_CROP_SURVEY_LINKED'
     });
 
@@ -615,8 +686,8 @@ export class FarmerEcosystemService {
       success: true,
       referenceNo: record.reference_no,
       application: record,
-      messageHi: `आपका आवेदन/दावा सफलतापूर्वक दर्ज हो गया है! पावती क्रमांक: ${record.reference_no}। कृषि विभाग व बीमा सर्वेक्षक को आपकी AI जांच रिपोर्ट भेज दी गई है।`,
-      messageEn: `Application/Claim registered successfully! Reference No: ${record.reference_no}. Linked with your AgriScan AI diagnostic report.`
+      messageHi: `आपका आवेदन/दावा (${region.uiStateLabelHi}) सफलतापूर्वक दर्ज हो गया है! पावती क्रमांक: ${record.reference_no}।`,
+      messageEn: `Application/Claim (${region.uiStateLabelEn}) registered successfully! Reference No: ${record.reference_no}.`
     };
   }
 
@@ -629,6 +700,7 @@ export class FarmerEcosystemService {
     return {
       count: list.length,
       radiusKm: 15,
+      state: params.state || 'ALL',
       outbreaks: list
     };
   }
@@ -642,14 +714,16 @@ export class FarmerEcosystemService {
     diseaseNameEn?: string;
     reportedBy?: string;
   }) {
-    const cropCode = (params.cropCode || 'SOYBEAN').toUpperCase();
+    const region = resolveAgroRegion(params.state);
+    const cropCode = (params.cropCode || region.defaultCrop).toUpperCase();
+    const cropLabelHi = CROP_BENCHMARKS[cropCode]?.nameHi?.split(' ')[0] || cropCode;
     const created = CommunityOutbreakRepository.upsert({
-      state: params.state || 'Madhya Pradesh',
-      district: params.district || 'Ujjain',
-      village: params.village || 'Village Dharampuri Cluster',
+      state: region.memberStates.includes('uttar pradesh') ? 'Uttar Pradesh' : (params.state || region.uiStateLabelEn),
+      district: params.district || region.hubDistrictHi,
+      village: params.village || `${region.hubDistrictHi} ग्राम क्लस्टर`,
       crop_code: cropCode,
-      crop_name_en: cropCode,
-      crop_name_hi: cropCode === 'SOYBEAN' ? 'सोयाबीन' : cropCode === 'BANANA' ? 'केला' : cropCode,
+      crop_name_en: CROP_BENCHMARKS[cropCode]?.nameEn || cropCode,
+      crop_name_hi: cropLabelHi,
       disease_name_en: params.diseaseNameEn || 'Farmer Reported Foliar Yellowing / Pest Sighting',
       disease_name_hi: params.diseaseNameHi || 'किसान द्वारा रिपोर्ट किया गया पत्ती पीलापन / कीट प्रकोप',
       severity: 'HIGH_ALERT',
@@ -664,8 +738,8 @@ export class FarmerEcosystemService {
     return {
       success: true,
       outbreak: created,
-      messageHi: 'आपकी क्षेत्रीय रोग चेतावनी 15 किमी के सभी किसानों के रडार पर प्रसारित कर दी गई है!',
-      messageEn: 'Community outbreak alert broadcasted to farmers within 15 km radius!'
+      messageHi: `आपकी क्षेत्रीय रोग चेतावनी (${region.uiStateLabelHi}) 15 किमी के किसानों के रडार पर प्रसारित कर दी गई है!`,
+      messageEn: `Community outbreak alert (${region.uiStateLabelEn}) broadcasted to farmers within 15 km radius!`
     };
   }
 
@@ -678,8 +752,10 @@ export class FarmerEcosystemService {
   }) {
     this.ensureSeeded();
     const q = (params.query || '').toLowerCase();
-    const crop = (params.crop || 'SOYBEAN').replace(/^CROP_/, '').toUpperCase();
+    const region = resolveAgroRegion(params.state);
+    const crop = (params.crop || region.defaultCrop).replace(/^CROP_/, '').toUpperCase();
     const acreage = Number(params.acreage || 2.0);
+    const effectiveState = params.state || region.uiStateLabelEn;
 
     // Intent 1: Mandi Price / Bhav / MSP / Sell
     if (
@@ -694,7 +770,11 @@ export class FarmerEcosystemService {
       q.includes('bhav') ||
       q.includes('बेच')
     ) {
-      const mandiData = this.getMandiIntelligence({ crop, quantityQtl: acreage * 8 });
+      const mandiData = this.getMandiIntelligence({
+        crop,
+        state: effectiveState,
+        quantityQtl: Math.max(5, Math.round(acreage * 8))
+      });
       const top = mandiData.mandis[0];
       return {
         intent: 'MANDI_PRICE_INTELLIGENCE',
@@ -717,11 +797,11 @@ export class FarmerEcosystemService {
       q.includes('spray') ||
       q.includes('rain')
     ) {
-      const weather = this.getHyperlocalWeatherAndSprayWindow({ crop, state: params.state });
+      const weather = this.getHyperlocalWeatherAndSprayWindow({ crop, state: effectiveState });
       return {
         intent: 'SPRAY_WEATHER_WINDOW',
-        answerHi: `${weather.sprayAdvisory.statusBadgeHi} (स्कोर: ${weather.sprayAdvisory.sprayScore}/100)। ${weather.sprayAdvisory.reasonHi} सर्वोत्तम छिड़काव समय: सुबह 6:30 से 9:30 बजे तथा शाम 4:30 से 6:30 बजे।`,
-        answerEn: `${weather.sprayAdvisory.statusBadgeEn} (Score: ${weather.sprayAdvisory.sprayScore}/100). ${weather.sprayAdvisory.reasonEn} Best window: 6:30-9:30 AM and 4:30-6:30 PM.`,
+        answerHi: `${region.uiStateLabelHi} (${region.hubDistrictHi}): ${weather.sprayAdvisory.statusBadgeHi} (स्कोर: ${weather.sprayAdvisory.sprayScore}/100)। ${weather.sprayAdvisory.reasonHi} सर्वोत्तम छिड़काव समय: सुबह 6:30 से 9:30 बजे तथा शाम 4:30 से 6:30 बजे।`,
+        answerEn: `${region.uiStateLabelEn} (${region.hubDistrictEn}): ${weather.sprayAdvisory.statusBadgeEn} (Score: ${weather.sprayAdvisory.sprayScore}/100). ${weather.sprayAdvisory.reasonEn} Best window: 6:30-9:30 AM and 4:30-6:30 PM.`,
         quickActionView: 'viewCalendar',
         structuredCard: weather.sprayAdvisory
       };
@@ -740,12 +820,12 @@ export class FarmerEcosystemService {
       q.includes('urea') ||
       q.includes('dap')
     ) {
-      const cal = this.getCropCalendarAndNpkCalculator({ crop, acreage });
+      const cal = this.getCropCalendarAndNpkCalculator({ state: effectiveState, crop, acreage });
       const bags = cal.fertilizerCalculator.commercialBagsRequired;
       return {
         intent: 'NPK_FERTILIZER_CALCULATOR',
-        answerHi: `${acreage} एकड़ ${cal.cropNameHi} के लिए मृदा स्वास्थ्य कार्ड के अनुसार संतुलित खाद: DAP ${bags[0].bags} बोरी, नीम यूरिया ${bags[1].bags} बोरी, पोटाश (MOP) ${bags[2].bags} बोरी तथा जिंक सल्फेट + ZSB ${bags[3].totalKg} किग्रा। कुल अनुमानित लागत ₹${cal.fertilizerCalculator.totalEstimatedCostInr.toLocaleString('en-IN')}।`,
-        answerEn: `For ${acreage} acres of ${cal.cropNameEn} based on your Soil Health Card: ${bags[0].bags} bags DAP, ${bags[1].bags} bags Neem Urea, ${bags[2].bags} bags MOP, and ${bags[3].totalKg} kg Zinc Sulphate + ZSB. Estimated cost: ₹${cal.fertilizerCalculator.totalEstimatedCostInr.toLocaleString('en-IN')}.`,
+        answerHi: `${region.uiStateLabelHi} की मिट्टी (pH ${region.soil.ph}) व ${acreage} एकड़ ${cal.cropNameHi} हेतु संतुलित खाद मात्रा: DAP ${bags[0].bags} बोरी, नीम यूरिया ${bags[1].bags} बोरी, पोटाश (MOP) ${bags[2].bags} बोरी तथा जिंक सल्फेट + ZSB ${bags[3].totalKg} किग्रा। जैव-उर्वरक व जीवामृत के प्रयोग से रासायनिक खाद की जरूरत 25% घटती है।`,
+        answerEn: `For ${acreage} acres of ${cal.cropNameEn} in ${region.uiStateLabelEn} (Soil pH ${region.soil.ph}): ${bags[0].bags} bags DAP, ${bags[1].bags} bags Neem Urea, ${bags[2].bags} bags MOP, and ${bags[3].totalKg} kg Zinc Sulphate + ZSB.`,
         quickActionView: 'viewCalendar',
         structuredCard: cal.fertilizerCalculator
       };
@@ -767,22 +847,24 @@ export class FarmerEcosystemService {
       q.includes('kcc') ||
       q.includes('subsidy')
     ) {
-      const sch = this.getGovernmentSchemesAndKcc({ crop, acreage, state: params.state });
+      const sch = this.getGovernmentSchemesAndKcc({ crop, acreage, state: effectiveState });
       return {
         intent: 'GOVT_SCHEMES_AND_KCC',
-        answerHi: `आपके ${acreage} एकड़ खेत के लिए: 1) पीएम-किसान सम्मान निधि ₹6,000/वर्ष सक्रिय है, 2) 4% ब्याज पर KCC ऋण पात्रता ₹${sch.summaryMetrics.kccEligibleCreditLimitInr.toLocaleString('en-IN')} है, 3) प्रधानमंत्री फसल बीमा कवर ₹${sch.summaryMetrics.pmfbyCoverageInr.toLocaleString('en-IN')} (प्रीमियम मात्र ₹${sch.summaryMetrics.pmfbyFarmerPremiumInr}) तथा 60% सोलर पंप सब्सिडी उपलब्ध है।`,
-        answerEn: `For your ${acreage} acre farm: (1) PM-KISAN ₹6,000/yr DBT active, (2) KCC 4% credit limit ₹${sch.summaryMetrics.kccEligibleCreditLimitInr.toLocaleString('en-IN')}, (3) PMFBY Crop Insurance cover ₹${sch.summaryMetrics.pmfbyCoverageInr.toLocaleString('en-IN')} (farmer premium ₹${sch.summaryMetrics.pmfbyFarmerPremiumInr}), plus 60% PM-KUSUM solar subsidy.`,
+        answerHi: `${region.uiStateLabelHi} में आपके ${acreage} एकड़ खेत हेतु: 1) ${region.stateScheme.titleHi}, 2) पीएम-किसान ₹6,000/वर्ष, 3) 4% ब्याज पर KCC ऋण पात्रता ₹${sch.summaryMetrics.kccEligibleCreditLimitInr.toLocaleString('en-IN')}, तथा 4) PMFBY फसल बीमा कवर ₹${sch.summaryMetrics.pmfbyCoverageInr.toLocaleString('en-IN')} उपलब्ध है।`,
+        answerEn: `For your ${acreage} acre farm in ${region.uiStateLabelEn}: (1) ${region.stateScheme.titleEn}, (2) PM-KISAN ₹6,000/yr, (3) KCC 4% credit limit ₹${sch.summaryMetrics.kccEligibleCreditLimitInr.toLocaleString('en-IN')}, and (4) PMFBY Crop Insurance cover ₹${sch.summaryMetrics.pmfbyCoverageInr.toLocaleString('en-IN')}.`,
         quickActionView: 'viewSchemes',
         structuredCard: sch.summaryMetrics
       };
     }
 
-    // Intent 5: State-Specific Challenges (Parali, Stubble, Basmati Ban, Black Soil, Pink Bollworm, Black Thrips, Drone, CHC)
+    // Intent 5: State-Specific Challenges
     if (
       q.includes('पराली') ||
       q.includes('पंजाब') ||
       q.includes('मध्य प्रदेश') ||
       q.includes('महाराष्ट्र') ||
+      q.includes('उत्तर प्रदेश') ||
+      q.includes('बिहार') ||
       q.includes('राज्य') ||
       q.includes('ड्रोन') ||
       q.includes('हैप्पी सीडर') ||
@@ -791,31 +873,35 @@ export class FarmerEcosystemService {
       q.includes('state') ||
       q.includes('stubble') ||
       q.includes('drone') ||
-      q.includes('punjab')
+      q.includes('punjab') ||
+      q.includes('bihar') ||
+      q.includes('up')
     ) {
       const stateCode = q.includes('पंजाब') || q.includes('पराली') || q.includes('punjab') || q.includes('stubble')
         ? 'PB_HR'
         : q.includes('महाराष्ट्र') || q.includes('सुंडी')
         ? 'MH'
+        : q.includes('उत्तर प्रदेश') || q.includes('बिहार') || q.includes('bihar')
+        ? 'UP_BR'
         : q.includes('थ्रिप्स') || q.includes('मिर्च')
         ? 'SOUTH'
-        : 'MP';
+        : region.stateCode;
       const stData = this.getStateWiseChallengesAndTechSolutions({ stateCode, acreage });
       const active = stData.selectedState;
       return {
         intent: 'STATE_WISE_AGRO_TECH_SOLUTION',
-        answerHi: `${active.state_name_hi}: मुख्य चुनौती — ${active.soil_water_challenge_hi} तकनीकी समाधान — ${active.tech_solution_title_hi}। प्रति एकड़ अनुमानित लाभ: ₹${active.estimated_roi_per_acre_inr.toLocaleString('en-IN')}।`,
-        answerEn: `${active.state_name_en}: Core Challenge — ${active.soil_water_challenge_en} Tech Solution — ${active.tech_solution_title_en}. Estimated ROI: ₹${active.estimated_roi_per_acre_inr.toLocaleString('en-IN')}/acre.`,
+        answerHi: `${active.state_name_hi}: मुख्य चुनौती — ${active.soil_water_challenge_hi} वैज्ञानिक समाधान — ${active.tech_solution_title_hi}।`,
+        answerEn: `${active.state_name_en}: Core Challenge — ${active.soil_water_challenge_en} Tech Solution — ${active.tech_solution_title_en}.`,
         quickActionView: 'viewStateMatrix',
         structuredCard: active
       };
     }
 
-    // Default Intent: Crop Disease & Nutrition-First Advisory
+    const cropLabelHi = CROP_BENCHMARKS[crop]?.nameHi?.split(' ')[0] || crop;
     return {
       intent: 'CROP_HEALTH_NUTRITION_ADVISORY',
-      answerHi: `कृषि स्वास्थ्य सहायक (किसान ई-मित्र) सलाह: ${crop} में पीलापन या धब्बे दिखने पर पहले 'चरण 1: सूक्ष्म पोषक तत्व' (जिंक सल्फेट 2.5g/L या घुलनशील पोटाश 00:00:50 @ 5g/L + सिलिकॉन) का छिड़काव सुबह 8-10 बजे करें। बिना जांच महंगे रासायनिक कीटनाशक पर खर्च न करें।`,
-      answerEn: `Kisan e-Mitra Nutrition-First Advisory: For yellowing or leaf spots in ${crop}, always begin with Step 1 Foliar Nutrition (Zinc Sulphate 2.5g/L or SOP 00:00:50 @ 5g/L + Potassium Silicate) during morning hours before resorting to synthetic pesticides.`,
+      answerHi: `किसान ई-मित्र (${region.uiStateLabelHi}) सलाह: ${cropLabelHi} में पीलापन या धब्बे दिखने पर पहले 'चरण 1: सूक्ष्म पोषक तत्व' (जिंक सल्फेट 2.5g/L या घुलनशील पोटाश 00:00:50 @ 5g/L) अथवा घरेलू नीमास्त्र/जीवामृत का छिड़काव सुबह 8-10 बजे करें। बिना जांच महंगे रासायनिक कीटनाशक पर खर्च न करें।`,
+      answerEn: `Kisan e-Mitra (${region.uiStateLabelEn}) Nutrition-First Advisory: For yellowing or leaf spots in ${crop}, begin with Step 1 Foliar Nutrition (Zinc Sulphate 2.5g/L or SOP 00:00:50 @ 5g/L) or on-farm Neemastra before synthetic pesticides.`,
       quickActionView: 'viewRecommendation',
       structuredCard: null
     };
@@ -829,7 +915,8 @@ export class FarmerEcosystemService {
     acreage?: number;
   }) {
     this.ensureSeeded();
-    const stateCode = (params.stateCode || 'MP').toUpperCase();
+    const resolvedCode = resolveAgroRegion(params.stateCode).stateCode;
+    const stateCode = (params.stateCode && params.stateCode.length <= 6 ? params.stateCode : resolvedCode).toUpperCase();
     const acreage = Math.max(0.5, Number(params.acreage || 3.5));
 
     const allStates = StateAgroChallengeRepository.listAll('ALL');
